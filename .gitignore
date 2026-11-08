@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+dist/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.agent-ecosystem/execution/*
+!.agent-ecosystem/execution/.gitkeep

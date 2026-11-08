@@ -1,0 +1,18 @@
+{
+  "displayName": "Frontend Agent",
+  "version": "0.2.0",
+  "description": "Designs and implements frontend application structure, accessible UI, state management, API integration, and frontend tests against approved design and contracts.",
+  "author": {
+    "name": "AI Agent Ecosystem contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "frontend",
+    "web",
+    "react",
+    "accessibility",
+    "testing"
+  ],
+  "id": "frontend-agent",
+  "kind": "source-module"
+}

@@ -1,0 +1,18 @@
+{
+  "displayName": "Core Engineering Skills",
+  "version": "0.2.0",
+  "description": "Portable skills for product discovery, architecture, task planning, API and data design, TDD, debugging, review, and verification.",
+  "author": {
+    "name": "AI Agent Ecosystem contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "engineering",
+    "planning",
+    "tdd",
+    "code-review"
+  ],
+  "id": "core-engineering-skills",
+  "kind": "source-module"
+}

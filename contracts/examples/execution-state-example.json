@@ -1,0 +1,23 @@
+{
+  "project_id": "rental-saas",
+  "team_id": "saas-mvp",
+  "status": "planning",
+  "updated_at": "2026-11-08T10:00:00+07:00",
+  "tasks": [
+    {
+      "task_id": "ARCH-001",
+      "status": "completed",
+      "owner": "architecture-agent",
+      "evidence": [
+        "Approved architecture baseline"
+      ]
+    },
+    {
+      "task_id": "BE-001",
+      "status": "ready_for_dispatch",
+      "owner": "backend-agent",
+      "evidence": [],
+      "blockers": []
+    }
+  ]
+}

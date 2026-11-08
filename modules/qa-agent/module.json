@@ -1,0 +1,17 @@
+{
+  "displayName": "QA Agent",
+  "version": "0.2.0",
+  "description": "Creates independent test strategies, validates acceptance criteria, tests critical user journeys, and reports reproducible defects and release risks.",
+  "author": {
+    "name": "AI Agent Ecosystem contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "qa",
+    "testing",
+    "quality",
+    "acceptance"
+  ],
+  "id": "qa-agent",
+  "kind": "source-module"
+}

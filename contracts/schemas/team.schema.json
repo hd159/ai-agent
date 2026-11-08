@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/ai-agent-ecosystem/team.schema.json",
+  "title": "Team Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "version",
+    "orchestrator",
+    "shared_modules",
+    "members",
+    "workflow",
+    "approval_gates",
+    "execution_policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "orchestrator": {
+      "type": "string"
+    },
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "module",
+          "agent",
+          "role",
+          "required"
+        ],
+        "properties": {
+          "agent": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "module": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "workflow": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "mode",
+          "agents"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "sequential",
+              "parallel",
+              "dependency-aware-parallel"
+            ]
+          },
+          "agents": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "approval_gate": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "approval_gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "required",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "execution_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_parallel_agents",
+        "parallelism",
+        "one_owner_per_task",
+        "disallow_overlapping_owned_paths",
+        "stop_dependent_tasks_on_failure",
+        "completion_requires_evidence"
+      ],
+      "properties": {
+        "max_parallel_agents": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parallelism": {
+          "enum": [
+            "sequential",
+            "dependency-aware"
+          ]
+        },
+        "one_owner_per_task": {
+          "type": "boolean"
+        },
+        "disallow_overlapping_owned_paths": {
+          "type": "boolean"
+        },
+        "stop_dependent_tasks_on_failure": {
+          "type": "boolean"
+        },
+        "completion_requires_evidence": {
+          "type": "boolean"
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "shared_modules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

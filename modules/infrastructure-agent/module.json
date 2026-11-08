@@ -1,0 +1,18 @@
+{
+  "displayName": "Infrastructure Agent",
+  "version": "0.2.0",
+  "description": "Designs and implements cloud infrastructure, environments, CI/CD, deployment configuration, secrets integration, observability, and operational readiness.",
+  "author": {
+    "name": "AI Agent Ecosystem contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "infrastructure",
+    "devops",
+    "cloud",
+    "cicd",
+    "observability"
+  ],
+  "id": "infrastructure-agent",
+  "kind": "source-module"
+}

@@ -1,0 +1,44 @@
+{
+  "task_id": "BE-001",
+  "title": "Implement account registration endpoint",
+  "owner": "backend-agent",
+  "objective": "Implement the registration endpoint against the approved API and domain contracts.",
+  "inputs": [
+    ".agent-ecosystem/artifacts/architecture.md",
+    ".agent-ecosystem/artifacts/openapi.yaml"
+  ],
+  "scope": [
+    "Validate registration payload",
+    "Enforce unique account identity",
+    "Hash password using approved password-hashing library",
+    "Return documented response"
+  ],
+  "out_of_scope": [
+    "Frontend registration form",
+    "Production deployment"
+  ],
+  "dependencies": [
+    "ARCH-001",
+    "API-001",
+    "DB-001"
+  ],
+  "owned_paths": [
+    "src/modules/accounts/**",
+    "tests/accounts/**"
+  ],
+  "acceptance_criteria": [
+    "Valid registration creates an account",
+    "Duplicate identity returns documented conflict",
+    "Password is never stored in plaintext"
+  ],
+  "verification": [
+    "Run account unit tests",
+    "Run API integration tests",
+    "Inspect persisted password hash in test environment"
+  ],
+  "status": "ready_for_dispatch",
+  "completion_evidence": [],
+  "notes": [
+    "Do not change the public API contract without architecture review."
+  ]
+}

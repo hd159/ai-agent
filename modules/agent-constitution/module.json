@@ -1,0 +1,16 @@
+{
+  "displayName": "Agent Constitution",
+  "version": "0.2.0",
+  "description": "Shared behavioral standards for specialist agents, including simplicity, scoped changes, explicit assumptions, and evidence-based completion.",
+  "author": {
+    "name": "AI Agent Ecosystem contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "constitution",
+    "agent-rules",
+    "engineering-standards"
+  ],
+  "id": "agent-constitution",
+  "kind": "source-module"
+}

@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0.0",
+  "id": "saas-mvp",
+  "name": "SaaS MVP Team",
+  "version": "0.2.0",
+  "description": "A cross-functional team for taking a SaaS idea from discovery through MVP implementation and quality review.",
+  "orchestrator": "team-orchestrator",
+  "members": [
+    {
+      "agent": "architecture-agent",
+      "role": "solution-architect",
+      "required": true,
+      "module": "architecture-agent"
+    },
+    {
+      "agent": "uiux-design-agent",
+      "role": "product-design",
+      "required": true,
+      "module": "uiux-design-agent"
+    },
+    {
+      "agent": "frontend-agent",
+      "role": "frontend-engineering",
+      "required": true,
+      "module": "frontend-agent"
+    },
+    {
+      "agent": "backend-agent",
+      "role": "backend-engineering",
+      "required": true,
+      "module": "backend-agent"
+    },
+    {
+      "agent": "infrastructure-agent",
+      "role": "platform-engineering",
+      "required": true,
+      "module": "infrastructure-agent"
+    },
+    {
+      "agent": "qa-agent",
+      "role": "quality-engineering",
+      "required": true,
+      "module": "qa-agent"
+    }
+  ],
+  "workflow": [
+    {
+      "id": "discovery",
+      "mode": "sequential",
+      "agents": [
+        "architecture-agent",
+        "uiux-design-agent"
+      ],
+      "approval_gate": "mvp_scope"
+    },
+    {
+      "id": "architecture-review",
+      "mode": "parallel",
+      "agents": [
+        "uiux-design-agent",
+        "frontend-agent",
+        "backend-agent",
+        "infrastructure-agent",
+        "qa-agent"
+      ],
+      "approval_gate": "architecture"
+    },
+    {
+      "id": "contract-definition",
+      "mode": "sequential",
+      "agents": [
+        "architecture-agent",
+        "frontend-agent",
+        "backend-agent",
+        "infrastructure-agent"
+      ]
+    },
+    {
+      "id": "implementation",
+      "mode": "dependency-aware-parallel",
+      "agents": [
+        "frontend-agent",
+        "backend-agent",
+        "infrastructure-agent"
+      ]
+    },
+    {
+      "id": "quality-review",
+      "mode": "sequential",
+      "agents": [
+        "qa-agent",
+        "architecture-agent"
+      ]
+    }
+  ],
+  "approval_gates": [
+    {
+      "id": "mvp_scope",
+      "required": true,
+      "description": "User approval of MVP scope, priorities, and non-goals."
+    },
+    {
+      "id": "architecture",
+      "required": true,
+      "description": "User approval of material architecture decisions and trade-offs."
+    },
+    {
+      "id": "production_deployment",
+      "required": true,
+      "description": "Explicit user authorization before production-impacting deployment."
+    }
+  ],
+  "execution_policy": {
+    "max_parallel_agents": 3,
+    "parallelism": "dependency-aware",
+    "one_owner_per_task": true,
+    "disallow_overlapping_owned_paths": true,
+    "stop_dependent_tasks_on_failure": true,
+    "completion_requires_evidence": true
+  },
+  "notes": [
+    "All listed agents, shared skills, and constitution rules are bundled into the single ai-agent Antigravity plugin repository.",
+    "The team manifest is a logical composition contract. Its module references resolve inside this repository and do not trigger separate GitHub repository installs.",
+    "The UI/UX member is a generic starter. Replace it with an existing Senior Product Design Agent if that specialist is preferred.",
+    "This manifest is declarative. The host runtime must support native subagent delegation for automatic dispatch."
+  ],
+  "shared_modules": [
+    "agent-constitution",
+    "core-engineering-skills"
+  ]
+}

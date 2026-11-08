@@ -1,0 +1,17 @@
+{
+  "displayName": "UI/UX Design Agent",
+  "version": "0.2.0",
+  "description": "Researches user needs, designs user journeys and information architecture, defines interaction patterns, and produces implementation-ready design specifications.",
+  "author": {
+    "name": "AI Agent Ecosystem contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ui",
+    "ux",
+    "product-design",
+    "accessibility"
+  ],
+  "id": "uiux-design-agent",
+  "kind": "source-module"
+}

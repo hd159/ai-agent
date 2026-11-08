@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0.0",
+  "ecosystem": "ai-agent-ecosystem",
+  "version": "0.2.0",
+  "distribution": "single-github-repository-single-antigravity-plugin",
+  "repository": "https://github.com/hd159/ai-agent",
+  "notes": [
+    "All specialist agents, shared skills, and constitution rules are bundled into one installable Antigravity plugin.",
+    "The modules/* directories are canonical source modules; scripts/build_single_plugin.py assembles their agents, skills, and rules at the repository root.",
+    "Install the complete ecosystem with agy plugin install https://github.com/hd159/ai-agent.",
+    "Team presets select logical agent roles; they do not require separate GitHub repositories or separate plugin installations."
+  ],
+  "modules": [
+    {
+      "id": "agent-constitution",
+      "version": "0.2.0",
+      "display_name": "Agent Constitution",
+      "description": "Shared behavioral standards for specialist agents, including simplicity, scoped changes, explicit assumptions, and evidence-based completion.",
+      "components": {
+        "agents": 0,
+        "skills": 0,
+        "rules": 1
+      },
+      "kind": "source-module"
+    },
+    {
+      "id": "architecture-agent",
+      "version": "0.2.0",
+      "display_name": "Architecture Agent",
+      "description": "Plans product and system architecture, defines module boundaries, records technical decisions, and decomposes approved scope into owned implementation tasks.",
+      "components": {
+        "agents": 1,
+        "skills": 0,
+        "rules": 0
+      },
+      "kind": "source-module"
+    },
+    {
+      "id": "backend-agent",
+      "version": "0.2.0",
+      "display_name": "Backend Agent",
+      "description": "Designs and implements backend domain logic, APIs, persistence, validation, integrations, authorization, and backend tests against approved architecture.",
+      "components": {
+        "agents": 1,
+        "skills": 0,
+        "rules": 0
+      },
+      "kind": "source-module"
+    },
+    {
+      "id": "core-engineering-skills",
+      "version": "0.2.0",
+      "display_name": "Core Engineering Skills",
+      "description": "Portable skills for product discovery, architecture, task planning, API and data design, TDD, debugging, review, and verification.",
+      "components": {
+        "agents": 0,
+        "skills": 12,
+        "rules": 0
+      },
+      "kind": "source-module"
+    },
+    {
+      "id": "frontend-agent",
+      "version": "0.2.0",
+      "display_name": "Frontend Agent",
+      "description": "Designs and implements frontend application structure, accessible UI, state management, API integration, and frontend tests against approved design and contracts.",
+      "components": {
+        "agents": 1,
+        "skills": 0,
+        "rules": 0
+      },
+      "kind": "source-module"
+    },
+    {
+      "id": "infrastructure-agent",
+      "version": "0.2.0",
+      "display_name": "Infrastructure Agent",
+      "description": "Designs and implements cloud infrastructure, environments, CI/CD, deployment configuration, secrets integration, observability, and operational readiness.",
+      "components": {
+        "agents": 1,
+        "skills": 0,
+        "rules": 0
+      },
+      "kind": "source-module"
+    },
+    {
+      "id": "qa-agent",
+      "version": "0.2.0",
+      "display_name": "QA Agent",
+      "description": "Creates independent test strategies, validates acceptance criteria, tests critical user journeys, and reports reproducible defects and release risks.",
+      "components": {
+        "agents": 1,
+        "skills": 0,
+        "rules": 0
+      },
+      "kind": "source-module"
+    },
+    {
+      "id": "team-orchestrator",
+      "version": "0.2.0",
+      "display_name": "Team Orchestrator",
+      "description": "Compose project teams from specialist agents, create dependency-aware task plans, coordinate handoffs, and track evidence-based execution.",
+      "components": {
+        "agents": 1,
+        "skills": 4,
+        "rules": 0
+      },
+      "kind": "source-module"
+    },
+    {
+      "id": "uiux-design-agent",
+      "version": "0.2.0",
+      "display_name": "UI/UX Design Agent",
+      "description": "Researches user needs, designs user journeys and information architecture, defines interaction patterns, and produces implementation-ready design specifications.",
+      "components": {
+        "agents": 1,
+        "skills": 0,
+        "rules": 0
+      },
+      "kind": "source-module"
+    }
+  ]
+}

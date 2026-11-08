@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/ai-agent-ecosystem/execution-state.schema.json",
+  "title": "Execution State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "project_id",
+    "team_id",
+    "status",
+    "updated_at",
+    "tasks"
+  ],
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "team_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "planning",
+        "awaiting_approval",
+        "ready_for_dispatch",
+        "in_progress",
+        "blocked",
+        "in_review",
+        "completed"
+      ]
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task_id",
+          "status"
+        ],
+        "properties": {
+          "task_id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "blocked",
+              "ready_for_dispatch",
+              "dispatched",
+              "in_progress",
+              "in_review",
+              "completed",
+              "failed"
+            ]
+          },
+          "owner": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

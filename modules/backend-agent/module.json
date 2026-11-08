@@ -1,0 +1,17 @@
+{
+  "displayName": "Backend Agent",
+  "version": "0.2.0",
+  "description": "Designs and implements backend domain logic, APIs, persistence, validation, integrations, authorization, and backend tests against approved architecture.",
+  "author": {
+    "name": "AI Agent Ecosystem contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "backend",
+    "api",
+    "database",
+    "domain-driven-design"
+  ],
+  "id": "backend-agent",
+  "kind": "source-module"
+}

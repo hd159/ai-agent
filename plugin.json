@@ -1,0 +1,28 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "ai-agent",
+  "displayName": "AI Agent Ecosystem",
+  "version": "0.2.0",
+  "description": "A complete multi-agent engineering team: architecture, product design, frontend, backend, infrastructure, QA, and orchestration, with shared engineering skills and behavioral rules.",
+  "repository": "https://github.com/hd159/ai-agent",
+  "suggestedPrompts": [
+    "Use Team Orchestrator to plan a new SaaS product or feature",
+    "Ask a specialist agent to review or implement a bounded task",
+    "Run product discovery and define an MVP with measurable outcomes"
+  ],
+  "author": {
+    "name": "AI Agent Ecosystem contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "multi-agent",
+    "orchestration",
+    "architecture",
+    "product-design",
+    "frontend",
+    "backend",
+    "devops",
+    "qa",
+    "agent-skills"
+  ]
+}
