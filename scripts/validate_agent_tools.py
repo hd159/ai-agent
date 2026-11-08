@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate explicit Antigravity agent tool allowlists and generated bundle parity."""
+"""Validate full Antigravity tool access and generated agent bundle parity."""
 from __future__ import annotations
 
 import json
@@ -12,36 +12,16 @@ POLICY_PATH = ROOT / "contracts" / "agent-tool-policy.json"
 errors: list[str] = []
 
 
-def parse_tools(path: Path) -> list[str]:
+def parse_frontmatter(path: Path) -> str:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
         errors.append(f"{path.relative_to(ROOT)}: missing YAML frontmatter")
-        return []
+        return ""
     end = text.find("\n---", 4)
     if end < 0:
         errors.append(f"{path.relative_to(ROOT)}: unterminated YAML frontmatter")
-        return []
-    lines = text[4:end].splitlines()
-    tools_index = next((i for i, line in enumerate(lines) if re.match(r"^tools:\s*$", line)), None)
-    if tools_index is None:
-        errors.append(f"{path.relative_to(ROOT)}: missing explicit tools allowlist")
-        return []
-    tools: list[str] = []
-    for line in lines[tools_index + 1:]:
-        if not line.strip():
-            continue
-        if not line.startswith((" ", "\t")):
-            break
-        match = re.fullmatch(r"\s+-\s+([a-z][a-z0-9_]*)\s*", line)
-        if not match:
-            errors.append(f"{path.relative_to(ROOT)}: malformed tools entry: {line.strip()}")
-            continue
-        tools.append(match.group(1))
-    if not tools:
-        errors.append(f"{path.relative_to(ROOT)}: tools allowlist must not be empty")
-    if len(tools) != len(set(tools)):
-        errors.append(f"{path.relative_to(ROOT)}: duplicate tool names")
-    return tools
+        return ""
+    return text[4:end]
 
 
 if not POLICY_PATH.is_file():
@@ -49,35 +29,41 @@ if not POLICY_PATH.is_file():
     sys.exit(1)
 
 policy = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
-allowed = set(policy.get("allowed_tools", []))
-profiles = policy.get("agents", {})
-for agent_id, tools in profiles.items():
-    for tool in tools:
-        if tool not in allowed:
-            errors.append(f"agent-tool-policy.json: unapproved tool '{tool}' for {agent_id}")
+frontmatter_policy = policy.get("frontmatter", {})
+if not str(frontmatter_policy.get("tools", "")).startswith("omitted"):
+    errors.append("agent-tool-policy.json: tools must be omitted to expose all built-in tools")
+if frontmatter_policy.get("inheritMcp") is not True:
+    errors.append("agent-tool-policy.json: inheritMcp must be true")
+if frontmatter_policy.get("inheritCustomizations") is not True:
+    errors.append("agent-tool-policy.json: inheritCustomizations must be true")
+if not str(frontmatter_policy.get("commandExecutionPolicy", "")).startswith("omitted"):
+    errors.append("agent-tool-policy.json: commandExecutionPolicy must be omitted")
 
+expected_agents = set(policy.get("agents", []))
 seen: set[str] = set()
 for source in sorted((ROOT / "modules").glob("*/agents/*.md")):
     agent_id = source.stem
     seen.add(agent_id)
-    expected = profiles.get(agent_id)
-    if expected is None:
-        errors.append(f"{source.relative_to(ROOT)}: no tool profile in agent-tool-policy.json")
-        continue
-    actual = parse_tools(source)
-    unknown = sorted(set(actual) - allowed)
-    if unknown:
-        errors.append(f"{source.relative_to(ROOT)}: unknown Antigravity tools: {', '.join(unknown)}")
-    if actual != expected:
-        errors.append(f"{source.relative_to(ROOT)}: tools differ from policy; expected={expected!r}, actual={actual!r}")
+    frontmatter = parse_frontmatter(source)
+    if re.search(r"(?m)^tools\s*:", frontmatter):
+        errors.append(f"{source.relative_to(ROOT)}: remove tools allowlist; omission grants all built-in tools")
+    if re.search(r"(?m)^commandExecutionPolicy\s*:", frontmatter):
+        errors.append(f"{source.relative_to(ROOT)}: omit commandExecutionPolicy so host/user settings govern execution")
+    if not re.search(r"(?m)^inheritMcp:\s*true\s*$", frontmatter):
+        errors.append(f"{source.relative_to(ROOT)}: inheritMcp: true is required")
+    if not re.search(r"(?m)^inheritCustomizations:\s*true\s*$", frontmatter):
+        errors.append(f"{source.relative_to(ROOT)}: inheritCustomizations: true is required")
+
     generated = ROOT / "agents" / source.name
     if not generated.is_file():
         errors.append(f"agents/{source.name}: generated agent file is missing")
     elif generated.read_bytes() != source.read_bytes():
         errors.append(f"agents/{source.name}: generated bundle is out of sync with source module")
 
-for agent_id in sorted(set(profiles) - seen):
-    errors.append(f"agent-tool-policy.json: profile has no source agent: {agent_id}")
+for agent_id in sorted(expected_agents - seen):
+    errors.append(f"agent-tool-policy.json: source agent is missing: {agent_id}")
+for agent_id in sorted(seen - expected_agents):
+    errors.append(f"agent-tool-policy.json: unexpected agent is missing from policy: {agent_id}")
 
 if errors:
     print("AGENT TOOL VALIDATION FAILED")
@@ -85,4 +71,8 @@ if errors:
         print("ERROR:", error)
     sys.exit(1)
 
-print(f"AGENT TOOL VALIDATION PASSED: {len(seen)} agents, {len(allowed)} approved tool names")
+print(
+    f"AGENT TOOL VALIDATION PASSED: {len(seen)} agents; "
+    "all built-in tools enabled; MCP/customization inheritance enabled; "
+    "execution policy left to Antigravity host settings"
+)

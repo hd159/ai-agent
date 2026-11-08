@@ -1,116 +1,36 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "platform": "Google Antigravity",
-  "purpose": "Explicit least-privilege built-in tool allowlists for the bundled custom agents.",
+  "purpose": "Give every bundled agent the full built-in Antigravity toolset and inherit the parent session's MCP servers and customizations; leave execution authorization to host/user settings.",
+  "frontmatter": {
+    "tools": "omitted — Antigravity's bundled-plugin default exposes all built-in tools",
+    "inheritMcp": true,
+    "inheritCustomizations": true,
+    "commandExecutionPolicy": "omitted — do not pin a per-agent execution policy"
+  },
+  "agents": [
+    "team-orchestrator",
+    "architecture-agent",
+    "uiux-design-agent",
+    "frontend-agent",
+    "backend-agent",
+    "infrastructure-agent",
+    "qa-agent"
+  ],
   "references": [
-    "https://antigravity.google/docs/subagents",
     "https://antigravity.google/docs/build-plugins",
+    "https://antigravity.google/docs/subagents",
+    "https://antigravity.google/docs/agent-settings",
+    "https://antigravity.google/docs/permissions",
     "https://antigravity.google/docs/hooks"
   ],
-  "allowed_tools": [
-    "find_by_name",
-    "grep_search",
-    "invoke_subagent",
-    "list_dir",
-    "manage_subagents",
-    "multi_replace_file_content",
-    "read_url_content",
-    "replace_file_content",
-    "run_command",
-    "search_web",
-    "send_message",
-    "view_file",
-    "write_to_file"
-  ],
-  "agents": {
-    "team-orchestrator": [
-      "view_file",
-      "list_dir",
-      "find_by_name",
-      "grep_search",
-      "write_to_file",
-      "replace_file_content",
-      "multi_replace_file_content",
-      "run_command",
-      "search_web",
-      "read_url_content",
-      "invoke_subagent",
-      "send_message",
-      "manage_subagents"
-    ],
-    "architecture-agent": [
-      "view_file",
-      "list_dir",
-      "find_by_name",
-      "grep_search",
-      "write_to_file",
-      "replace_file_content",
-      "multi_replace_file_content",
-      "run_command",
-      "search_web",
-      "read_url_content"
-    ],
-    "uiux-design-agent": [
-      "view_file",
-      "list_dir",
-      "find_by_name",
-      "grep_search",
-      "write_to_file",
-      "replace_file_content",
-      "multi_replace_file_content",
-      "search_web",
-      "read_url_content"
-    ],
-    "frontend-agent": [
-      "view_file",
-      "list_dir",
-      "find_by_name",
-      "grep_search",
-      "write_to_file",
-      "replace_file_content",
-      "multi_replace_file_content",
-      "run_command"
-    ],
-    "backend-agent": [
-      "view_file",
-      "list_dir",
-      "find_by_name",
-      "grep_search",
-      "write_to_file",
-      "replace_file_content",
-      "multi_replace_file_content",
-      "run_command",
-      "search_web",
-      "read_url_content"
-    ],
-    "infrastructure-agent": [
-      "view_file",
-      "list_dir",
-      "find_by_name",
-      "grep_search",
-      "write_to_file",
-      "replace_file_content",
-      "multi_replace_file_content",
-      "run_command",
-      "search_web",
-      "read_url_content"
-    ],
-    "qa-agent": [
-      "view_file",
-      "list_dir",
-      "find_by_name",
-      "grep_search",
-      "write_to_file",
-      "replace_file_content",
-      "multi_replace_file_content",
-      "run_command"
-    ]
-  },
   "notes": [
-    "Tool names are case-sensitive and must match Antigravity built-in tool identifiers.",
-    "The tool allowlist controls which tools are exposed to an agent. commandExecutionPolicy controls shell execution behavior and does not grant missing tools.",
-    "The Team Orchestrator is the only agent granted invoke_subagent and manage_subagents for centralized delegation.",
-    "UI/UX is intentionally not granted run_command; it can inspect source and write design artifacts.",
-    "Keep this policy synchronized with modules/*/agents/*.md and the generated root agents/*.md bundle."
+    "Do not add a tools property or tools: []; omission is intentional and grants the full built-in toolset to bundled plugin agents.",
+    "inheritMcp: true lets each agent inherit MCP servers and tools configured for its parent session.",
+    "inheritCustomizations: true inherits applicable workspace skills, rules, and hooks.",
+    "commandExecutionPolicy is omitted so the plugin does not impose a per-agent execution mode; Antigravity defaults and user/global/project/session settings govern execution.",
+    "Tool availability is not authorization. Antigravity host permissions, allow/ask/deny rules, sandboxing, workspace boundaries, and approval prompts remain authoritative.",
+    "Agent roles define responsibility and task ownership, not tool access. The Orchestrator remains the coordinator and single writer of shared execution state.",
+    "Keep canonical module agents and generated root agents synchronized."
   ]
 }
