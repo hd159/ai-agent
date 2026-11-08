@@ -58,4 +58,4 @@ Do not rely on a runtime shutdown hook. A checkpoint is an explicit work action,
 
 ## Gate reconciliation
 
-Before writing a checkpoint that claims \`completed\`, confirm the task's independent QA report and successful quality gate execution. Record gate command, exit status, verified source commit, and evidence paths in the session journal. A failed or unavailable gate must be recorded as a blocker; do not silently preserve a false \`completed\` status. After checkpointing, run \`quality_gate.py validate\` to detect task/state drift.
+Before writing a checkpoint that claims `completed`, confirm the task's independent QA report and successful quality gate execution. Record gate command, exit status, verified source commit, and evidence paths in the session journal. A failed or unavailable gate must be recorded as a blocker; do not silently preserve a false `completed` status. After checkpointing, run `quality_gate.py validate` to detect task/state drift.
