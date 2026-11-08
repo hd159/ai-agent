@@ -153,7 +153,9 @@ class Gate:
         if not reviewer or reviewer == task.get("owner"):
             self.error(f"Task {task_id}: independent reviewer required")
         qa_agents = {m.get("agent") for m in (team or {}).get("members", []) if m.get("role") == "quality-engineering"}
-        if qa_agents and reviewer not in qa_agents:
+        if not qa_agents:
+            self.error(f"Task {task_id}: configured independent QA specialist required")
+        elif reviewer not in qa_agents:
             self.error(f"Task {task_id}: reviewer {reviewer} is not a configured QA agent")
         if report.get("review_status") != "approved":
             self.error(f"Task {task_id}: independent QA review has not approved completion")
@@ -186,6 +188,8 @@ class Gate:
             if ident in checks:
                 self.error(f"Task {task_id}: duplicate verification check {ident}")
             checks[ident] = check
+            if check.get("result") in ("failed", "blocked") and report.get("review_status") == "approved":
+                self.error(f"Task {task_id}: approved QA report contains failed/blocked check {ident}")
             if check.get("result") == "passed":
                 if check.get("kind") != "inspection" and (not check.get("command") or check.get("exit_code") != 0):
                     self.error(f"Task {task_id}: passed executable check {ident} missing command or successful exit code")

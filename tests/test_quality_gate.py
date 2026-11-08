@@ -129,6 +129,19 @@ class QualityGateTests(unittest.TestCase):
         self.write_report()
         self.assertTrue(any("not a configured QA agent" in e for e in self.check()))
 
+    def test_team_must_configure_independent_qa(self):
+        self.team["members"] = [m for m in self.team["members"] if m["agent"] != "qa-agent"]
+        save(self.eco / "team.json", self.team)
+        self.assertTrue(any("configured independent QA specialist required" in e for e in self.check()))
+
+    def test_failed_extra_check_blocks_approved_review(self):
+        self.report["checks"].append({
+            "id": "regression", "kind": "test", "result": "failed", "executed_at": NOW,
+            "command": "python -m unittest regression", "exit_code": 1, "evidence_paths": [self.evidence]
+        })
+        self.write_report()
+        self.assertTrue(any("approved QA report contains failed/blocked" in e for e in self.check()))
+
     def test_qa_review_must_approve(self):
         self.report["review_status"] = "changes_requested"
         self.write_report()
