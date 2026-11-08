@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "rental-saas",
+  "team_id": "saas-mvp",
+  "goal": "Deliver the approved SaaS MVP with secure payment settlement.",
+  "status": "active",
+  "created_at": "2026-11-08T09:00:00+07:00",
+  "updated_at": "2026-11-08T10:00:00+07:00",
+  "phases": [
+    {
+      "phase_id": "discovery",
+      "status": "completed",
+      "mode": "sequential",
+      "agents": ["architecture-agent", "uiux-design-agent"],
+      "approval_gate": "mvp_scope"
+    },
+    {
+      "phase_id": "implementation",
+      "status": "in_progress",
+      "mode": "dependency-aware-parallel",
+      "agents": ["frontend-agent", "backend-agent", "infrastructure-agent"],
+      "approval_gate": null
+    }
+  ],
+  "approval_gates": [
+    {
+      "id": "mvp_scope",
+      "required": true,
+      "description": "User approval of MVP scope, priorities, and non-goals.",
+      "status": "approved",
+      "approved_at": "2026-11-08T09:30:00+07:00",
+      "approved_by": "user"
+    },
+    {
+      "id": "architecture",
+      "required": true,
+      "description": "User approval of material architecture decisions and trade-offs.",
+      "status": "pending",
+      "approved_at": null,
+      "approved_by": null
+    }
+  ]
+}

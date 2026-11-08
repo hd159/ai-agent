@@ -6,8 +6,10 @@ import json, re, sys
 ROOT = Path(__file__).resolve().parents[1]
 errors = []
 
+
 def fail(message):
     errors.append(message)
+
 
 def parse_frontmatter(text, path):
     if not text.startswith("---\n"):
@@ -25,6 +27,7 @@ def parse_frontmatter(text, path):
         if match:
             result[match.group(1)] = match.group(2).strip().strip('"').strip("'")
     return result
+
 
 for path in ROOT.rglob("*.json"):
     try:
@@ -70,7 +73,7 @@ for module_dir in module_dirs:
         if fm.get("name") != skill_file.parent.name:
             fail(f"{skill_file.relative_to(ROOT)}: skill name must match directory")
         if not fm.get("description"):
-            fail(f"{skill_file.relative_to(ROOT)}: missing description")
+            fail(f"{skill_file.relative_to(ROOT)}: missing skill description")
 
 catalog_path = ROOT / "ecosystem.json"
 if catalog_path.is_file():
@@ -103,11 +106,22 @@ for team_file in (ROOT / "teams").glob("*/team.json"):
                 fail(f"{team_file.relative_to(ROOT)}: workflow references unknown agent '{agent_id}'")
 
 required = [
-    "contracts/schemas/agent.schema.json", "contracts/schemas/task.schema.json",
-    "contracts/schemas/team.schema.json", "contracts/schemas/handoff.schema.json",
-    "contracts/schemas/execution-state.schema.json", "contracts/examples/task-example.json",
-    "contracts/examples/handoff-example.json", "plugin.json", "agents", "skills", "rules",
-    "scripts/build_single_plugin.py"
+    "contracts/schemas/agent.schema.json",
+    "contracts/schemas/task.schema.json",
+    "contracts/schemas/team.schema.json",
+    "contracts/schemas/handoff.schema.json",
+    "contracts/schemas/execution-state.schema.json",
+    "contracts/schemas/project-plan.schema.json",
+    "contracts/examples/task-example.json",
+    "contracts/examples/handoff-example.json",
+    "contracts/examples/execution-state-example.json",
+    "contracts/examples/project-plan-example.json",
+    "plugin.json",
+    "agents",
+    "skills",
+    "rules",
+    "scripts/build_single_plugin.py",
+    "docs/architecture/PERSISTENT-PROJECT-MEMORY.md",
 ]
 for relative in required:
     if not (ROOT / relative).exists():
