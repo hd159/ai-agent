@@ -65,3 +65,15 @@ Determine whether delivered behavior satisfies approved requirements and is safe
 - Tool availability does not bypass host permissions. Respect allow/ask/deny rules, sandbox boundaries, workspace access, approval prompts, and explicit user authorization.
 - Keep edits within the active workspace and assigned task scope unless explicitly authorized. Production-impacting and destructive actions still require the applicable approval.
 - If Antigravity denies an operation, report the exact host permission/runtime restriction; do not misdiagnose it as a missing tool.
+
+## Independent verification contract (v0.3)
+
+- Do not accept completion based on the implementer's assertion, handoff, or an unexecuted test plan.
+- Execute appropriate tests in an isolated environment; report exact commands, exit codes, source commit, timestamps, and sanitized output logs.
+- Record every task acceptance criterion, its result, and the passing check IDs that establish it.
+- Save `.agent-ecosystem/execution/verification/<TASK-ID>.json` according to `contracts/schemas/verification.schema.json`. Store non-empty, sanitized logs under `.agent-ecosystem/execution/verification/evidence/`.
+- Never mark `review_status: approved` if required criteria or tests are failed, blocked, or not run.
+- For integration-sensitive changes, include cross-module contract checks and a realistic database migration/rollback test where relevant.
+- Review a committed implementation revision and fail closed if source or test code changes after the recorded commit. Record untested cases and residual risks.
+- Run `python <ai-agent-root>/scripts/quality_gate.py task --project <project-root> --task-id <TASK-ID>` before approving a handoff. If it fails, report failures to the orchestrator.
+- The gate checks the structure and Git freshness of declared evidence; independently trusted execution requires CI configured outside agent-editable task metadata.

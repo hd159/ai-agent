@@ -84,7 +84,7 @@ def main() -> int:
     copy_tree(ROOT / "templates/artifacts", artifacts)
 
     execution = eco / "execution"
-    for folder in ("tasks", "handoffs", "sessions", "decisions"):
+    for folder in ("tasks", "handoffs", "sessions", "decisions", "verification", "verification/evidence"):
         (execution / folder).mkdir(parents=True, exist_ok=True)
 
     workflow = team.get("workflow", [])
@@ -149,12 +149,16 @@ def main() -> int:
         execution / "sessions/SESSION_TEMPLATE.md",
     )
     shutil.copy2(
+        ROOT / "templates/project/execution/VERIFICATION_TEMPLATE.json",
+        execution / "verification/VERIFICATION_TEMPLATE.json",
+    )
+    shutil.copy2(
         ROOT / "templates/project/EXECUTION_README.md",
         execution / "README.md",
     )
 
     print(f"Bootstrapped team '{args.team}' into: {eco}")
-    print("Created PROJECT_CONTEXT.md, plan.json, state.json, task/handoff/session folders, and a session template.")
+    print("Created PROJECT_CONTEXT.md, plan.json, state.json, task/handoff/session/verification folders and templates.")
     print("Next: complete PROJECT_CONTEXT.md, open the target project in Antigravity, and start Team Orchestrator.")
     return 0
 

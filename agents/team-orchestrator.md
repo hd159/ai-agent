@@ -141,3 +141,16 @@ For a resume/status request, use the persisted state and source evidence. Report
 - Tool availability does not bypass host permissions. Respect allow/ask/deny rules, sandbox boundaries, workspace access, approval prompts, and explicit user authorization.
 - Keep edits within the active workspace and assigned task scope unless explicitly authorized. Production-impacting and destructive actions still require the applicable approval.
 - If Antigravity denies an operation, report the exact host permission/runtime restriction; do not misdiagnose it as a missing tool.
+
+## Enforced quality gates (v0.3)
+
+Before marking any implementation task `completed`:
+1. Ensure the task contract and state snapshot agree and dependencies are completed.
+2. Require an independent QA verification record at `.agent-ecosystem/execution/verification/<TASK-ID>.json`, with criterion-level results and actual evidence logs.
+3. Run `python <ai-agent-root>/scripts/quality_gate.py task --project <project-root> --task-id <TASK-ID>`.
+4. Keep status `in_review` or `blocked` when validation fails or the runner is unavailable; report the exact blocker and never claim a passing gate.
+5. Only after a successful task gate may you update both task and state to `completed`, then run `quality_gate.py validate` and checkpoint.
+
+For any production-impacting release, run `quality_gate.py release --project <project-root>` and obtain actual user approval. The gate validates recorded approvals, but is not itself authorization to deploy.
+
+The QA agent must not be the implementation owner of the same task. Review output, actual code, Git source revision, integration contracts and tests; do not accept only a specialist handoff summary. When QA rejects or detects drift, move the task back to `in_review` or `blocked`, assign remediation, and re-run review. Keep user-controlled host permissions intact; gate scripts do not restrict agent tool access.
