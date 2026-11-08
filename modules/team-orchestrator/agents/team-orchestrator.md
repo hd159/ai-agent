@@ -5,7 +5,7 @@ description: >-
 model: inherit
 mainAgent: true
 subagent: true
-  - manage_subagents
+
 inheritMcp: true
 inheritCustomizations: true
 ---

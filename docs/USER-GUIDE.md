@@ -33,7 +33,7 @@ To update the plugin, run the install command again. To remove it:
 agy plugin uninstall ai-agent
 ~~~
 
-After updating, reload the Antigravity window or restart the application if the agent list still shows an older version.
+After updating, reload the Antigravity window or restart the application so it rediscovers the plugin agents. Verify discovery with `agy agents`; then open the agent picker or type `@team-orchestrator` in the composer. If it still shows no match, check the exact frontmatter of the installed plugin and the active plugin version before changing permission settings.
 
 ## 3. Open the correct workspace
 
@@ -183,7 +183,7 @@ At meaningful task boundaries and before handing control back, Orchestrator must
 
 ## 10. Agent tools and permissions
 
-Every bundled agent receives the **full Antigravity built-in toolset**. The plugin intentionally omits the `tools` property from each agent's YAML frontmatter. For bundled plugin agents, Antigravity documents this as the default that exposes all built-in tools. Do not add a role-specific subset or `tools: []`.
+Every bundled agent receives the **full Antigravity built-in toolset**. Agent frontmatter must remain valid YAML; never leave a tool-list item behind after removing the `tools:` key. The plugin intentionally omits the `tools` property from each agent's YAML frontmatter. For bundled plugin agents, Antigravity documents this as the default that exposes all built-in tools. Do not add a role-specific subset or `tools: []`.
 
 Each agent also declares:
 - `inheritMcp: true`: inherit MCP servers and tools configured for the parent session.

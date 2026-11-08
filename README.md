@@ -68,7 +68,7 @@ The root `agents/`, `skills/`, `rules/`, and `plugin.json` are generated from th
 
 ## Agent tool access
 
-All seven bundled agents receive **the full Antigravity built-in toolset**. Their YAML frontmatter intentionally omits the `tools` property; for bundled plugin agents, Antigravity documents omission as the default that exposes all built-in tools. Do not add a partial list or `tools: []`, because that would restrict the agent.
+All seven bundled agents receive **the full Antigravity built-in toolset**. Keep their YAML frontmatter valid and omit the `tools` property entirely. Their YAML frontmatter intentionally omits the `tools` property; for bundled plugin agents, Antigravity documents omission as the default that exposes all built-in tools. Do not add a partial list or `tools: []`, because that would restrict the agent.
 
 Every agent also sets:
 - `inheritMcp: true` — inherit MCP servers and tools configured for the parent session.
