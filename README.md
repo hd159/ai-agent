@@ -8,22 +8,22 @@ A complete multi-agent engineering team distributed as **one GitHub repository a
 
 ## Install — one command
 
-```powershell
+~~~powershell
 agy plugin install https://github.com/hd159/ai-agent
-```
+~~~
 
 Then verify:
 
-```powershell
+~~~powershell
 agy plugin list
 agy agents
-```
+~~~
 
 To update, run the same install command again. To uninstall:
 
-```powershell
+~~~powershell
 agy plugin uninstall ai-agent
-```
+~~~
 
 All specialists ship together. You do **not** need to install or clone nine separate repositories, copy plugin folders, or run a local folder installer.
 
@@ -31,7 +31,7 @@ All specialists ship together. You do **not** need to install or clone nine sepa
 
 | Agent | Responsibility |
 |---|---|
-| `team-orchestrator` | Team composition, task graph, delegation, handoffs, execution state |
+| `team-orchestrator` | Team composition, task graph, delegation, handoffs, execution state, and persistent project memory |
 | `architecture-agent` | Product-to-system architecture, module boundaries, ADRs, task decomposition |
 | `uiux-design-agent` | User journeys, information architecture, interaction and design specifications |
 | `frontend-agent` | Frontend implementation, client state, API integration, accessibility |
@@ -40,7 +40,7 @@ All specialists ship together. You do **not** need to install or clone nine sepa
 | `qa-agent` | Test strategy, acceptance, regression, independent verification |
 
 Also included:
-- **16 reusable skills** for product discovery, MVP scoping, architecture, API/data design, task decomposition, TDD, debugging, code review, deployment readiness, and verification.
+- **18 reusable skills** for product discovery, MVP scoping, architecture, API/data design, task decomposition, project memory, session checkpointing, TDD, debugging, code review, deployment readiness, and verification.
 - **Shared constitution rules** for scoped changes, explicit assumptions, simplicity, and evidence-based completion.
 - **SaaS MVP team preset**, task/handoff contracts, project templates, and evaluation scenarios.
 
@@ -48,22 +48,60 @@ Also included:
 
 This repository is both the canonical source and the installable plugin:
 
-```text
+~~~text
 ai-agent/
 ├── plugin.json                 # Root manifest; agy installs this repository
 ├── agents/                     # Generated bundle: all 7 specialist agents
-├── skills/                     # Generated bundle: all 16 skills
+├── skills/                     # Generated bundle: all 18 skills
 ├── rules/                      # Generated shared agent rules
 ├── modules/                    # Canonical source modules for each specialist
 ├── teams/                      # Logical team composition presets
-├── contracts/                  # Agent/task/team/handoff JSON schemas
-├── workflows/                  # Project lifecycle workflows
-├── templates/                  # Project and artifact templates
+├── contracts/                  # Agent/task/team/handoff/memory schemas
 ├── docs/                       # Architecture, security, and adapter docs
-└── scripts/                    # Build, install helper, and validators
-```
+├── evals/                      # Agent and workflow evaluation scenarios
+├── templates/                  # Project, execution, and artifact templates
+└── scripts/                    # Build, bootstrap, install helper, and validators
+~~~
 
 The root `agents/`, `skills/`, `rules/`, and `plugin.json` are generated from the canonical modules under `modules/`. Do not hand-edit generated files; update the source module and rebuild.
+
+## Persistent Project Memory
+
+The ecosystem uses **Git-backed, project-local memory**. It does not depend on a chat transcript or require a separate database for a single-repository project.
+
+Each initialized project gets:
+
+~~~text
+.agent-ecosystem/
+├── PROJECT_CONTEXT.md           # Stable project context and constraints
+├── team.json                    # Selected team and workflow
+├── artifacts/                   # Architecture, ADRs, product and delivery docs
+└── execution/
+    ├── plan.json                # Planned phases and approval gates
+    ├── state.json               # Current execution snapshot
+    ├── tasks/                   # Detailed task contracts
+    ├── handoffs/                # Specialist handoff records
+    ├── sessions/                # Append-only session checkpoints
+    └── decisions/               # Decision log and references
+~~~
+
+The three persistence layers have distinct responsibilities:
+
+1. **Project memory:** architecture, requirements, constraints, and approved decisions.
+2. **Execution state:** current phase, task statuses, blockers, pending decisions, evidence, and next actions.
+3. **Session journal:** what happened in each work session and where the next session should resume.
+
+The Team Orchestrator must load the current state before continuing an existing project, checkpoint after meaningful task outcomes, and write a session journal before handing work back. Specialist agents return handoffs; the orchestrator is the single writer that reconciles those handoffs into the shared execution state.
+
+Session journals are historical records, not the current source of truth. Current source code, approved architecture/ADRs, task contracts, and `state.json` must be reconciled when they disagree. Never store credentials, access tokens, private keys, or other secrets in project memory.
+
+Bootstrap a project:
+
+~~~powershell
+python .\scripts\init_project.py --team saas-mvp --target ..\my-saas-app
+~~~
+
+For the complete read/resume/checkpoint protocol, see [Persistent Project Memory](docs/architecture/PERSISTENT-PROJECT-MEMORY.md).
 
 ## Development
 
@@ -71,23 +109,23 @@ Requirements: Python 3.10+.
 
 Build the single plugin bundle after changing agents, skills, or rules:
 
-```powershell
+~~~powershell
 python .\scripts\build_single_plugin.py
-```
+~~~
 
 Validate the source and generated installable plugin:
 
-```powershell
+~~~powershell
 python .\scripts\validate_repo.py
 python .\scripts\validate_plugin.py
 python .\scripts\build_single_plugin.py --check
-```
+~~~
 
 Optional helper to install the same single repository while validating the logical team preset:
 
-```powershell
+~~~powershell
 python .\scripts\install_team.py --team saas-mvp
-```
+~~~
 
 The helper invokes exactly one command: `agy plugin install https://github.com/hd159/ai-agent`.
 
@@ -97,9 +135,9 @@ The helper invokes exactly one command: `agy plugin install https://github.com/h
 
 Start a project by asking Team Orchestrator to read `.agent-ecosystem/team.json` and `.agent-ecosystem/PROJECT_CONTEXT.md`. Bootstrap project artifacts with:
 
-```powershell
+~~~powershell
 python .\scripts\init_project.py --team saas-mvp --target ..\my-saas-app
-```
+~~~
 
 ## Design principles
 
@@ -107,13 +145,16 @@ python .\scripts\init_project.py --team saas-mvp --target ..\my-saas-app
 2. **Modular source, unified runtime.** Specialist source modules remain separated under `modules/`; the build script assembles one root plugin bundle.
 3. **Shared skills, not duplicated procedures.** Skills are portable and reusable across specialist agents.
 4. **Project teams are configuration.** A team manifest selects roles and workflow stages without requiring separate plugin repositories.
-5. **No false completion.** Work is complete only when acceptance criteria and evidence are recorded.
-6. **Human approval gates.** MVP scope, material architecture decisions, and production deployment require explicit approval.
+5. **Persistent, evidence-based continuity.** Project state survives chat sessions through versionable files, task contracts, handoffs, and checkpoints.
+6. **No false completion.** Work is complete only when acceptance criteria and evidence are recorded.
+7. **Human approval gates.** MVP scope, material architecture decisions, and production deployment require explicit approval.
 
 ## Current limitations
 
 - Native subagent delegation depends on Antigravity runtime support and agent discovery.
 - The team manifest is declarative; it does not create a distributed scheduler.
+- Session checkpointing is an explicit agent workflow, not a guaranteed host shutdown hook. The orchestrator must checkpoint at task boundaries and before returning control.
+- Git-backed memory is project-local. Multi-user, multi-workspace centralized memory is outside the current scope.
 - Codex and Claude Code adapters remain future work.
 
 ## References

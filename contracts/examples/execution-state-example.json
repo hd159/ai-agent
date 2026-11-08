@@ -1,23 +1,35 @@
 {
+  "schema_version": "1.0.0",
   "project_id": "rental-saas",
   "team_id": "saas-mvp",
-  "status": "planning",
+  "status": "in_progress",
+  "current_phase": "implementation",
+  "current_focus": "P1 payment settlement",
   "updated_at": "2026-11-08T10:00:00+07:00",
+  "last_checkpoint_at": "2026-11-08T10:00:00+07:00",
+  "last_session_id": "2026-11-08-p1-payment",
+  "source_commit": "a1b2c3d",
+  "blockers": ["Native BNB payment attribution needs an approved decision."],
+  "pending_decisions": ["Approve the payment attribution approach in ADR-002."],
+  "next_actions": [
+    "Finalize ADR-002.",
+    "Implement atomic settlement.",
+    "Run duplicate transaction tests."
+  ],
   "tasks": [
     {
       "task_id": "ARCH-001",
       "status": "completed",
       "owner": "architecture-agent",
-      "evidence": [
-        "Approved architecture baseline"
-      ]
+      "evidence": ["artifacts/ARCHITECTURE.md", "artifacts/adr/ADR-001.md"],
+      "blockers": []
     },
     {
       "task_id": "BE-001",
-      "status": "ready_for_dispatch",
+      "status": "blocked",
       "owner": "backend-agent",
       "evidence": [],
-      "blockers": []
+      "blockers": ["Waiting for ADR-002 approval."]
     }
   ]
 }

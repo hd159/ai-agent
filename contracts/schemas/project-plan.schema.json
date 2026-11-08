@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/ai-agent-ecosystem/project-plan.schema.json",
+  "title": "Project Execution Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "team_id",
+    "status",
+    "created_at",
+    "updated_at",
+    "phases",
+    "approval_gates"
+  ],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "project_id": { "type": "string" },
+    "team_id": { "type": "string" },
+    "goal": { "type": ["string", "null"] },
+    "status": {
+      "enum": ["planning", "active", "blocked", "completed", "archived"]
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "phases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["phase_id", "status", "mode", "agents"],
+        "properties": {
+          "phase_id": { "type": "string" },
+          "status": {
+            "enum": ["pending", "in_progress", "blocked", "completed", "skipped"]
+          },
+          "mode": {
+            "enum": ["sequential", "parallel", "dependency-aware-parallel"]
+          },
+          "agents": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "approval_gate": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "approval_gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "required", "description", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "required": { "type": "boolean" },
+          "description": { "type": "string" },
+          "status": { "enum": ["pending", "approved", "rejected", "waived"] },
+          "approved_at": { "type": ["string", "null"], "format": "date-time" },
+          "approved_by": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}
