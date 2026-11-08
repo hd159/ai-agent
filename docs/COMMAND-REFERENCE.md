@@ -152,3 +152,12 @@ python -m unittest discover -s tests -v
 ```
 
 `validate` checks every completed task and canonical project state; `task` verifies an independent QA record for one in-review/completed task; `release` requires all tasks completed and recorded mandatory approvals. See [Quality Gates](QUALITY-GATES.md). A passing artifact check is not a substitute for independently executed CI checks or actual human approval.
+
+## 9. Full capability checks
+
+~~~powershell
+python -m pip install -r requirements-dev.txt
+python .\scripts\validate_capabilities.py
+~~~
+
+Invoke `/capability-smoke-test` in Antigravity to check actual file edit, terminal, skill and connected MCP tools. Repeat for all seven agents; a static pass does not grant access or prove runtime execution.

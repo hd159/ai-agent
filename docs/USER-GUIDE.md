@@ -239,3 +239,7 @@ Verification records are stored under the **product** `.agent-ecosystem/executio
 ## 13. Agent discovery and runtime troubleshooting
 
 See [Agent Diagnostics](AGENT-DIAGNOSTICS.md) when App `@` reports no matches or the selected agent says it cannot write files/run commands. These are separate issues. A successful plugin validation does not demonstrate actual runtime tool access.
+
+## 14. Capability audit for all agents
+
+From a local ai-agent clone run `python scripts/validate_capabilities.py` after `python -m pip install -r requirements-dev.txt`. It validates seven full-tool agent declarations, 19 discoverable skills, shared rules and MCP inheritance. Then invoke `/capability-smoke-test` separately in a fresh session for each agent to verify actual host tool access. MCP tools exist only when connected and authorized by the user.

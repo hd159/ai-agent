@@ -81,3 +81,16 @@ The user controls allow/ask/deny, sandbox, workspace access, and other host exec
 - The Antigravity App/CLI version and local-vs-remote workspace type.
 
 Never include tokens, passwords or other secrets in diagnostic outputs.
+
+## 7. Verify every installed agent at runtime
+
+Run the read-only static audit from the ai-agent clone:
+
+~~~powershell
+python -m pip install -r requirements-dev.txt
+python .\scripts\validate_capabilities.py
+~~~
+
+Then select each of the seven agents in a fresh Antigravity session and invoke `/capability-smoke-test`. The skill calls real file, terminal and (if connected) authorized read-only MCP tools. Record results separately for every agent. If MCP is not configured, mark it not configured; do not count it as a pass. The smoke test checks one skill's activation, not all 19 skill implementations.
+
+Static checks cannot prove host tool permissions, account entitlements or MCP connectivity. Antigravity's bundled-plugin documentation and generic custom-subagent documentation have different default semantics for omitted `tools`; inspect actual runtime behavior if the same installed agent works in one surface but not another.
