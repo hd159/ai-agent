@@ -81,8 +81,17 @@ if catalog_path.is_file():
     catalog_ids = {item.get("id") for item in catalog.get("modules", [])}
     if catalog_ids != module_ids:
         fail("ecosystem.json module IDs do not match modules/* directories")
-    if catalog.get("version") != "0.2.0":
-        fail("ecosystem.json version must match release 0.2.0")
+    release_version = catalog.get("version", "")
+    if not re.fullmatch(r"\d+\.\d+\.\d+", release_version):
+        fail("ecosystem.json version must use MAJOR.MINOR.PATCH")
+    plugin_manifest_path = ROOT / "plugin.json"
+    if plugin_manifest_path.is_file():
+        plugin_manifest = json.loads(plugin_manifest_path.read_text(encoding="utf-8"))
+        if plugin_manifest.get("version") != release_version:
+            fail("plugin.json version must match ecosystem.json")
+    for module in catalog.get("modules", []):
+        if module.get("version") != release_version:
+            fail(f"ecosystem.json module '{module.get('id')}' version must match release {release_version}")
 else:
     fail("missing ecosystem.json")
 
