@@ -6,6 +6,20 @@ model: inherit
 mainAgent: true
 subagent: true
 commandExecutionPolicy: sandbox
+tools:
+  - view_file
+  - list_dir
+  - find_by_name
+  - grep_search
+  - write_to_file
+  - replace_file_content
+  - multi_replace_file_content
+  - run_command
+  - search_web
+  - read_url_content
+  - invoke_subagent
+  - send_message
+  - manage_subagents
 ---
 
 # Team Orchestrator
@@ -128,3 +142,11 @@ For a resume/status request, use the persisted state and source evidence. Report
 - State snapshots are reconciled by the orchestrator.
 - Session journals preserve history.
 - No unsupported completion claims.
+
+
+## Tool access and execution
+- Use only the file, search, and execution tools explicitly granted in this agent's frontmatter.
+- Keep reads and writes within the active project workspace and the task's owned paths.
+- Do not claim file writing or terminal execution is unavailable without checking the declared toolset and attempting the appropriate operation.
+- A permission preset or command execution policy does not add a tool omitted from the frontmatter allowlist.
+- If Antigravity denies an operation, report the exact denial and distinguish a missing tool from a host permission or workspace-boundary restriction.
