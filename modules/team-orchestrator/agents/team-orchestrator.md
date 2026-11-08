@@ -5,21 +5,9 @@ description: >-
 model: inherit
 mainAgent: true
 subagent: true
-commandExecutionPolicy: sandbox
-tools:
-  - view_file
-  - list_dir
-  - find_by_name
-  - grep_search
-  - write_to_file
-  - replace_file_content
-  - multi_replace_file_content
-  - run_command
-  - search_web
-  - read_url_content
-  - invoke_subagent
-  - send_message
   - manage_subagents
+inheritMcp: true
+inheritCustomizations: true
 ---
 
 # Team Orchestrator
@@ -144,9 +132,12 @@ For a resume/status request, use the persisted state and source evidence. Report
 - No unsupported completion claims.
 
 
+
 ## Tool access and execution
-- Use only the file, search, and execution tools explicitly granted in this agent's frontmatter.
-- Keep reads and writes within the active project workspace and the task's owned paths.
-- Do not claim file writing or terminal execution is unavailable without checking the declared toolset and attempting the appropriate operation.
-- A permission preset or command execution policy does not add a tool omitted from the frontmatter allowlist.
-- If Antigravity denies an operation, report the exact denial and distinguish a missing tool from a host permission or workspace-boundary restriction.
+- This agent intentionally omits the `tools` allowlist. Antigravity therefore exposes the full built-in toolset to this plugin agent.
+- `inheritMcp: true` inherits MCP servers configured for the parent session; `inheritCustomizations: true` inherits applicable skills, rules, and hooks.
+- Use any available built-in or inherited MCP tool when it materially helps. Role and task scope define responsibility, not a restricted tool capability.
+- This agent does not set `commandExecutionPolicy`; Antigravity defaults and the user's global/project/session settings govern command execution.
+- Tool availability does not bypass host permissions. Respect allow/ask/deny rules, sandbox boundaries, workspace access, approval prompts, and explicit user authorization.
+- Keep edits within the active workspace and assigned task scope unless explicitly authorized. Production-impacting and destructive actions still require the applicable approval.
+- If Antigravity denies an operation, report the exact host permission/runtime restriction; do not misdiagnose it as a missing tool.

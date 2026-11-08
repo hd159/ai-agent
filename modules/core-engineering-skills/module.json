@@ -1,6 +1,6 @@
 {
   "displayName": "Core Engineering Skills",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Portable skills for product discovery, architecture, task planning, API and data design, TDD, debugging, review, and verification.",
   "author": {
     "name": "AI Agent Ecosystem contributors"

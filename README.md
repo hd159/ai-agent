@@ -1,6 +1,6 @@
 # AI Agent Ecosystem
 
-**Version:** `0.2.1` — Single-repository Antigravity plugin  
+**Version:** `0.2.2` — Single-repository Antigravity plugin  
 **Runtime:** Google Antigravity (`agy`)  
 **License:** MIT
 
@@ -68,18 +68,18 @@ The root `agents/`, `skills/`, `rules/`, and `plugin.json` are generated from th
 
 ## Agent tool access
 
-Every bundled custom agent declares an explicit, role-specific Antigravity built-in tool allowlist in its YAML frontmatter. The Orchestrator has file read/write, search, terminal, and subagent management tools; implementation specialists have the file-edit and terminal tools required by their role; UI/UX can create design artifacts without a terminal by default.
+All seven bundled agents receive **the full Antigravity built-in toolset**. Their YAML frontmatter intentionally omits the `tools` property; for bundled plugin agents, Antigravity documents omission as the default that exposes all built-in tools. Do not add a partial list or `tools: []`, because that would restrict the agent.
 
-Do not rely on implicit tool defaults. Antigravity documentation describes tool allowlists and defaults across different agent surfaces; this repository uses explicit profiles to avoid runtime ambiguity.
+Every agent also sets:
+- `inheritMcp: true` — inherit MCP servers and tools configured for the parent session.
+- `inheritCustomizations: true` — inherit applicable workspace skills, rules, and hooks.
+- `commandExecutionPolicy` is intentionally omitted — the plugin does not pin a per-agent command execution policy.
 
-Important:
-- **tools** controls which tools are exposed to an agent.
-- **commandExecutionPolicy** controls shell execution behavior; it does not grant missing tools.
-- Host permission settings still govern workspace boundaries, sandboxing, and approval.
-- The Orchestrator is the only bundled agent with **invoke_subagent** and **manage_subagents**.
-- Tool profiles are defined in [contracts/agent-tool-policy.json](contracts/agent-tool-policy.json) and checked by [scripts/validate_agent_tools.py](scripts/validate_agent_tools.py).
+**The agent's role defines responsibility, not tool availability.** UI/UX, QA, Frontend, Backend, Infrastructure, Architecture, and Orchestrator can all use available built-in tools and inherited MCP tools when useful.
 
-If an agent reports that it cannot write files or run commands, first verify the selected agent's generated frontmatter, active workspace root, and Antigravity permission settings. Do not switch to unrestricted permissions to compensate for a missing tool declaration.
+The user remains in control of execution and security through Antigravity settings: permission presets, allow/ask/deny rules, terminal auto-execution, sandboxing, workspace boundaries, non-workspace file access, and MCP permissions. Declaring a tool makes it available to the agent; it does not bypass host authorization or approval.
+
+The full-access contract is defined in [contracts/agent-tool-policy.json](contracts/agent-tool-policy.json) and checked by [scripts/validate_agent_tools.py](scripts/validate_agent_tools.py). If an operation is denied, diagnose the host permission or runtime restriction rather than removing the tool from the agent.
 
 ## Persistent Project Memory
 

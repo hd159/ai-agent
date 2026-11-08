@@ -183,29 +183,39 @@ At meaningful task boundaries and before handing control back, Orchestrator must
 
 ## 10. Agent tools and permissions
 
-Every bundled agent declares an explicit, role-specific tools allowlist in YAML frontmatter. The list controls which built-in tools the agent can use.
+Every bundled agent receives the **full Antigravity built-in toolset**. The plugin intentionally omits the `tools` property from each agent's YAML frontmatter. For bundled plugin agents, Antigravity documents this as the default that exposes all built-in tools. Do not add a role-specific subset or `tools: []`.
 
-Important distinctions:
+Each agent also declares:
+- `inheritMcp: true`: inherit MCP servers and tools configured for the parent session.
+- `inheritCustomizations: true`: inherit applicable skills, rules, and hooks.
+- No `commandExecutionPolicy`: the plugin does not pin a per-agent command execution policy.
 
-- tools controls whether a tool is exposed to an agent.
-- commandExecutionPolicy controls shell command execution behavior.
-- Antigravity permission settings control whether an available operation is allowed, sandboxed, or requires approval.
-- A permission preset such as Turbo cannot add a tool omitted from an agent's allowlist.
+The role of an agent defines its responsibility and task ownership, **not** which tools it is allowed to see. All seven agents can use available file, search, terminal, task, collaboration, question, image, and inherited MCP tools when useful.
 
-The Orchestrator needs file read/write, search, terminal, and subagent management tools. Implementation agents need workspace file-edit and terminal tools. UI/UX can write design artifacts but does not need a terminal by default.
+### User-controlled permissions
 
-If an agent says it cannot write files or run commands:
-1. Check that the selected agent is the updated bundled agent.
-2. Inspect its frontmatter and confirm the required tool is listed.
-3. Confirm the product repository is the active workspace.
-4. Check Antigravity's Windows Agent Settings for terminal auto-execution and non-workspace access if the target is outside the workspace.
-5. Read the exact host permission error. Do not switch to unrestricted permissions merely to compensate for a missing tool declaration.
+Tool exposure is separate from authorization. Antigravity's host settings remain authoritative for:
+- Allow / Ask / Deny decisions and approval prompts.
+- Terminal command auto-execution and sandbox mode.
+- Workspace and non-workspace file access.
+- MCP tool permissions and connected server availability.
+
+On Windows, configure the relevant controls in Antigravity's Agent Settings / permission settings. The exact controls shown depend on the Antigravity version and account type. The plugin does not force Turbo, unrestricted filesystem access, or automatic command approval.
+
+If an agent cannot perform an operation:
+1. Confirm the latest plugin version is installed and the updated agent was discovered.
+2. Check that its frontmatter omits `tools` and has `inheritMcp: true`.
+3. Confirm the correct product repository is the active workspace.
+4. Inspect the exact Antigravity permission prompt or denial.
+5. Fix the user-controlled host permission only if you want to authorize that operation; do not narrow the plugin's toolset to work around it.
 
 Official references:
+- [Build plugins — bundled agents, all tools, and MCP inheritance](https://antigravity.google/docs/build-plugins)
 - [Custom subagents](https://antigravity.google/docs/subagents)
-- [Build plugins](https://antigravity.google/docs/build-plugins)
 - [Agent settings](https://antigravity.google/docs/agent-settings)
 - [Permissions](https://antigravity.google/docs/permissions)
+
+## 11. End a session
 
 ## 11. End a session
 

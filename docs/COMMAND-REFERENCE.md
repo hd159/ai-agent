@@ -70,7 +70,7 @@ Validate generated plugin manifest and agent/skill metadata:
 python .\scripts\validate_plugin.py
 ~~~
 
-Validate explicit agent tool allowlists and source/generated parity:
+Validate full built-in tool access, MCP inheritance, host-managed execution policy, and source/generated parity:
 
 ~~~powershell
 python .\scripts\validate_agent_tools.py

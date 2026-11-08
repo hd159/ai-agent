@@ -102,7 +102,7 @@ Do not set dispatched or in_progress merely because a task file was created.
 | QA | Independent verification | Test matrix, results, defect evidence |
 | Orchestrator | Coordination and state | Task contracts, handoffs, current execution snapshot |
 
-Use only the specialists relevant to the request. A small backend bug does not need all seven agents.
+All bundled agents have the same full built-in tool availability and inherit the parent session's MCP/customizations. Tool access does not change role ownership: the Orchestrator remains the single coordinator and writer of shared execution state, while specialists own their assigned task scope. Use only the specialists relevant to the request. A small backend bug does not need all seven agents.
 
 ## 7. Dispatch and parallel execution
 
