@@ -1,6 +1,6 @@
 {
   "displayName": "Infrastructure Agent",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Designs and implements cloud infrastructure, environments, CI/CD, deployment configuration, secrets integration, observability, and operational readiness.",
   "author": {
     "name": "AI Agent Ecosystem contributors"

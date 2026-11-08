@@ -1,6 +1,6 @@
 # AI Agent Ecosystem
 
-**Version:** `0.2.0` — Single-repository Antigravity plugin  
+**Version:** `0.2.1` — Single-repository Antigravity plugin  
 **Runtime:** Google Antigravity (`agy`)  
 **License:** MIT
 
@@ -65,6 +65,22 @@ ai-agent/
 
 The root `agents/`, `skills/`, `rules/`, and `plugin.json` are generated from the canonical modules under `modules/`. Do not hand-edit generated files; update the source module and rebuild.
 
+
+## Agent tool access
+
+Every bundled custom agent declares an explicit, role-specific Antigravity built-in tool allowlist in its YAML frontmatter. The Orchestrator has file read/write, search, terminal, and subagent management tools; implementation specialists have the file-edit and terminal tools required by their role; UI/UX can create design artifacts without a terminal by default.
+
+Do not rely on implicit tool defaults. Antigravity documentation describes tool allowlists and defaults across different agent surfaces; this repository uses explicit profiles to avoid runtime ambiguity.
+
+Important:
+- **tools** controls which tools are exposed to an agent.
+- **commandExecutionPolicy** controls shell execution behavior; it does not grant missing tools.
+- Host permission settings still govern workspace boundaries, sandboxing, and approval.
+- The Orchestrator is the only bundled agent with **invoke_subagent** and **manage_subagents**.
+- Tool profiles are defined in [contracts/agent-tool-policy.json](contracts/agent-tool-policy.json) and checked by [scripts/validate_agent_tools.py](scripts/validate_agent_tools.py).
+
+If an agent reports that it cannot write files or run commands, first verify the selected agent's generated frontmatter, active workspace root, and Antigravity permission settings. Do not switch to unrestricted permissions to compensate for a missing tool declaration.
+
 ## Persistent Project Memory
 
 The ecosystem uses **Git-backed, project-local memory**. It does not depend on a chat transcript or require a separate database for a single-repository project.
@@ -101,7 +117,7 @@ Bootstrap a project:
 python .\scripts\init_project.py --team saas-mvp --target ..\my-saas-app
 ~~~
 
-For the complete read/resume/checkpoint protocol, see [Persistent Project Memory](docs/architecture/PERSISTENT-PROJECT-MEMORY.md).
+For the complete read/resume/checkpoint protocol, see [Persistent Project Memory](docs/architecture/PERSISTENT-PROJECT-MEMORY.md) and the [Project Bootstrap Guide](docs/PROJECT-BOOTSTRAP.md).
 
 ## Development
 
@@ -118,6 +134,7 @@ Validate the source and generated installable plugin:
 ~~~powershell
 python .\scripts\validate_repo.py
 python .\scripts\validate_plugin.py
+python .\scripts\validate_agent_tools.py
 python .\scripts\build_single_plugin.py --check
 ~~~
 
@@ -138,6 +155,29 @@ Start a project by asking Team Orchestrator to read `.agent-ecosystem/team.json`
 ~~~powershell
 python .\scripts\init_project.py --team saas-mvp --target ..\my-saas-app
 ~~~
+
+
+## Documentation Roadmap
+
+The user documentation is organized by the lifecycle of adopting and using the ecosystem:
+
+| Document | What it covers |
+|---|---|
+| [User Guide](docs/USER-GUIDE.md) | Install, verify agents, open a project, choose Orchestrator or a specialist, work on features/bugs, and resume sessions |
+| [Command Reference](docs/COMMAND-REFERENCE.md) | Antigravity CLI commands, Python scripts, parameters, validation, and Windows examples |
+| [Orchestration Workflow](docs/ORCHESTRATION-WORKFLOW.md) | Task contracts, lifecycle, dependency-aware dispatch, parallel ownership, handoffs, QA, and checkpoints |
+| [Project Bootstrap](docs/PROJECT-BOOTSTRAP.md) | New vs existing projects, one-time initialization, recovery, source discovery, and safe reinitialization |
+| [Architecture Documentation Standard](docs/ARCHITECTURE-DOCUMENTATION-STANDARD.md) | Audit versioning, current/target architecture, C4, ADRs, findings register, scoring, and evidence |
+| [Prompt Cookbook](docs/PROMPT-COOKBOOK.md) | Reusable prompts for initialization, resume, feature work, bug fixes, architecture/security review, QA, and release |
+
+### Architecture and project templates
+
+- [Persistent Project Memory](docs/architecture/PERSISTENT-PROJECT-MEMORY.md)
+- [Architecture Audit Template](templates/artifacts/architecture/ARCHITECTURE-AUDIT-TEMPLATE.md)
+- [Findings Register Template](templates/artifacts/architecture/FINDINGS-REGISTER-TEMPLATE.md)
+- [ADR Template](templates/artifacts/ADR.md)
+
+The documentation is generic and belongs in this ecosystem repository. Product-specific architecture audits, ADRs, findings, and execution state must remain in the target product repository under .agent-ecosystem/.
 
 ## Design principles
 

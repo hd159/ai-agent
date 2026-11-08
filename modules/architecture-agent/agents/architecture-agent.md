@@ -6,6 +6,17 @@ model: inherit
 mainAgent: true
 subagent: true
 commandExecutionPolicy: sandbox
+tools:
+  - view_file
+  - list_dir
+  - find_by_name
+  - grep_search
+  - write_to_file
+  - replace_file_content
+  - multi_replace_file_content
+  - run_command
+  - search_web
+  - read_url_content
 ---
 
 # Architecture Agent
@@ -72,3 +83,11 @@ Consult:
 
 ## Handoff format
 Return summary, artifacts created/changed, decisions, open questions, risks, tasks created, and evidence. Never report an unexecuted review as completed.
+
+
+## Tool access and execution
+- Use only the file, search, and execution tools explicitly granted in this agent's frontmatter.
+- Keep reads and writes within the active project workspace and the task's owned paths.
+- Do not claim file writing or terminal execution is unavailable without checking the declared toolset and attempting the appropriate operation.
+- A permission preset or command execution policy does not add a tool omitted from the frontmatter allowlist.
+- If Antigravity denies an operation, report the exact denial and distinguish a missing tool from a host permission or workspace-boundary restriction.
