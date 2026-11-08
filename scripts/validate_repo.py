@@ -92,6 +92,12 @@ if catalog_path.is_file():
     for module in catalog.get("modules", []):
         if module.get("version") != release_version:
             fail(f"ecosystem.json module '{module.get('id')}' version must match release {release_version}")
+    for module_dir in module_dirs:
+        manifest_path = module_dir / "module.json"
+        if manifest_path.is_file():
+            module_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            if module_manifest.get("version") != release_version:
+                fail(f"{manifest_path.relative_to(ROOT)}: version must match ecosystem release {release_version}")
 else:
     fail("missing ecosystem.json")
 
