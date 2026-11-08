@@ -123,6 +123,12 @@ for team_file in (ROOT / "teams").glob("*/team.json"):
 required = [
     "contracts/schemas/agent.schema.json",
     "contracts/schemas/task.schema.json",
+    "contracts/schemas/verification.schema.json",
+    "scripts/quality_gate.py",
+    "tests/test_quality_gate.py",
+    "requirements-dev.txt",
+    "docs/QUALITY-GATES.md",
+    "templates/project/execution/VERIFICATION_TEMPLATE.json",
     "contracts/schemas/team.schema.json",
     "contracts/schemas/handoff.schema.json",
     "contracts/schemas/execution-state.schema.json",

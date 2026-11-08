@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0 — Executable quality gates
+
+- Added schema-validated project state, task, plan, team, handoff and independent verification records.
+- Added fail-closed task completion and release readiness CLI with Git source-freshness checks.
+- Added independent QA evidence mapping and human-approval record validation.
+- Added negative regression tests for false completion, stale evidence, missing logs and release gates.
+- Updated Orchestrator, QA and verification skills, project bootstrap, CI and user documentation.
+- Retained full agent tool access and user-owned execution permissions.
+- Release checks validate declared evidence but do not authenticate user approvals or substitute for protected CI.
+
+
 ## 0.2.0 — Single-repository distribution
 
 - Consolidated all seven specialist agents, 16 shared skills, and constitution rules into one root-level Antigravity plugin bundle.

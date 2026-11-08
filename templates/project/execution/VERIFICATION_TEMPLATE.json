@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "BE-001",
+  "implementation_agent": "backend-agent",
+  "reviewer_agent": "qa-agent",
+  "reviewed_at": "2026-11-08T12:00:00+07:00",
+  "review_status": "blocked",
+  "source_commit": "0000000000000000000000000000000000000000",
+  "checks": [
+    {
+      "id": "unit-tests",
+      "kind": "test",
+      "result": "not_run",
+      "executed_at": "2026-11-08T12:00:00+07:00",
+      "environment": "isolated",
+      "command": "python -m unittest",
+      "evidence_paths": []
+    }
+  ],
+  "acceptance_results": [
+    {
+      "criterion": "Replace with exact acceptance criterion from the task contract",
+      "result": "not_run",
+      "check_ids": [
+        "unit-tests"
+      ]
+    }
+  ],
+  "notes": [
+    "Template only: replace values and run checks; never mark approved until independently verified."
+  ]
+}

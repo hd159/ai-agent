@@ -1,6 +1,6 @@
 # AI Agent Ecosystem
 
-**Version:** `0.2.2` — Single-repository Antigravity plugin  
+**Version:** `0.3.0` — Single-repository Antigravity plugin  
 **Runtime:** Google Antigravity (`agy`)  
 **License:** MIT
 
@@ -97,6 +97,7 @@ Each initialized project gets:
     ├── state.json               # Current execution snapshot
     ├── tasks/                   # Detailed task contracts
     ├── handoffs/                # Specialist handoff records
+    ├── verification/            # Independent QA records and sanitized evidence logs
     ├── sessions/                # Append-only session checkpoints
     └── decisions/               # Decision log and references
 ~~~
@@ -121,7 +122,7 @@ For the complete read/resume/checkpoint protocol, see [Persistent Project Memory
 
 ## Development
 
-Requirements: Python 3.10+.
+Requirements: Python 3.10+ (quality gate CLI also requires `python -m pip install -r requirements-dev.txt`).
 
 Build the single plugin bundle after changing agents, skills, or rules:
 
@@ -136,6 +137,7 @@ python .\scripts\validate_repo.py
 python .\scripts\validate_plugin.py
 python .\scripts\validate_agent_tools.py
 python .\scripts\build_single_plugin.py --check
+python -m unittest discover -s tests -v
 ~~~
 
 Optional helper to install the same single repository while validating the logical team preset:
@@ -157,6 +159,19 @@ python .\scripts\init_project.py --team saas-mvp --target ..\my-saas-app
 ~~~
 
 
+## v0.3 Quality Gates
+
+The framework now includes a **read-only, fail-closed project validator** for task/state/handoff schemas, dependency graphs, independent QA approval, acceptance evidence, Git source freshness, and mandatory production approval records.
+
+\`\`\`powershell
+python -m pip install -r requirements-dev.txt
+python .\scripts\quality_gate.py validate --project ..\my-saas-app
+python .\scripts\quality_gate.py task --project ..\my-saas-app --task-id BE-001
+python .\scripts\quality_gate.py release --project ..\my-saas-app
+\`\`\`
+
+**Trust boundary:** the gate checks the authenticity of neither the user's approval nor whether commands genuinely ran. For enforceable release controls, use protected branches, required external CI checks and human approval. Learn more in [Quality Gates](docs/QUALITY-GATES.md).
+
 ## Documentation Roadmap
 
 The user documentation is organized by the lifecycle of adopting and using the ecosystem:
@@ -168,6 +183,7 @@ The user documentation is organized by the lifecycle of adopting and using the e
 | [Orchestration Workflow](docs/ORCHESTRATION-WORKFLOW.md) | Task contracts, lifecycle, dependency-aware dispatch, parallel ownership, handoffs, QA, and checkpoints |
 | [Project Bootstrap](docs/PROJECT-BOOTSTRAP.md) | New vs existing projects, one-time initialization, recovery, source discovery, and safe reinitialization |
 | [Architecture Documentation Standard](docs/ARCHITECTURE-DOCUMENTATION-STANDARD.md) | Audit versioning, current/target architecture, C4, ADRs, findings register, scoring, and evidence |
+| [Quality Gates](docs/QUALITY-GATES.md) | Executable task, evidence, state and release gate checks |
 | [Prompt Cookbook](docs/PROMPT-COOKBOOK.md) | Reusable prompts for initialization, resume, feature work, bug fixes, architecture/security review, QA, and release |
 
 ### Architecture and project templates

@@ -136,3 +136,17 @@ python .\scripts\init_project.py --team saas-mvp --target "$env:USERPROFILE\Desk
 ## 7. Generated-file ownership
 
 Canonical agent source files live under modules/<module>/agents/. The root agents/ directory is generated. Skills and rules at the root are also generated. Edit canonical sources, run build_single_plugin.py, and validate the generated bundle. Do not hand-edit generated files.
+
+## 8. Quality gate commands (v0.3)
+
+\`\`\`powershell
+python -m pip install -r requirements-dev.txt
+
+python .\scripts\quality_gate.py validate --project "C:\work\my-product"
+python .\scripts\quality_gate.py task --project "C:\work\my-product" --task-id BE-001
+python .\scripts\quality_gate.py release --project "C:\work\my-product"
+
+python -m unittest discover -s tests -v
+\`\`\`
+
+\`validate\` checks every completed task and canonical project state; \`task\` verifies an independent QA record for one in-review/completed task; \`release\` requires all tasks completed and recorded mandatory approvals. See [Quality Gates](QUALITY-GATES.md). A passing artifact check is not a substitute for independently executed CI checks or actual human approval.
