@@ -11,6 +11,8 @@ Run from PowerShell or an Antigravity CLI terminal:
 | agy plugin install https://github.com/hd159/ai-agent | Install the complete plugin |
 | agy plugin list | List installed plugins |
 | agy agents | List discovered agents |
+| agy plugin list --json | Inspect installed plugin status, version and installation path |
+| agy --agent team-orchestrator | Start Team Orchestrator as the primary CLI agent |
 | agy plugin uninstall ai-agent | Uninstall the plugin |
 
 Update by running the same install command again:
@@ -116,7 +118,7 @@ Use Team Orchestrator in the Antigravity agent picker:
 | Review current architecture | Request architecture delta review |
 | Checkpoint this session | Persist state and session journal |
 
-These are examples, not slash commands. Use the agent picker or supported @agent syntax to address a custom agent.
+These are example prompts, not slash commands. In Antigravity App, select the primary agent via the agent selector, not the `@` menu. In the CLI, use `agy --agent team-orchestrator` or `/agents`. CLI `@` only messages an existing subagent. See [Agent Diagnostics](AGENT-DIAGNOSTICS.md).
 
 ## 6. Common Windows path mistake
 

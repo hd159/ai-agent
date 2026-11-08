@@ -33,7 +33,7 @@ To update the plugin, run the install command again. To remove it:
 agy plugin uninstall ai-agent
 ~~~
 
-After updating, reload the Antigravity window or restart the application so it rediscovers the plugin agents. Verify discovery with `agy agents`; then open the agent picker or type `@team-orchestrator` in the composer. If it still shows no match, check the exact frontmatter of the installed plugin and the active plugin version before changing permission settings.
+After updating, restart Antigravity and start a new session to load the updated agent definition. Check `agy plugin list --json` and `agy agents`. In the Antigravity App select Team Orchestrator using the agent selector (or Customizations > Installed > ai-agent > Agents). Do not type `@team-orchestrator` in the App composer; its `@` search does not select primary agents. In the CLI, use `agy --agent team-orchestrator` from the product repository root.
 
 ## 3. Open the correct workspace
 
@@ -58,7 +58,7 @@ A new project usually starts with discovery, MVP scope, architecture, and approv
 
 ## 5. Start work with Team Orchestrator
 
-Select Team Orchestrator in the Antigravity agent picker. You can also address a discovered subagent using Antigravity's supported @agent syntax.
+Select Team Orchestrator in the Antigravity App agent picker, or run `agy --agent team-orchestrator` in the CLI. CLI `@` can message an existing subagent; App `@` does not select a primary custom agent.
 
 For a new project:
 
@@ -235,3 +235,7 @@ A session checkpoint is an explicit agent action. Do not assume the host automat
 When using project memory, install CLI dependencies in the `ai-agent` source clone with `python -m pip install -r requirements-dev.txt`. Then run `python scripts/quality_gate.py validate --project <project-root>`, `python scripts/quality_gate.py task --project <project-root> --task-id <TASK-ID>`, or `python scripts/quality_gate.py release --project <project-root>`.
 
 Verification records are stored under the **product** `.agent-ecosystem/execution/verification/` directory. QA must be independent from implementation. The orchestrator cannot mark tasks completed without passing verification. Full details and caveats: [Quality Gates](QUALITY-GATES.md).
+
+## 13. Agent discovery and runtime troubleshooting
+
+See [Agent Diagnostics](AGENT-DIAGNOSTICS.md) when App `@` reports no matches or the selected agent says it cannot write files/run commands. These are separate issues. A successful plugin validation does not demonstrate actual runtime tool access.
