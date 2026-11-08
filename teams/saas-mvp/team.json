@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "id": "saas-mvp",
   "name": "SaaS MVP Team",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A cross-functional team for taking a SaaS idea from discovery through MVP implementation and quality review.",
   "orchestrator": "team-orchestrator",
   "members": [

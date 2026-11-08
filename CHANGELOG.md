@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.1 — Agent capability auditing and runtime diagnostics
+
+- Verified all seven bundled agents retain unrestricted built-in tool exposure, MCP inheritance, customizations inheritance, and main/subagent selection.
+- Added a strict static capability validator covering YAML, bundled skills, shared rules, manifest and source/generated parity.
+- Added the capability-smoke-test skill for real file, terminal, skill and connected MCP checks in each Antigravity session.
+- Added capability regression tests and CI validation; clarified App agent selection and troubleshooting.
+- Preserved user-owned host permission controls; no runtime access claim is made from static validation alone.
+
+
 ## 0.3.0 — Executable quality gates
 
 - Added schema-validated project state, task, plan, team, handoff and independent verification records.

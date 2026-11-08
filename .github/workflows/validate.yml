@@ -29,3 +29,5 @@ jobs:
         run: python scripts/validate_plugin.py
       - name: Validate explicit agent tool allowlists
         run: python scripts/validate_agent_tools.py
+      - name: Validate complete static agent/MCP/skill capabilities
+        run: python scripts/validate_capabilities.py

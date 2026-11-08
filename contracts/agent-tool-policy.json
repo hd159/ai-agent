@@ -31,6 +31,9 @@
     "commandExecutionPolicy is omitted so the plugin does not impose a per-agent execution mode; Antigravity defaults and user/global/project/session settings govern execution.",
     "Tool availability is not authorization. Antigravity host permissions, allow/ask/deny rules, sandboxing, workspace boundaries, and approval prompts remain authoritative.",
     "Agent roles define responsibility and task ownership, not tool access. The Orchestrator remains the coordinator and single writer of shared execution state.",
-    "Keep canonical module agents and generated root agents synchronized."
+    "Keep canonical module agents and generated root agents synchronized.",
+    "All bundled skills are discoverable on demand; no per-agent skill allowlist is declared.",
+    "No MCP servers are bundled by default. inheritMcp exposes only connected/authorized user-configured MCP tools.",
+    "Static validation cannot prove runtime rights. Run /capability-smoke-test in a fresh session for each agent."
   ]
 }

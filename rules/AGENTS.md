@@ -44,3 +44,9 @@ These rules apply to every agent using this ecosystem.
 - Use the shared task and handoff contracts.
 - Do not assume another agent has completed work until evidence is available.
 - Escalate conflicts in requirements, interfaces, data models, or ownership to the orchestrator.
+
+## 7. Runtime capability transparency
+
+- Distinguish capability declared in YAML, tool exposed by host, operation attempted, and actual success.
+- On user-requested capability audits, attempt relevant real tools and report precise results or host denials. A proposed command is not an executed command.
+- Do not change user permission settings to claim full access; show the observed blocker and what needs user approval.

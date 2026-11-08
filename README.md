@@ -1,6 +1,6 @@
 # AI Agent Ecosystem
 
-**Version:** `0.3.0` — Single-repository Antigravity plugin  
+**Version:** `0.3.1` — Single-repository Antigravity plugin  
 **Runtime:** Google Antigravity (`agy`)  
 **License:** MIT
 
@@ -16,6 +16,7 @@ Then verify:
 
 ~~~powershell
 agy plugin list
+agy plugin list --json
 agy agents
 ~~~
 
@@ -26,6 +27,29 @@ agy plugin uninstall ai-agent
 ~~~
 
 All specialists ship together. You do **not** need to install or clone nine separate repositories, copy plugin folders, or run a local folder installer.
+
+## Selecting an agent
+
+**App:** Open Customizations > Installed > ai-agent > Agents, then use the agent selector to start a new Team Orchestrator session. App `@team-orchestrator` is not a primary-agent selector; `@` searches project references.
+
+**CLI:** Open the product workspace and run `agy --agent team-orchestrator` (or open `/agents`). CLI `@` messages an existing subagent, not a primary agent.
+
+If the custom agent can only read files despite Turbo, see [Agent Diagnostics](docs/AGENT-DIAGNOSTICS.md). Check actual tools in a new session and compare with the built-in agent; plugin packaging validation alone does not prove write/terminal capabilities.
+
+## Capability validation
+
+All seven bundled agents have no `tools` allowlist, declare `inheritMcp: true`
+and `inheritCustomizations: true`, and discover 19 bundled skills on demand.
+MCP servers are inherited from the user environment; no MCP server ships with this plugin.
+
+~~~powershell
+python -m pip install -r requirements-dev.txt
+python .\scripts\validate_capabilities.py
+~~~
+
+Use `/capability-smoke-test` in a fresh Antigravity session **for each agent**
+to test real file write/read, shell, skill activation and connected MCP tools.
+Static validation does not grant permissions or prove the host exposed tools.
 
 ## Included agents
 
@@ -40,7 +64,7 @@ All specialists ship together. You do **not** need to install or clone nine sepa
 | `qa-agent` | Test strategy, acceptance, regression, independent verification |
 
 Also included:
-- **18 reusable skills** for product discovery, MVP scoping, architecture, API/data design, task decomposition, project memory, session checkpointing, TDD, debugging, code review, deployment readiness, and verification.
+- **19 reusable skills** for product discovery, MVP scoping, architecture, API/data design, task decomposition, project memory, session checkpointing, TDD, debugging, code review, deployment readiness, and verification.
 - **Shared constitution rules** for scoped changes, explicit assumptions, simplicity, and evidence-based completion.
 - **SaaS MVP team preset**, task/handoff contracts, project templates, and evaluation scenarios.
 
@@ -179,6 +203,7 @@ The user documentation is organized by the lifecycle of adopting and using the e
 | Document | What it covers |
 |---|---|
 | [User Guide](docs/USER-GUIDE.md) | Install, verify agents, open a project, choose Orchestrator or a specialist, work on features/bugs, and resume sessions |
+| [Agent Diagnostics](docs/AGENT-DIAGNOSTICS.md) | Agent selection, actual runtime tool availability, and host troubleshooting |
 | [Command Reference](docs/COMMAND-REFERENCE.md) | Antigravity CLI commands, Python scripts, parameters, validation, and Windows examples |
 | [Orchestration Workflow](docs/ORCHESTRATION-WORKFLOW.md) | Task contracts, lifecycle, dependency-aware dispatch, parallel ownership, handoffs, QA, and checkpoints |
 | [Project Bootstrap](docs/PROJECT-BOOTSTRAP.md) | New vs existing projects, one-time initialization, recovery, source discovery, and safe reinitialization |
