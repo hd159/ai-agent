@@ -1,6 +1,6 @@
 {
   "displayName": "Team Orchestrator",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Compose project teams from specialist agents, create dependency-aware task plans, coordinate handoffs, and maintain persistent project memory and session checkpoints.",
   "author": {
     "name": "AI Agent Ecosystem contributors"
