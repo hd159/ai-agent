@@ -23,3 +23,5 @@ jobs:
         run: python scripts/validate_repo.py
       - name: Validate installable Antigravity plugin
         run: python scripts/validate_plugin.py
+      - name: Validate explicit agent tool allowlists
+        run: python scripts/validate_agent_tools.py

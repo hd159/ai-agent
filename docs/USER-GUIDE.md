@@ -1,0 +1,221 @@
+# AI Agent Ecosystem — User Guide
+
+This guide explains how to install the reusable agent team, open a project, initialize project memory, delegate work, and resume work across sessions.
+
+## 1. What is installed?
+
+Install the AI Agent Ecosystem once in Antigravity. One plugin contains:
+
+- Team Orchestrator — primary project coordinator.
+- Architecture Agent — architecture, ADRs, module boundaries, task decomposition.
+- UI/UX Design Agent — journeys, information architecture, interaction specifications.
+- Frontend Agent — frontend implementation and tests.
+- Backend Agent — APIs, domain logic, persistence, authorization, integrations.
+- Infrastructure Agent — runtime, CI/CD, secrets, observability, operations.
+- QA Agent — independent test planning, regression, acceptance evidence.
+- Shared skills, engineering rules, team presets, and project templates.
+
+The plugin repository is generic. Product code, project context, architecture decisions, task state, and session history belong in each product repository.
+
+## 2. Install and verify
+
+Run in PowerShell or the Antigravity CLI terminal:
+
+~~~powershell
+agy plugin install https://github.com/hd159/ai-agent
+agy plugin list
+agy agents
+~~~
+
+To update the plugin, run the install command again. To remove it:
+
+~~~powershell
+agy plugin uninstall ai-agent
+~~~
+
+After updating, reload the Antigravity window or restart the application if the agent list still shows an older version.
+
+## 3. Open the correct workspace
+
+Open the root directory of the application you want the agents to work on, for example:
+
+~~~text
+C:\work\certvault
+~~~
+
+The active workspace should be the product repository, not the ai-agent plugin source repository. In a multi-root workspace, confirm which root contains the files the task should change.
+
+## 4. New project vs existing project
+
+First check whether the project already has a non-empty .agent-ecosystem directory.
+
+- If it exists and contains project memory, do not initialize it again. Ask Team Orchestrator to resume and reconcile it.
+- If it does not exist, initialize it once using Project Bootstrap.
+- If it exists but is empty, the bootstrap script can populate it.
+- If it contains partial files, preserve them and ask Orchestrator to reconcile; do not delete the directory to force initialization.
+
+A new project usually starts with discovery, MVP scope, architecture, and approval. An existing project starts with source inspection, architecture recovery, audit reconciliation, and current-state reporting.
+
+## 5. Start work with Team Orchestrator
+
+Select Team Orchestrator in the Antigravity agent picker. You can also address a discovered subagent using Antigravity's supported @agent syntax.
+
+For a new project:
+
+~~~text
+Initialize this project. Inspect the repository, understand the product and
+technology stack, and create the project context. Start with read-only
+discovery. Report the current architecture, risks, unknowns, and recommended
+next steps. Do not implement code until I approve the scope.
+~~~
+
+For an existing project:
+
+~~~text
+Resume this project. Read .agent-ecosystem project memory, inspect Git status
+and the current source, reconcile the latest checkpoint, and report completed
+work, in-progress tasks, blockers, pending decisions, and the next action.
+Do not assume old task statuses are still accurate.
+~~~
+
+For a quick status:
+
+~~~text
+Show project status from state.json and verify it against the current Git
+state. Summarize completed, active, blocked, and next tasks.
+~~~
+
+## 6. Which agent should I call?
+
+Use Team Orchestrator for work that spans roles, has dependencies, needs a plan, or should be tracked across sessions.
+
+Call a specialist directly for a focused, bounded task:
+
+| Agent | Good direct assignment |
+|---|---|
+| Architecture Agent | Review a module boundary, API contract, data model, or ADR |
+| UI/UX Design Agent | Design a user journey or page specification |
+| Frontend Agent | Implement a defined component or frontend bug fix |
+| Backend Agent | Implement a defined endpoint, domain rule, or migration |
+| Infrastructure Agent | Review CI/CD, Docker, cloud configuration, or observability |
+| QA Agent | Build a test matrix or independently verify a completed change |
+
+A specialist assignment should include the goal, relevant files, constraints, acceptance criteria, and whether implementation is authorized.
+
+## 7. Common work modes
+
+### New feature
+
+Ask Orchestrator to clarify the user outcome, inspect the current architecture, request UX/architecture input as needed, define contracts, create task contracts, dispatch ready work, and coordinate QA.
+
+Approve material changes to product scope, API/data contracts, architecture, and deployment before implementation crosses those gates.
+
+### Bug fix
+
+Ask Orchestrator to reproduce the issue, identify root cause, add a regression test, assign the smallest suitable owner, implement the fix, and request independent verification. Avoid unrelated refactoring.
+
+### Refactoring
+
+Define the behavior that must remain unchanged. Require baseline tests, a bounded file scope, migration/compatibility notes, and regression evidence. Split large refactors into safe increments.
+
+### Architecture or security review
+
+Ask Architecture Agent to inspect actual source and compare it with existing architecture documents and ADRs. Findings must include evidence, severity, confidence, affected paths, recommended remediation, and verification steps.
+
+### Release or deployment
+
+Ask QA and Infrastructure to verify release readiness, rollback, migrations, monitoring, secrets, and operational risks. Production-impacting actions require explicit user approval.
+
+## 8. How task delegation works
+
+Orchestrator creates a task contract before dispatch. A task should include:
+
+- Task ID, title, and one accountable owner.
+- Objective, inputs, scope, and exclusions.
+- Dependencies and owned paths.
+- Acceptance criteria and verification commands.
+- Current status, blockers, and evidence.
+
+The normal task lifecycle is:
+
+~~~text
+pending -> ready_for_dispatch -> dispatched -> in_progress
+        -> in_review -> completed
+                    -> blocked / failed
+~~~
+
+Only report a task as dispatched after a real subagent invocation. Only report it as completed after acceptance criteria and verification evidence are satisfied.
+
+The default SaaS MVP team allows at most three parallel specialists. Do not allow parallel agents to edit overlapping paths. Use isolated branch/worktree execution for parallel code changes when supported by the host; otherwise serialize conflicting work.
+
+## 9. Persistent project memory
+
+Project memory lives in the application's repository:
+
+~~~text
+.agent-ecosystem/
+├── PROJECT_CONTEXT.md
+├── team.json
+├── artifacts/
+│   ├── architecture/
+│   ├── adr/
+│   └── product/
+└── execution/
+    ├── plan.json
+    ├── state.json
+    ├── tasks/
+    ├── handoffs/
+    ├── sessions/
+    └── decisions/
+~~~
+
+- PROJECT_CONTEXT.md: stable product context and constraints.
+- team.json: selected team and workflow policy.
+- artifacts/: architecture, ADR, product, and delivery documents.
+- plan.json: phases and approval gates.
+- state.json: concise current status and next actions.
+- tasks/: detailed task contracts.
+- handoffs/: specialist results and evidence.
+- sessions/: append-only session checkpoints.
+- decisions/: decision log and references.
+
+At meaningful task boundaries and before handing control back, Orchestrator must update the affected task, reconcile state.json, create a dated session journal, and read the files back. Never store credentials, tokens, private keys, or secrets in project memory.
+
+## 10. Agent tools and permissions
+
+Every bundled agent declares an explicit, role-specific tools allowlist in YAML frontmatter. The list controls which built-in tools the agent can use.
+
+Important distinctions:
+
+- tools controls whether a tool is exposed to an agent.
+- commandExecutionPolicy controls shell command execution behavior.
+- Antigravity permission settings control whether an available operation is allowed, sandboxed, or requires approval.
+- A permission preset such as Turbo cannot add a tool omitted from an agent's allowlist.
+
+The Orchestrator needs file read/write, search, terminal, and subagent management tools. Implementation agents need workspace file-edit and terminal tools. UI/UX can write design artifacts but does not need a terminal by default.
+
+If an agent says it cannot write files or run commands:
+1. Check that the selected agent is the updated bundled agent.
+2. Inspect its frontmatter and confirm the required tool is listed.
+3. Confirm the product repository is the active workspace.
+4. Check Antigravity's Windows Agent Settings for terminal auto-execution and non-workspace access if the target is outside the workspace.
+5. Read the exact host permission error. Do not switch to unrestricted permissions merely to compensate for a missing tool declaration.
+
+Official references:
+- [Custom subagents](https://antigravity.google/docs/subagents)
+- [Build plugins](https://antigravity.google/docs/build-plugins)
+- [Agent settings](https://antigravity.google/docs/agent-settings)
+- [Permissions](https://antigravity.google/docs/permissions)
+
+## 11. End a session
+
+Ask:
+
+~~~text
+Checkpoint this session. Reconcile completed, active, blocked, and pending
+tasks against source changes and test output. Update task contracts and
+state.json, write a new dated session journal, read the files back, and tell
+me exactly what is persisted and where the next session should resume.
+~~~
+
+A session checkpoint is an explicit agent action. Do not assume the host automatically saves a complete project journal when a conversation ends.

@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0.0",
+  "platform": "Google Antigravity",
+  "purpose": "Explicit least-privilege built-in tool allowlists for the bundled custom agents.",
+  "references": [
+    "https://antigravity.google/docs/subagents",
+    "https://antigravity.google/docs/build-plugins",
+    "https://antigravity.google/docs/hooks"
+  ],
+  "allowed_tools": [
+    "find_by_name",
+    "grep_search",
+    "invoke_subagent",
+    "list_dir",
+    "manage_subagents",
+    "multi_replace_file_content",
+    "read_url_content",
+    "replace_file_content",
+    "run_command",
+    "search_web",
+    "send_message",
+    "view_file",
+    "write_to_file"
+  ],
+  "agents": {
+    "team-orchestrator": [
+      "view_file",
+      "list_dir",
+      "find_by_name",
+      "grep_search",
+      "write_to_file",
+      "replace_file_content",
+      "multi_replace_file_content",
+      "run_command",
+      "search_web",
+      "read_url_content",
+      "invoke_subagent",
+      "send_message",
+      "manage_subagents"
+    ],
+    "architecture-agent": [
+      "view_file",
+      "list_dir",
+      "find_by_name",
+      "grep_search",
+      "write_to_file",
+      "replace_file_content",
+      "multi_replace_file_content",
+      "run_command",
+      "search_web",
+      "read_url_content"
+    ],
+    "uiux-design-agent": [
+      "view_file",
+      "list_dir",
+      "find_by_name",
+      "grep_search",
+      "write_to_file",
+      "replace_file_content",
+      "multi_replace_file_content",
+      "search_web",
+      "read_url_content"
+    ],
+    "frontend-agent": [
+      "view_file",
+      "list_dir",
+      "find_by_name",
+      "grep_search",
+      "write_to_file",
+      "replace_file_content",
+      "multi_replace_file_content",
+      "run_command"
+    ],
+    "backend-agent": [
+      "view_file",
+      "list_dir",
+      "find_by_name",
+      "grep_search",
+      "write_to_file",
+      "replace_file_content",
+      "multi_replace_file_content",
+      "run_command",
+      "search_web",
+      "read_url_content"
+    ],
+    "infrastructure-agent": [
+      "view_file",
+      "list_dir",
+      "find_by_name",
+      "grep_search",
+      "write_to_file",
+      "replace_file_content",
+      "multi_replace_file_content",
+      "run_command",
+      "search_web",
+      "read_url_content"
+    ],
+    "qa-agent": [
+      "view_file",
+      "list_dir",
+      "find_by_name",
+      "grep_search",
+      "write_to_file",
+      "replace_file_content",
+      "multi_replace_file_content",
+      "run_command"
+    ]
+  },
+  "notes": [
+    "Tool names are case-sensitive and must match Antigravity built-in tool identifiers.",
+    "The tool allowlist controls which tools are exposed to an agent. commandExecutionPolicy controls shell execution behavior and does not grant missing tools.",
+    "The Team Orchestrator is the only agent granted invoke_subagent and manage_subagents for centralized delegation.",
+    "UI/UX is intentionally not granted run_command; it can inspect source and write design artifacts.",
+    "Keep this policy synchronized with modules/*/agents/*.md and the generated root agents/*.md bundle."
+  ]
+}

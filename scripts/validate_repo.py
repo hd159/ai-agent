@@ -121,6 +121,14 @@ required = [
     "skills",
     "rules",
     "scripts/build_single_plugin.py",
+    "scripts/validate_agent_tools.py",
+    "contracts/agent-tool-policy.json",
+    "docs/USER-GUIDE.md",
+    "docs/COMMAND-REFERENCE.md",
+    "docs/ORCHESTRATION-WORKFLOW.md",
+    "docs/PROJECT-BOOTSTRAP.md",
+    "docs/ARCHITECTURE-DOCUMENTATION-STANDARD.md",
+    "docs/PROMPT-COOKBOOK.md",
     "docs/architecture/PERSISTENT-PROJECT-MEMORY.md",
 ]
 for relative in required:
