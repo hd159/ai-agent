@@ -1,6 +1,6 @@
 # AI Agent Ecosystem
 
-**Version:** `0.2.1` — Single-repository Antigravity plugin  
+**Version:** `0.2.2` — Single-repository Antigravity plugin  
 **Runtime:** Google Antigravity (`agy`)  
 **License:** MIT
 
