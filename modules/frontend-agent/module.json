@@ -1,6 +1,6 @@
 {
   "displayName": "Frontend Agent",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Designs and implements frontend application structure, accessible UI, state management, API integration, and frontend tests against approved design and contracts.",
   "author": {
     "name": "AI Agent Ecosystem contributors"
