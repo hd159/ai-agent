@@ -5,7 +5,7 @@ description: >-
 model: inherit
 mainAgent: true
 subagent: true
-  - read_url_content
+
 inheritMcp: true
 inheritCustomizations: true
 ---
