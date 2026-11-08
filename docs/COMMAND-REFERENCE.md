@@ -139,7 +139,7 @@ Canonical agent source files live under modules/<module>/agents/. The root agent
 
 ## 8. Quality gate commands (v0.3)
 
-\`\`\`powershell
+```powershell
 python -m pip install -r requirements-dev.txt
 
 python .\scripts\quality_gate.py validate --project "C:\work\my-product"
@@ -147,6 +147,6 @@ python .\scripts\quality_gate.py task --project "C:\work\my-product" --task-id B
 python .\scripts\quality_gate.py release --project "C:\work\my-product"
 
 python -m unittest discover -s tests -v
-\`\`\`
+```
 
-\`validate\` checks every completed task and canonical project state; \`task\` verifies an independent QA record for one in-review/completed task; \`release\` requires all tasks completed and recorded mandatory approvals. See [Quality Gates](QUALITY-GATES.md). A passing artifact check is not a substitute for independently executed CI checks or actual human approval.
+`validate` checks every completed task and canonical project state; `task` verifies an independent QA record for one in-review/completed task; `release` requires all tasks completed and recorded mandatory approvals. See [Quality Gates](QUALITY-GATES.md). A passing artifact check is not a substitute for independently executed CI checks or actual human approval.

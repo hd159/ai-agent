@@ -161,12 +161,12 @@ Session journals are append-only. Do not rewrite old history to make it appear t
 
 ## 11. Machine-checked completion and release (v0.3)
 
-Project-local tasks, handoffs, plan and state must conform to the canonical JSON Schemas under \`contracts/schemas/\`. The Team Orchestrator runs:
+Project-local tasks, handoffs, plan and state must conform to the canonical JSON Schemas under `contracts/schemas/`. The Team Orchestrator runs:
 
-\`\`\`bash
+```bash
 python scripts/quality_gate.py validate --project /path/to/product
 python scripts/quality_gate.py task --project /path/to/product --task-id BE-001
 python scripts/quality_gate.py release --project /path/to/product
-\`\`\`
+```
 
-The \`task\` gate requires an independent QA verification record, full source Git SHA, exact acceptance-criteria mapping, and non-empty evidence logs. A failed gate keeps the task \`in_review\`/\`blocked\` and requires remediation. The \`release\` gate also enforces recorded human approvals; it cannot replace actual approval or protected CI. See [Quality Gates](QUALITY-GATES.md).
+The `task` gate requires an independent QA verification record, full source Git SHA, exact acceptance-criteria mapping, and non-empty evidence logs. A failed gate keeps the task `in_review`/`blocked` and requires remediation. The `release` gate also enforces recorded human approvals; it cannot replace actual approval or protected CI. See [Quality Gates](QUALITY-GATES.md).

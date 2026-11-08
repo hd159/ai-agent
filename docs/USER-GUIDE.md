@@ -232,6 +232,6 @@ A session checkpoint is an explicit agent action. Do not assume the host automat
 
 ## 12. Validate tasks and release readiness
 
-When using project memory, install CLI dependencies in the \`ai-agent\` source clone with \`python -m pip install -r requirements-dev.txt\`. Then run \`python scripts/quality_gate.py validate --project <project-root>\`, \`python scripts/quality_gate.py task --project <project-root> --task-id <TASK-ID>\`, or \`python scripts/quality_gate.py release --project <project-root>\`.
+When using project memory, install CLI dependencies in the `ai-agent` source clone with `python -m pip install -r requirements-dev.txt`. Then run `python scripts/quality_gate.py validate --project <project-root>`, `python scripts/quality_gate.py task --project <project-root> --task-id <TASK-ID>`, or `python scripts/quality_gate.py release --project <project-root>`.
 
-Verification records are stored under the **product** \`.agent-ecosystem/execution/verification/\` directory. QA must be independent from implementation. The orchestrator cannot mark tasks completed without passing verification. Full details and caveats: [Quality Gates](QUALITY-GATES.md).
+Verification records are stored under the **product** `.agent-ecosystem/execution/verification/` directory. QA must be independent from implementation. The orchestrator cannot mark tasks completed without passing verification. Full details and caveats: [Quality Gates](QUALITY-GATES.md).

@@ -163,12 +163,12 @@ python .\scripts\init_project.py --team saas-mvp --target ..\my-saas-app
 
 The framework now includes a **read-only, fail-closed project validator** for task/state/handoff schemas, dependency graphs, independent QA approval, acceptance evidence, Git source freshness, and mandatory production approval records.
 
-\`\`\`powershell
+```powershell
 python -m pip install -r requirements-dev.txt
 python .\scripts\quality_gate.py validate --project ..\my-saas-app
 python .\scripts\quality_gate.py task --project ..\my-saas-app --task-id BE-001
 python .\scripts\quality_gate.py release --project ..\my-saas-app
-\`\`\`
+```
 
 **Trust boundary:** the gate checks the authenticity of neither the user's approval nor whether commands genuinely ran. For enforceable release controls, use protected branches, required external CI checks and human approval. Learn more in [Quality Gates](docs/QUALITY-GATES.md).
 
