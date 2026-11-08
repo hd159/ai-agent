@@ -1,6 +1,6 @@
 # AI Agent Ecosystem
 
-**Version:** `0.3.0` — Single-repository Antigravity plugin  
+**Version:** `0.3.1` — Single-repository Antigravity plugin  
 **Runtime:** Google Antigravity (`agy`)  
 **License:** MIT
 
@@ -36,6 +36,21 @@ All specialists ship together. You do **not** need to install or clone nine sepa
 
 If the custom agent can only read files despite Turbo, see [Agent Diagnostics](docs/AGENT-DIAGNOSTICS.md). Check actual tools in a new session and compare with the built-in agent; plugin packaging validation alone does not prove write/terminal capabilities.
 
+## Capability validation
+
+All seven bundled agents have no `tools` allowlist, declare `inheritMcp: true`
+and `inheritCustomizations: true`, and discover 19 bundled skills on demand.
+MCP servers are inherited from the user environment; no MCP server ships with this plugin.
+
+~~~powershell
+python -m pip install -r requirements-dev.txt
+python .\scripts\validate_capabilities.py
+~~~
+
+Use `/capability-smoke-test` in a fresh Antigravity session **for each agent**
+to test real file write/read, shell, skill activation and connected MCP tools.
+Static validation does not grant permissions or prove the host exposed tools.
+
 ## Included agents
 
 | Agent | Responsibility |
@@ -49,7 +64,7 @@ If the custom agent can only read files despite Turbo, see [Agent Diagnostics](d
 | `qa-agent` | Test strategy, acceptance, regression, independent verification |
 
 Also included:
-- **18 reusable skills** for product discovery, MVP scoping, architecture, API/data design, task decomposition, project memory, session checkpointing, TDD, debugging, code review, deployment readiness, and verification.
+- **19 reusable skills** for product discovery, MVP scoping, architecture, API/data design, task decomposition, project memory, session checkpointing, TDD, debugging, code review, deployment readiness, and verification.
 - **Shared constitution rules** for scoped changes, explicit assumptions, simplicity, and evidence-based completion.
 - **SaaS MVP team preset**, task/handoff contracts, project templates, and evaluation scenarios.
 
