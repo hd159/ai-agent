@@ -1,6 +1,6 @@
 # GitHub Copilot Adapter — v0.4.0
 
-The Copilot adapter generates repository instructions, custom agent profiles, and reusable Agent Skills for GitHub Copilot CLI and supported IDE agent modes.
+The Copilot adapter generates repository instructions, custom agent profiles, and reusable Agent Skills for GitHub Copilot CLI, supported IDE agent modes, and GitHub.com custom-agent assignment.
 
 ## Generated layout
 
@@ -41,7 +41,7 @@ python .\scripts\install_adapter.py --adapter copilot --target ..\my-project --u
 
 ## Surface compatibility
 
-Custom agents and Agent Skills are available on supported Copilot surfaces, but feature parity is not universal. The current GitHub feature matrix distinguishes VS Code and Copilot CLI from GitHub.com: GitHub.com supports custom agents and skills but does not list subagent execution. The generated profile is therefore not proof that delegation is available. Verify the exact IDE/CLI surface, version, organization policy, and runtime permissions before dispatch.
+Custom agents and Agent Skills are available on supported Copilot surfaces, but feature parity is not universal. The current GitHub feature matrix distinguishes VS Code and Copilot CLI from GitHub.com: GitHub.com supports custom agents and skills but does not list subagent execution. On GitHub.com, use the profile as the selected custom agent; do not expect it to orchestrate native subagents. The generated profile is therefore not proof that delegation is available. Verify the exact IDE/CLI surface, version, organization policy, and runtime permissions before dispatch.
 
 ## Runtime verification
 
