@@ -8,7 +8,7 @@
 - Generate native instruction files and install all 19 shared skills into each runtime's supported project skill directory.
 - Add safe project installer with dry-run, managed instruction blocks, conflict protection, update ownership registry, and uninstall.
 - Add native adapter validation and cross-platform installer tests.
-- Expand CI validation to Windows, macOS, and Linux across Python 3.10, 3.11, and 3.12.
+- Expand CI validation across Windows, macOS, and Linux; test Python 3.10, 3.11, and 3.12 on Linux plus Python 3.12 on Windows and macOS.
 - Keep project memory and task/handoff/verification contracts shared across runtimes.
 
 ## 0.3.2 — Explicit Antigravity runtime tool access
