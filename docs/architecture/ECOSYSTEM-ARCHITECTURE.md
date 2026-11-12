@@ -149,7 +149,7 @@ The ecosystem uses one canonical repository. The existing Antigravity plugin rem
 
 The native adapter builder generates:
 - Codex CLI: AGENTS.md, .codex/agents/*.toml, and .agents/skills/.
-- GitHub Copilot CLI / supported VS Code agent mode: .github/copilot-instructions.md, .github/agents/*.agent.md, and .agents/skills/.
+- GitHub Copilot CLI / supported VS Code agent mode: .github/copilot-instructions.md, .github/agents/*.agent.md, and .github/skills/.
 - Claude Code CLI: CLAUDE.md, .claude/agents/*.md, and .claude/skills/.
 
 The installer merges root instructions inside explicit managed markers, records installer-owned paths under .agent-ecosystem/adapters/, refuses to overwrite unmanaged conflicting profiles or skills, and supports safe uninstall. Generated adapter files are derived artifacts, not new sources of truth.
