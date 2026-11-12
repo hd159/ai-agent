@@ -92,7 +92,7 @@ class CapabilityAuditTests(unittest.TestCase):
         self.assertTrue(any("expected" in e or "YAML" in e for e in self.errors()))
 
     def test_duplicate_yaml_keys_fail(self):
-        self.update_agent(lambda s: s.replace("inheritMcp: true", "inheritMcp: true\\ninheritMcp: true"))
+        self.update_agent(lambda s: s.replace("inheritMcp: true", "inheritMcp: true\ninheritMcp: true"))
         self.assertTrue(any("duplicate YAML key" in e for e in self.errors()))
 
     def test_missing_shared_rule(self):
