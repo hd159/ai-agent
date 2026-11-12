@@ -140,7 +140,9 @@
       "version": "0.4.0",
       "status": "supported",
       "surfaces": [
-        "Codex CLI"
+        "Codex CLI",
+        "Codex desktop app",
+        "Codex IDE extension"
       ],
       "instructions_file": "AGENTS.md",
       "agent_directory": ".codex/agents",
@@ -156,7 +158,8 @@
       "status": "supported",
       "surfaces": [
         "GitHub Copilot CLI",
-        "VS Code agent mode"
+        "VS Code agent mode",
+        "GitHub.com custom agent assignment (no subagent delegation)"
       ],
       "instructions_file": ".github/copilot-instructions.md",
       "agent_directory": ".github/agents",
