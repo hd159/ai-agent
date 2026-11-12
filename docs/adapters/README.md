@@ -11,7 +11,7 @@ AI Agent Ecosystem 0.4.0 has one canonical source repository and native adapters
 
 Build all non-Antigravity bundles with python scripts/build_adapters.py --adapter all. Validate them with python scripts/validate_adapters.py.
 
-Install an adapter into an existing project with python scripts/install_adapter.py --adapter <codex|copilot|claude-code> --target <project-path>. Run with --dry-run first. The installer preserves existing root instructions, skips conflicting unowned files, and records ownership for safe updates and uninstall.
+Install an adapter into an existing project with python scripts/install_adapter.py --adapter codex, copilot, or claude-code --target <project-path>. Run with --dry-run first. The installer preserves existing root instructions, skips conflicting unowned files, and records ownership for safe updates and uninstall.
 
 See:
 - [Codex](codex/README.md)
