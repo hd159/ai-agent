@@ -153,6 +153,15 @@ class AdapterInstallerTests(unittest.TestCase):
         self.assertTrue((self.project / ".github/skills/capability-smoke-test/SKILL.md").is_file())
         self.assertTrue((self.project / ".claude/skills/capability-smoke-test/SKILL.md").is_file())
 
+    def test_parent_file_collision_fails_before_any_project_write(self):
+        blocked = self.project / ".codex"
+        blocked.write_text("user-owned file", encoding="utf-8")
+        with self.assertRaises(ValueError):
+            install_adapter("codex", self.project, root=ROOT)
+        self.assertFalse((self.project / "AGENTS.md").exists())
+        self.assertFalse((self.project / ".agents").exists())
+        self.assertEqual(blocked.read_text(encoding="utf-8"), "user-owned file")
+
     def test_dry_run_does_not_create_project_files(self):
         result = install_adapter("copilot", self.project, root=ROOT, dry_run=True)
         self.assertTrue(result["dry_run"])
