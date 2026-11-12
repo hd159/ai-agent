@@ -178,10 +178,12 @@ def _render_agent(adapter: str, name: str, description: str, body: str) -> str:
             f'description = {json.dumps(description, ensure_ascii=False)}\n'
             f'developer_instructions = {json.dumps(instructions, ensure_ascii=False)}\n'
         )
+    copilot_custom_instructions = "include-custom-instructions: true\n" if adapter == "copilot" else ""
     return (
         "---\n"
         f"name: {name}\n"
         f"description: {json.dumps(description, ensure_ascii=False)}\n"
+        f"{copilot_custom_instructions}"
         "---\n\n"
         f"{instructions}"
     )
