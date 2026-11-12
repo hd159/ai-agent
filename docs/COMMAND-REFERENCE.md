@@ -86,6 +86,8 @@ python .\scripts\build_single_plugin.py --check
 python .\scripts\validate_repo.py
 python .\scripts\validate_plugin.py
 python .\scripts\validate_agent_tools.py
+python .\scripts\validate_capabilities.py
+python .\scripts\validate_adapters.py
 ~~~
 
 Requirements: Python 3.10+.
