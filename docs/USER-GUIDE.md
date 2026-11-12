@@ -40,8 +40,8 @@ After updating, restart Antigravity and start a new session to load the updated 
 For non-Antigravity runtimes, clone the ai-agent repository and install the adapter into the target project. Preview changes first:
 
 ~~~powershell
-python .\scripts\install_adapter.py --adapter codex --target ..\my-project --dry-run
-python .\scripts\install_adapter.py --adapter codex --target ..\my-project
+python .\scripts\install_adapter.py --adapter all --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter all --target ..\my-project
 ~~~
 
 Choose copilot or claude-code for the other native formats. The installer preserves existing root instructions, avoids overwriting unmanaged conflicting profiles/skills, and records ownership under .agent-ecosystem/adapters/. See [Native Runtime Adapters](adapters/README.md) for details. Start a new runtime session after installation and run the capability-smoke-test skill where available.
