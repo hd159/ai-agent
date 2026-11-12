@@ -407,7 +407,7 @@ def install_adapter(
             if path.is_symlink():
                 conflicts.append(f"{relative}: symlink detected; left untouched")
                 continue
-            if relative == previous.get("instructions_file"):
+            if relative == previous.get("instructions_file") and LAYOUTS[adapter].get("merge_instructions", True):
                 try:
                     updated, changed = _remove_managed_block(
                         path.read_bytes().decode("utf-8"),
