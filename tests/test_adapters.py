@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -164,6 +165,28 @@ class AdapterInstallerTests(unittest.TestCase):
         self.assertFalse((self.project / ".agents/skills/capability-smoke-test/SKILL.md").exists())
         self.assertTrue((self.project / ".github/skills/capability-smoke-test/SKILL.md").is_file())
         self.assertTrue((self.project / ".claude/skills/capability-smoke-test/SKILL.md").is_file())
+
+    def test_install_cli_supports_all_adapters_and_uninstall(self):
+        script = ROOT / "scripts/install_adapter.py"
+        install = subprocess.run(
+            [sys.executable, str(script), "--adapter", "all", "--target", str(self.project)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(install.returncode, 0, msg=install.stdout + install.stderr)
+        for adapter in ADAPTERS:
+            self.assertTrue((self.project / f".agent-ecosystem/adapters/{adapter}.json").is_file())
+
+        uninstall = subprocess.run(
+            [sys.executable, str(script), "--adapter", "all", "--target", str(self.project), "--uninstall"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(uninstall.returncode, 0, msg=uninstall.stdout + uninstall.stderr)
+        for adapter in ADAPTERS:
+            self.assertFalse((self.project / f".agent-ecosystem/adapters/{adapter}.json").exists())
 
     def test_parent_file_collision_fails_before_any_project_write(self):
         blocked = self.project / ".codex"
