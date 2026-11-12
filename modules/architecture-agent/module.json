@@ -1,6 +1,6 @@
 {
   "displayName": "Architecture Agent",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Plans product and system architecture, defines module boundaries, records technical decisions, and decomposes approved scope into owned implementation tasks.",
   "author": {
     "name": "AI Agent Ecosystem contributors"
