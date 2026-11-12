@@ -40,9 +40,17 @@ class CapabilityAuditTests(unittest.TestCase):
         self.assertEqual(stats["skills"], 19)
         self.assertEqual(stats["rules"], 1)
 
-    def test_forbids_tools_allowlist(self):
-        self.update_agent(lambda s: s.replace("inheritMcp: true", "tools: []\ninheritMcp: true"))
-        self.assertTrue(any("tools" in e for e in self.errors()))
+    def test_rejects_changed_tool_allowlist(self):
+        self.update_agent(lambda s: s.replace("  - ask_question", "  - wrong_tool"))
+        self.assertTrue(any("13-tool policy list" in e for e in self.errors()))
+
+    def test_rejects_missing_tool_allowlist(self):
+        self.update_agent(lambda s: s.replace("tools:\\n", ""))
+        self.assertTrue(any("13-tool policy list" in e for e in self.errors()))
+
+    def test_requires_command_execution_auto(self):
+        self.update_agent(lambda s: s.replace("commandExecutionPolicy: auto", "commandExecutionPolicy: ask"))
+        self.assertTrue(any("commandExecutionPolicy" in e for e in self.errors()))
 
     def test_missing_mcp_inheritance(self):
         self.update_agent(lambda s: s.replace("inheritMcp: true", "inheritMcp: false"))
@@ -53,7 +61,7 @@ class CapabilityAuditTests(unittest.TestCase):
         self.assertTrue(any("inheritCustomizations" in e for e in self.errors()))
 
     def test_denies_per_agent_skill_restrictions(self):
-        self.update_agent(lambda s: s.replace("inheritMcp: true", "skills: []\ninheritMcp: true"))
+        self.update_agent(lambda s: s.replace("inheritMcp: true", "skills: []\\ninheritMcp: true"))
         self.assertTrue(any("skills" in e for e in self.errors()))
 
     def test_missing_bundle_skill(self):
@@ -62,21 +70,21 @@ class CapabilityAuditTests(unittest.TestCase):
 
     def test_bad_skill_metadata(self):
         path = self.root / "modules/core-engineering-skills/skills/capability-smoke-test/SKILL.md"
-        path.write_text(path.read_text().replace("name: capability-smoke-test", "name: other"), encoding="utf-8")
+        path.write_text(path.read_text(encoding="utf-8").replace("name: capability-smoke-test", "name: other"), encoding="utf-8")
         self.assertTrue(any("invalid name/description" in e for e in self.errors()))
 
     def test_cannot_ship_plugin_disabled(self):
         path = self.root / "plugin.json"
-        obj = json.loads(path.read_text())
+        obj = json.loads(path.read_text(encoding="utf-8"))
         obj["disabled"] = True
-        path.write_text(json.dumps(obj))
+        path.write_text(json.dumps(obj), encoding="utf-8")
         self.assertTrue(any("disabled" in e for e in self.errors()))
 
     def test_mismatched_catalog_counts(self):
         path = self.root / "ecosystem.json"
-        obj = json.loads(path.read_text())
+        obj = json.loads(path.read_text(encoding="utf-8"))
         obj["modules"][3]["components"]["skills"] = 0
-        path.write_text(json.dumps(obj))
+        path.write_text(json.dumps(obj), encoding="utf-8")
         self.assertTrue(any("catalog skills" in e for e in self.errors()))
 
     def test_invalid_yaml_fails(self):
@@ -84,7 +92,7 @@ class CapabilityAuditTests(unittest.TestCase):
         self.assertTrue(any("expected" in e or "YAML" in e for e in self.errors()))
 
     def test_duplicate_yaml_keys_fail(self):
-        self.update_agent(lambda s: s.replace("inheritMcp: true", "inheritMcp: true\ninheritMcp: true"))
+        self.update_agent(lambda s: s.replace("inheritMcp: true", "inheritMcp: true\\ninheritMcp: true"))
         self.assertTrue(any("duplicate YAML key" in e for e in self.errors()))
 
     def test_missing_shared_rule(self):
