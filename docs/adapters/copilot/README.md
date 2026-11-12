@@ -21,7 +21,7 @@ The Copilot adapter generates repository instructions, custom agent profiles, an
       SKILL.md
 ~~~
 
-The agent profiles use native Markdown frontmatter with name and description. Tool restrictions are intentionally omitted: the active Copilot surface controls which tools are available. Shared skills use .agents/skills, a supported project-level location.
+The agent profiles use native Markdown frontmatter with name, description, and include-custom-instructions: true so Copilot subagents receive repository custom instructions. Tool restrictions are intentionally omitted: the active Copilot surface controls which tools are available. Shared skills use .agents/skills, a supported project-level location.
 
 ## Install into a project
 
