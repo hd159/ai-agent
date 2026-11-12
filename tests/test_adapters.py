@@ -138,6 +138,18 @@ class AdapterInstallerTests(unittest.TestCase):
         self.assertFalse((self.project / ".claude/agents/backend-agent.md").exists())
         self.assertFalse((self.project / ".agent-ecosystem/adapters/claude-code.json").exists())
 
+    def test_uninstall_restores_original_instruction_bytes_and_line_endings(self):
+        instructions = self.project / ".github/copilot-instructions.md"
+        original = b"# Existing Copilot instructions\r\nPreserve trailing spaces and no final newline. "
+        instructions.parent.mkdir(parents=True)
+        instructions.write_bytes(original)
+
+        install_adapter("copilot", self.project, root=ROOT)
+        result = install_adapter("copilot", self.project, root=ROOT, uninstall=True)
+
+        self.assertEqual(result["conflicts"], [])
+        self.assertEqual(instructions.read_bytes(), original)
+
     def test_all_runtime_adapters_can_coexist_in_one_project(self):
         for adapter in ADAPTERS:
             result = install_adapter(adapter, self.project, root=ROOT)
