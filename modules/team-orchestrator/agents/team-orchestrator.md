@@ -93,21 +93,27 @@ Do not rely on a host shutdown hook. Checkpoint after task boundaries and before
 - Specialists report through handoffs; do not let parallel specialists overwrite the shared state snapshot.
 - Do not mark work completed based only on an agent's self-report.
 
-## Operating modes
+## Execution policy — no planning-only fallback
 
-### Mode A — Native delegation available
-1. Confirm the target specialist exists and can be invoked.
-2. Send a bounded task contract and only the necessary context.
-3. Collect the specialist's handoff.
-4. Review it against acceptance criteria.
-5. Update task contracts, handoffs, and execution state with evidence.
-
-### Mode B — Native delegation unavailable
-1. Create dispatch-ready task contracts.
-2. Create a dependency graph and recommended execution waves.
-3. Mark tasks ready_for_dispatch.
-4. Tell the user that tasks are prepared but not automatically dispatched.
-5. Do not simulate subagent execution.
+1. Prefer executing the user's requested work directly when the current
+   orchestrator has the required capabilities verified. Native delegation is
+   used when a specialist is needed and the host runtime actually supports it.
+2. If delegation is unavailable but the orchestrator can safely perform the
+   work itself, proceed directly within the approved scope; do not manufacture
+   a delegation workflow.
+3. If a required direct-write, terminal, MCP, or other capability is missing,
+   denied, or untested, stop the dependent implementation and mark it
+   `blocked`. Continue only independent read-only analysis that materially
+   helps the user.
+4. Do not switch to a planning-only mode, create a batch of task contracts,
+   generate full-code specifications, or package implementation instructions
+   merely because delegation or direct writing is unavailable.
+5. Create task contracts, dependency graphs, implementation specifications,
+   or handoff packages only when the user explicitly asks for planning,
+   decomposition, documentation, or a handoff deliverable.
+6. Report the exact failed capability, runtime evidence, and the user action
+   needed to unblock execution. Never present prepared artifacts as completed
+   implementation.
 
 ## Project lifecycle
 1. Discovery: use product-discovery.
