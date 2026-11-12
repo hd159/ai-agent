@@ -184,6 +184,8 @@ Validate the source and generated installable plugin and adapters:
 python .\scripts\validate_repo.py
 python .\scripts\validate_plugin.py
 python .\scripts\validate_agent_tools.py
+python .\scripts\validate_capabilities.py
+python .\scripts\validate_adapters.py
 python .\scripts\build_single_plugin.py --check
 python -m unittest discover -s tests -v
 ~~~
@@ -234,6 +236,8 @@ The user documentation is organized by the lifecycle of adopting and using the e
 | [Architecture Documentation Standard](docs/ARCHITECTURE-DOCUMENTATION-STANDARD.md) | Audit versioning, current/target architecture, C4, ADRs, findings register, scoring, and evidence |
 | [Quality Gates](docs/QUALITY-GATES.md) | Executable task, evidence, state and release gate checks |
 | [Prompt Cookbook](docs/PROMPT-COOKBOOK.md) | Reusable prompts for initialization, resume, feature work, bug fixes, architecture/security review, QA, and release |
+| [Native Runtime Adapters](docs/adapters/README.md) | Generate and safely install native Codex, Copilot, and Claude Code profiles and skills |
+| [Multi-Platform Adapter Architecture](docs/architecture/MULTI-PLATFORM-ADAPTERS.md) | Canonical sources, native layouts, versioning, capability boundaries, and installer safety |
 
 ### Architecture and project templates
 
@@ -246,8 +250,8 @@ The documentation is generic and belongs in this ecosystem repository. Product-s
 
 ## Design principles
 
-1. **One repository, one install.** All agents, skills, and rules are distributed together from this repository.
-2. **Modular source, unified runtime.** Specialist source modules remain separated under `modules/`; the build script assembles one root plugin bundle.
+1. **One repository, native distributions.** Antigravity remains a single plugin; other runtimes receive native project adapters generated from the same repository.
+2. **Modular source, runtime adapters.** Specialist source modules remain separated under `modules/`; each adapter builds only its host-native files.
 3. **Shared skills, not duplicated procedures.** Skills are portable and reusable across specialist agents.
 4. **Project teams are configuration.** A team manifest selects roles and workflow stages without requiring separate plugin repositories.
 5. **Persistent, evidence-based continuity.** Project state survives chat sessions through versionable files, task contracts, handoffs, and checkpoints.
@@ -256,12 +260,13 @@ The documentation is generic and belongs in this ecosystem repository. Product-s
 
 ## Current limitations
 
-- Native subagent delegation depends on Antigravity runtime support and agent discovery.
+- Native subagent delegation depends on the active runtime, product surface, version, and host policy.
 - The team manifest is declarative; it does not create a distributed scheduler.
 - Session checkpointing is an explicit agent workflow, not a guaranteed host shutdown hook. The orchestrator must checkpoint at task boundaries and before returning control.
 - Git-backed memory is project-local. Multi-user, multi-workspace centralized memory is outside the current scope.
 - Copilot subagent execution depends on the selected surface and version; generated profiles do not guarantee runtime delegation.
 - Native tool permissions, shell access, MCP connectivity, and approvals remain controlled by each host runtime.
+- The installer is a local project-file installer; it does not publish marketplace extensions or centrally configure user/organization-level runtime settings.
 
 ## References
 
