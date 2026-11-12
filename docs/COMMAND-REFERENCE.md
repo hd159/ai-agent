@@ -72,10 +72,16 @@ Validate generated plugin manifest and agent/skill metadata:
 python .\scripts\validate_plugin.py
 ~~~
 
-Validate full built-in tool access, MCP inheritance, host-managed execution policy, and source/generated parity:
+Validate the Antigravity 13-tool allowlist and runtime policy:
 
 ~~~powershell
 python .\scripts\validate_agent_tools.py
+python .\scripts\validate_capabilities.py
+~~~
+
+Validate native Codex, Copilot, and Claude Code adapter layouts, agent profiles, and skill parity:
+
+~~~powershell
 python .\scripts\validate_adapters.py
 ~~~
 
@@ -87,7 +93,9 @@ python .\scripts\validate_repo.py
 python .\scripts\validate_plugin.py
 python .\scripts\validate_agent_tools.py
 python .\scripts\validate_capabilities.py
+python .\scripts\build_adapters.py --adapter all
 python .\scripts\validate_adapters.py
+python -m unittest discover -s tests -v
 ~~~
 
 Requirements: Python 3.10+.
@@ -192,4 +200,4 @@ python -m pip install -r requirements-dev.txt
 python .\scripts\validate_capabilities.py
 ~~~
 
-Invoke `/capability-smoke-test` in Antigravity to check actual file edit, terminal, skill and connected MCP tools. Repeat for all seven agents; a static pass does not grant access or prove runtime execution.
+Invoke `/capability-smoke-test` in a fresh Antigravity session for each of the seven agents to check real file read/write, terminal, skill, and connected MCP operations. In Codex, Copilot, and Claude Code, run the same skill where supported and verify read, write, shell, MCP, and delegation independently. Static validation does not grant access or prove runtime execution.
