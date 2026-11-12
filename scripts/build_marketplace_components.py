@@ -15,11 +15,12 @@ MARKER = ".generated-by-ai-agent-ecosystem.json"
 
 def build_cursor_components(root: Path = ROOT, destination: Path | None = None, check: bool = False) -> list[str]:
     root = root.resolve()
-    raw_destination = destination or root / "cursor-plugin"
+    raw_destination = destination or root / "plugins" / "ai-agent-ecosystem"
     if raw_destination.is_symlink():
         return [f"refusing symlink destination: {raw_destination}"]
     destination = raw_destination.resolve()
     errors: list[str] = []
+
     if destination.exists() and not destination.is_dir():
         return [f"destination is not a directory: {destination}"]
 
@@ -37,7 +38,7 @@ def build_cursor_components(root: Path = ROOT, destination: Path | None = None, 
             content = path.read_text(encoding="utf-8")
             content = content.replace(
                 "Use the custom profiles in .cursor/agents/",
-                "Use the custom profiles in cursor-plugin/agents/",
+                "Use the custom profiles in agents/",
             )
             expected[f"agents/{path.name}"] = content.encode("utf-8")
         if not source_rule.is_file():
@@ -58,7 +59,7 @@ def build_cursor_components(root: Path = ROOT, destination: Path | None = None, 
 
         if check:
             if not destination.is_dir():
-                return [f"generated Cursor plugin directory is missing: {destination}"]
+                return [f"generated plugin directory is missing: {destination}"]
             actual = {
                 path.relative_to(destination).as_posix()
                 for path in destination.rglob("*")
