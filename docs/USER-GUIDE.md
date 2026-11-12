@@ -35,7 +35,7 @@ agy plugin uninstall ai-agent
 
 After updating, restart Antigravity and start a new session to load the updated agent definition. Check `agy plugin list --json` and `agy agents`. In the Antigravity App select Team Orchestrator using the agent selector (or Customizations > Installed > ai-agent > Agents). Do not type `@team-orchestrator` in the App composer; its `@` search does not select primary agents. In the CLI, use `agy --agent team-orchestrator` from the product repository root.
 
-## 3. Install Codex, Copilot, or Claude Code adapter
+## 3. Install Codex, Copilot, Claude Code, or Cursor adapters
 
 For non-Antigravity runtimes, clone the ai-agent repository and install the adapter into the target project. Preview changes first:
 
@@ -44,7 +44,7 @@ python .\scripts\install_adapter.py --adapter all --target ..\my-project --dry-r
 python .\scripts\install_adapter.py --adapter all --target ..\my-project
 ~~~
 
-The all option installs Codex, Copilot, and Claude Code together; use codex, copilot, or claude-code to install only one runtime. The installer preserves existing root instructions, avoids overwriting unmanaged conflicting profiles/skills, and records ownership under .agent-ecosystem/adapters/. See [Native Runtime Adapters](adapters/README.md) for details. Start a new runtime session after installation and run the capability-smoke-test skill where available.
+The all option installs Codex, Copilot, Claude Code, and Cursor together; use codex, copilot, claude-code, or cursor to install only one runtime. The installer preserves existing root instructions, avoids overwriting unmanaged conflicting profiles/skills, and records ownership under .agent-ecosystem/adapters/. See [Native Runtime Adapters](adapters/README.md) for details. Start a new runtime session after installation and run the capability-smoke-test skill where available.
 
 ## 4. Open the correct workspace
 
