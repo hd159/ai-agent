@@ -85,13 +85,13 @@ if catalog_path.is_file():
     if not re.fullmatch(r"\d+\.\d+\.\d+", release_version):
         fail("ecosystem.json version must use MAJOR.MINOR.PATCH")
     adapter_versions = catalog.get("adapters", {})
-    for adapter_id in ("antigravity", "codex", "copilot", "claude-code"):
+    for adapter_id in ("antigravity", "codex", "copilot", "claude-code", "cursor"):
         adapter = adapter_versions.get(adapter_id, {})
         if not re.fullmatch(r"\d+\.\d+\.\d+", adapter.get("version", "")):
             fail(f"ecosystem.json adapter '{adapter_id}' must declare a semantic version")
     if adapter_versions.get("antigravity", {}).get("version") != "0.3.2":
         fail("Antigravity adapter version must remain 0.3.2")
-    for adapter_id in ("codex", "copilot", "claude-code"):
+    for adapter_id in ("codex", "copilot", "claude-code", "cursor"):
         if adapter_versions.get(adapter_id, {}).get("version") != release_version:
             fail(f"ecosystem.json adapter '{adapter_id}' version must match ecosystem release {release_version}")
     plugin_manifest_path = ROOT / "plugin.json"
@@ -178,6 +178,7 @@ required = [
     "docs/adapters/copilot/README.md",
     "docs/adapters/codex/README.md",
     "docs/adapters/claude-code/README.md",
+    "docs/adapters/cursor/README.md",
     "docs/adapters/antigravity/README.md",
     "docs/adapters/README.md",
 ]
