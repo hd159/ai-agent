@@ -302,6 +302,11 @@ def _safe_target(target: Path, relative: str) -> Path:
     if rel.parts and ":" in rel.parts[0]:
         raise ValueError(f"Unsafe generated path: {relative}")
     candidate = target.joinpath(*rel.parts)
+    cursor = target
+    for part in rel.parts:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise ValueError(f"Generated path contains a symlink: {relative}")
     resolved = candidate.resolve(strict=False)
     if resolved != target and target not in resolved.parents:
         raise ValueError(f"Generated path escapes target through a symlink: {relative}")
@@ -333,6 +338,10 @@ def install_adapter(
     if adapter not in ADAPTERS:
         raise ValueError(f"Unsupported adapter '{adapter}'. Choose from: {', '.join(ADAPTERS)}")
     target = target.resolve()
+    if target.exists() and not target.is_dir():
+        raise ValueError(f"Target project path is not a directory: {target}")
+    if not target.exists() and not dry_run and not uninstall:
+        target.mkdir(parents=True, exist_ok=True)
     registry = _safe_target(target, f".agent-ecosystem/adapters/{adapter}.json")
 
     if uninstall:
@@ -407,6 +416,9 @@ def install_adapter(
                 conflicts.append(f"{relative}: symlink detected; left untouched")
                 continue
             if relative == instruction_file:
+                if destination.exists() and not destination.is_file():
+                    conflicts.append(f"{relative}: destination exists and is not a regular file; left untouched")
+                    continue
                 existing = destination.read_text(encoding="utf-8") if destination.is_file() else ""
                 try:
                     merged = _merge_managed_block(existing, source.read_text(encoding="utf-8"))
