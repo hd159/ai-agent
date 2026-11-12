@@ -94,3 +94,30 @@ python .\scripts\validate_capabilities.py
 Then select each of the seven agents in a fresh Antigravity session and invoke `/capability-smoke-test`. The skill calls real file, terminal and (if connected) authorized read-only MCP tools. Record results separately for every agent. If MCP is not configured, mark it not configured; do not count it as a pass. The smoke test checks one skill's activation, not all 19 skill implementations.
 
 Static checks cannot prove host tool permissions, account entitlements or MCP connectivity. Antigravity's bundled-plugin documentation and generic custom-subagent documentation have different default semantics for omitted `tools`; inspect actual runtime behavior if the same installed agent works in one surface but not another.
+
+
+## 8. Mandatory preflight before work
+
+Run `/capability-smoke-test` in the exact agent/session/workspace that will
+perform the task. The skill derives task-specific requirements and probes real
+read, write, terminal, MCP and delegation operations as applicable.
+
+Use these result states:
+
+| State | Meaning |
+|---|---|
+| `available_verified` | A real operation succeeded |
+| `exposed_but_denied` | Tool exists; host denied the operation |
+| `not_exposed` | No matching tool exists in this runtime |
+| `not_configured` | Required MCP/server integration is absent |
+| `not_required` | Task does not need this capability |
+| `not_tested` | No real probe was possible |
+
+Do not dispatch or start implementation that depends on anything except
+`available_verified`. Keep it blocked, continue safe read-only analysis, and
+tell the user exactly which operation failed and what host-side change is
+needed. Re-run the failed probe after the user changes the environment.
+
+The framework can detect and gate missing capabilities; it cannot grant
+Antigravity permissions or bypass sandbox/approval controls. A capability
+result is scoped to that agent, session, workspace and permission context.

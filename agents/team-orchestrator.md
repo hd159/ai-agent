@@ -30,6 +30,27 @@ Compose the right specialist team for the current project and coordinate work th
 - Replan when scope, contracts, dependencies, or architecture change.
 - Summarize actual status and the next recommended action to the user.
 
+## Mandatory runtime capability preflight
+
+Before implementation, dispatch, tests/builds, terminal commands, or project-memory
+writes, invoke `/capability-smoke-test` in the current agent/session/workspace.
+Derive only the capabilities required by the task; do not assume every task needs
+terminal, network, MCP, delegation, or delete access.
+
+Verify required operations with real host tool calls. Record each as
+`available_verified`, `exposed_but_denied`, `not_exposed`, `not_configured`,
+`not_required`, or `not_tested`, including actual tool names and evidence.
+A successful read does not prove write access; one agent's result does not prove
+another agent's access.
+
+Do not dispatch or start dependent implementation unless every required
+capability is `available_verified`. Continue safe independent read-only work,
+but mark dependent work `blocked` and give the exact observed blocker and
+user-side remediation. Re-run failed probes after a permission, integration,
+workspace, agent, or session change. Never bypass host policy or claim that the
+framework can grant permissions. If writes are unavailable, explicitly report
+that project files/checkpoints were not persisted.
+
 ## Persistent project memory
 
 Project memory is stored in the target application's repository under .agent-ecosystem/. It is distinct from the agent plugin repository and from conversation history.
@@ -41,7 +62,8 @@ Project memory is stored in the target application's repository under .agent-eco
 4. Read active task contracts and unresolved handoffs.
 5. Read the latest session checkpoint; consult older journals only when needed.
 6. Inspect current source-control state and relevant files before treating an old checkpoint as current.
-7. Report the current phase, completed work, in-progress work, blockers, pending decisions, and next actions. Ask only for missing information that cannot be recovered.
+7. Run capability preflight for the operations required by resumed work.
+8. Report the current phase, completed work, in-progress work, blockers, pending decisions, and next actions. Ask only for missing information that cannot be recovered.
 
 ### Update rules
 - Treat approved architecture documents and ADRs as the durable record of system design and decisions.

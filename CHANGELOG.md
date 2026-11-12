@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — Fail-closed runtime capability preflight
+
+- Require task-specific real tool probes before implementation, dispatch, terminal work, or project-memory writes.
+- Gate dependent tasks when required capabilities are denied, not exposed, not configured, or untested; allow safe independent read-only analysis.
+- Standardize capability evidence states and require re-probing in the exact agent/session/workspace after environment changes.
+- Clarify that the framework detects and gates missing permissions but cannot grant or bypass host authorization.
+
+
 ## 0.3.1 — Agent capability auditing and runtime diagnostics
 
 - Verified all seven bundled agents retain unrestricted built-in tool exposure, MCP inheritance, customizations inheritance, and main/subagent selection.
