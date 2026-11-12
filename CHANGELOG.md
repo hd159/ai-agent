@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 — Hybrid multi-runtime adapters
+
+- Add native Codex CLI, GitHub Copilot CLI / VS Code, and Claude Code adapters generated from the existing canonical agent and skill sources.
+- Preserve the Antigravity plugin at version 0.3.2, including the explicit 13-tool manifest, commandExecutionPolicy: auto, and existing install command.
+- Add native agent profile generation: Codex TOML, Copilot Markdown agent profiles, and Claude Code subagents.
+- Generate native instruction files and install all 19 shared skills into each runtime's supported project skill directory.
+- Add safe project installer with dry-run, managed instruction blocks, conflict protection, update ownership registry, and uninstall.
+- Add native adapter validation and cross-platform installer tests.
+- Expand CI validation to Windows, macOS, and Linux across Python 3.10, 3.11, and 3.12.
+- Keep project memory and task/handoff/verification contracts shared across runtimes.
+
 ## 0.3.2 — Explicit Antigravity runtime tool access
 
 - Declare the exact 13 built-in Antigravity tools in all seven canonical agent manifests.
