@@ -26,6 +26,12 @@ class RuntimePreflightContractTests(unittest.TestCase):
         self.assertNotIn("Mode B — Native delegation unavailable", source)
         self.assertIn("Do not switch to a planning-only mode", source)
         self.assertIn("only when the user explicitly asks", source)
+        self.assertNotIn("within its role", (ROOT / "docs/ORCHESTRATION-WORKFLOW.md").read_text())
+        self.assertNotIn("within its role", (ROOT / "docs/architecture/ORCHESTRATION-SPEC.md").read_text())
+        self.assertIn("absorbing the necessary specialist execution responsibilities", (ROOT / "docs/ORCHESTRATION-WORKFLOW.md").read_text())
+        readme = (ROOT / "README.md").read_text()
+        self.assertNotIn("otherwise it prepares dispatch-ready task contracts", readme)
+        self.assertIn("does not automatically replace implementation with task contracts", readme)
 
     def test_constitution_requires_runtime_evidence(self):
         source = (ROOT / "modules/agent-constitution/rules/AGENTS.md").read_text()
