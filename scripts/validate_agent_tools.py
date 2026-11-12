@@ -36,10 +36,10 @@ UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, uni
 def parse_frontmatter(path: Path) -> dict:
     text = path.read_text(encoding="utf-8")
     relative = path.relative_to(ROOT)
-    if not text.startswith("---\\n"):
+    if not text.startswith("---\n"):
         errors.append(f"{relative}: missing YAML frontmatter")
         return {}
-    end = text.find("\\n---", 4)
+    end = text.find("\n---", 4)
     if end < 0:
         errors.append(f"{relative}: unterminated YAML frontmatter")
         return {}
