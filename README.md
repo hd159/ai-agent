@@ -174,7 +174,7 @@ The helper invokes exactly one command: `agy plugin install https://github.com/h
 
 ## Team Orchestration
 
-`teams/saas-mvp/team.json` describes the logical team composition, workflow stages, approval gates, and execution constraints. It is a coordination contract, not a distributed scheduler. The Team Orchestrator uses native subagent delegation only when the installed Antigravity runtime supports it; otherwise it prepares dispatch-ready task contracts and reports that automatic dispatch is unavailable.
+`teams/saas-mvp/team.json` describes the logical team composition, workflow stages, approval gates, and execution constraints. It is a coordination contract, not a distributed scheduler. The Team Orchestrator uses native subagent delegation when the installed Antigravity runtime supports it. If delegation is unavailable, it executes bounded implementation directly when its required capabilities are verified and the work is within the approved project scope. If a required capability is unavailable or denied, it blocks the dependent implementation and reports the exact runtime blocker; it does not automatically replace implementation with task contracts or execution plans. Planning and handoff artifacts are created only when explicitly requested.
 
 Start a project by asking Team Orchestrator to read `.agent-ecosystem/team.json` and `.agent-ecosystem/PROJECT_CONTEXT.md`. Bootstrap project artifacts with:
 
