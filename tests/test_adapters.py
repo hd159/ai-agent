@@ -21,6 +21,7 @@ from adapter_support import (
     BEGIN_MARKER,
     END_MARKER,
     LAYOUTS,
+    build_adapter,
     build_all_adapters,
     install_adapter,
 )
@@ -45,6 +46,15 @@ class AdapterBuildTests(unittest.TestCase):
             self.assertEqual(len(manifest["agents"]), 7)
             self.assertEqual(len(manifest["skills"]), 19)
             self.assertTrue((bundle / LAYOUTS[adapter]["instructions"]).is_file())
+
+    def test_builder_refuses_to_delete_unmanaged_output_directory(self):
+        destination = self.output / "codex"
+        destination.mkdir(parents=True)
+        keep = destination / "user-file.txt"
+        keep.write_text("preserve me", encoding="utf-8")
+        with self.assertRaises(ValueError):
+            build_adapter(ROOT, "codex", destination)
+        self.assertEqual(keep.read_text(encoding="utf-8"), "preserve me")
 
     def test_codex_profiles_are_valid_toml(self):
         build_all_adapters(ROOT, self.output)
