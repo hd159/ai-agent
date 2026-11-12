@@ -47,7 +47,10 @@ Build output is written to dist/ and is reproducible. The adapter validator buil
 Use scripts/install_adapter.py with an explicit adapter and target project:
 
 ~~~powershell
-python .\scripts\install_adapter.py --adapter codex --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter all --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter all --target ..\my-project
+
+# Or install one runtime only
 python .\scripts\install_adapter.py --adapter codex --target ..\my-project
 python .\scripts\install_adapter.py --adapter copilot --target ..\my-project
 python .\scripts\install_adapter.py --adapter claude-code --target ..\my-project
