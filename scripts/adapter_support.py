@@ -303,10 +303,12 @@ def _safe_target(target: Path, relative: str) -> Path:
         raise ValueError(f"Unsafe generated path: {relative}")
     candidate = target.joinpath(*rel.parts)
     cursor = target
-    for part in rel.parts:
+    for index, part in enumerate(rel.parts):
         cursor = cursor / part
         if cursor.is_symlink():
             raise ValueError(f"Generated path contains a symlink: {relative}")
+        if index < len(rel.parts) - 1 and cursor.exists() and not cursor.is_dir():
+            raise ValueError(f"Generated path parent is not a directory: {relative}")
     resolved = candidate.resolve(strict=False)
     if resolved != target and target not in resolved.parents:
         raise ValueError(f"Generated path escapes target through a symlink: {relative}")
@@ -408,6 +410,10 @@ def install_adapter(
 
         source_files = sorted(path for path in bundle.rglob("*") if path.is_file() and path.name != "adapter.json")
         current_relatives = {path.relative_to(bundle).as_posix() for path in source_files}
+        # Preflight every parent path before the first write so a malformed project
+        # directory cannot leave a partially installed, unregistered adapter.
+        for relative in current_relatives:
+            _safe_target(target, relative)
 
         for source in source_files:
             relative = source.relative_to(bundle).as_posix()
