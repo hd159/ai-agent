@@ -36,7 +36,7 @@
       "instructions_file": ".github/copilot-instructions.md",
       "agent_directory": ".github/agents/",
       "agent_extension": ".agent.md",
-      "agent_frontmatter": ["name", "description"],
+      "agent_frontmatter": ["name", "description", "include-custom-instructions"],
       "skill_directory": ".agents/skills/",
       "delegation": "Surface-dependent; probe the active Copilot host. GitHub.com custom agents do not imply subagent support."
     },
