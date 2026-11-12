@@ -44,7 +44,7 @@ python .\scripts\install_adapter.py --adapter all --target ..\my-project --dry-r
 python .\scripts\install_adapter.py --adapter all --target ..\my-project
 ~~~
 
-Choose copilot or claude-code for the other native formats. The installer preserves existing root instructions, avoids overwriting unmanaged conflicting profiles/skills, and records ownership under .agent-ecosystem/adapters/. See [Native Runtime Adapters](adapters/README.md) for details. Start a new runtime session after installation and run the capability-smoke-test skill where available.
+The all option installs Codex, Copilot, and Claude Code together; use codex, copilot, or claude-code to install only one runtime. The installer preserves existing root instructions, avoids overwriting unmanaged conflicting profiles/skills, and records ownership under .agent-ecosystem/adapters/. See [Native Runtime Adapters](adapters/README.md) for details. Start a new runtime session after installation and run the capability-smoke-test skill where available.
 
 ## 4. Open the correct workspace
 
