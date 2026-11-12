@@ -87,8 +87,11 @@ if catalog_path.is_file():
     plugin_manifest_path = ROOT / "plugin.json"
     if plugin_manifest_path.is_file():
         plugin_manifest = json.loads(plugin_manifest_path.read_text(encoding="utf-8"))
-        if plugin_manifest.get("version") != release_version:
-            fail("plugin.json version must match ecosystem.json")
+        antigravity_version = catalog.get("adapters", {}).get("antigravity", {}).get("version", release_version)
+        if plugin_manifest.get("version") != antigravity_version:
+            fail("plugin.json version must match ecosystem.adapters.antigravity.version")
+        if antigravity_version != "0.3.2":
+            fail("Antigravity adapter must remain backward-compatible at version 0.3.2")
     for module in catalog.get("modules", []):
         if module.get("version") != release_version:
             fail(f"ecosystem.json module '{module.get('id')}' version must match release {release_version}")
