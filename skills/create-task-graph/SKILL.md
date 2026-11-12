@@ -7,6 +7,8 @@ description: >-
 
 # Create Task Graph
 
+Use this skill only when the user explicitly requests task decomposition/planning or when an approved execution workflow genuinely requires task contracts. Never invoke it as a fallback merely because direct write or native delegation is unavailable. If implementation is blocked by missing runtime capability, report the blocker instead of generating substitute task packages.
+
 1. Read approved scope, architecture, contracts, and team manifest.
 2. Split work into bounded deliverables.
 3. Assign one owner to each task.
