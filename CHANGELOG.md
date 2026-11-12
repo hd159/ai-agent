@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — Dual Codex and Cursor plugin marketplaces
+
+- Add separate native marketplace catalogs at `.agents/plugins/marketplace.json` and `.cursor-plugin/marketplace.json`.
+- Package both platform manifests in one nested plugin directory, avoiding collision with the backward-compatible Antigravity root `plugin.json`.
+- Bundle 19 shared skills for Codex and Cursor; package seven native Cursor agents and one always-applied MDC rule.
+- Add deterministic Cursor marketplace component generation, ownership-safe updates, validators, unit tests, and CI checks.
+- Document Codex Git subdirectory marketplace setup (including leaving sparse paths empty) and Cursor team/local marketplace installation.
+- Keep Codex custom-agent profiles in the existing native adapter installer because Codex plugin packages expose skills/MCP/hooks rather than Cursor-style agent and rule components.
+
+
 ## 0.4.0 — Hybrid multi-runtime adapters
 
 - Add native Codex local-client, GitHub Copilot CLI / VS Code / GitHub.com custom-agent, Claude Code, and Cursor adapters generated from the existing canonical agent and skill sources.
