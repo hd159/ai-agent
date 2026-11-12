@@ -138,6 +138,21 @@ class AdapterInstallerTests(unittest.TestCase):
         self.assertFalse((self.project / ".claude/agents/backend-agent.md").exists())
         self.assertFalse((self.project / ".agent-ecosystem/adapters/claude-code.json").exists())
 
+    def test_all_runtime_adapters_can_coexist_in_one_project(self):
+        for adapter in ADAPTERS:
+            result = install_adapter(adapter, self.project, root=ROOT)
+            self.assertEqual(result["conflicts"], [], msg=f"{adapter}: {result['conflicts']}")
+
+        self.assertTrue((self.project / ".agents/skills/capability-smoke-test/SKILL.md").is_file())
+        self.assertTrue((self.project / ".github/skills/capability-smoke-test/SKILL.md").is_file())
+        self.assertTrue((self.project / ".claude/skills/capability-smoke-test/SKILL.md").is_file())
+
+        uninstall_adapter = install_adapter("codex", self.project, root=ROOT, uninstall=True)
+        self.assertEqual(uninstall_adapter["conflicts"], [])
+        self.assertFalse((self.project / ".agents/skills/capability-smoke-test/SKILL.md").exists())
+        self.assertTrue((self.project / ".github/skills/capability-smoke-test/SKILL.md").is_file())
+        self.assertTrue((self.project / ".claude/skills/capability-smoke-test/SKILL.md").is_file())
+
     def test_dry_run_does_not_create_project_files(self):
         result = install_adapter("copilot", self.project, root=ROOT, dry_run=True)
         self.assertTrue(result["dry_run"])
