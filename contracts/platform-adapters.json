@@ -71,10 +71,29 @@
       ],
       "skill_directory": ".claude/skills/",
       "delegation": "Use the native Agent mechanism only when exposed and authorized."
+    },
+    "cursor": {
+      "version": "0.4.0",
+      "status": "supported",
+      "surfaces": [
+        "Cursor Editor",
+        "Cursor CLI",
+        "Cursor Cloud Agents"
+      ],
+      "instructions_file": ".cursor/rules/ai-agent-ecosystem.mdc",
+      "instruction_mode": "exclusive-managed-file",
+      "agent_directory": ".cursor/agents/",
+      "agent_extension": ".md",
+      "agent_frontmatter": [
+        "name",
+        "description"
+      ],
+      "skill_directory": ".cursor/skills/",
+      "delegation": "Use native Cursor subagents in Editor, CLI, or Cloud Agents only when exposed and authorized."
     }
   },
   "installer_policy": {
-    "instruction_files": "Merge ecosystem instructions inside explicit managed markers; preserve user-authored content outside the markers.",
+    "instruction_files": "Merge ecosystem instructions inside explicit managed markers for Codex, Copilot, and Claude Code; install the Cursor MDC rule as a separate exclusively managed file so required frontmatter remains at the start of the file.",
     "agent_and_skill_files": "Never overwrite an existing unmanaged file with different content. Update only files recorded in .agent-ecosystem/adapters/<adapter>.json.",
     "uninstall": "Remove only registered managed files and managed instruction blocks. Preserve unrelated project files and project memory.",
     "dry_run": "Must not create or modify any project file."
