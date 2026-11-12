@@ -45,7 +45,7 @@ class CapabilityAuditTests(unittest.TestCase):
         self.assertTrue(any("13-tool policy list" in e for e in self.errors()))
 
     def test_rejects_missing_tool_allowlist(self):
-        self.update_agent(lambda s: s.replace("tools:\\n", ""))
+        self.update_agent(lambda s: s.replace("tools:\n", ""))
         self.assertTrue(any("13-tool policy list" in e for e in self.errors()))
 
     def test_requires_command_execution_auto(self):
