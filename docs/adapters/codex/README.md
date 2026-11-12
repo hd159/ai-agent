@@ -1,6 +1,6 @@
 # Codex Adapter — v0.4.0
 
-The Codex adapter generates native project-scoped Codex CLI configuration from the shared agent and skill sources.
+The Codex adapter generates native project-scoped configuration for local Codex clients that discover project AGENTS.md, .codex/agents/, and .agents/skills/ (CLI, desktop app, and IDE extension). Verify the exact client version and workspace discovery behavior after installation.
 
 ## Generated layout
 
@@ -49,7 +49,7 @@ python .\scripts\install_adapter.py --adapter codex --target ..\my-project --uni
 
 Start a new Codex CLI session in the target project. Confirm that AGENTS.md is loaded, inspect the available custom agents, and run the capability-smoke-test skill. Test read, write, shell, MCP, and delegation independently. A generated TOML profile does not enable a permission or guarantee that a subagent can be spawned.
 
-The adapter targets Codex CLI project configuration. Other Codex surfaces may have different discovery and delegation behavior.
+Current local Codex releases expose subagent workflows in the desktop app, CLI, and IDE extension. Custom project agents are loaded from .codex/agents/. Verify the exact client version and permissions in the active session.
 
 ## Native references
 
