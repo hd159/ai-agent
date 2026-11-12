@@ -57,7 +57,7 @@ def build(destination: Path) -> list[str]:
                 rule_count += 1
 
     catalog = json.loads((ROOT / "ecosystem.json").read_text(encoding="utf-8"))
-    version = catalog["version"]
+    version = catalog.get("adapters", {}).get("antigravity", {}).get("version", catalog["version"])
     manifest = {
         "$schema": "https://antigravity.google/schemas/v1/plugin.json",
         "name": "ai-agent",
