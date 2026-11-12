@@ -1,7 +1,7 @@
 # Ecosystem Architecture
 
-**Status:** Accepted for v0.2.0  
-**Scope:** Reusable specialist agents, portable skills, project teams, and Antigravity distribution.
+**Status:** Accepted for v0.4.0  
+**Scope:** Reusable specialist agents, portable skills, project teams, shared project memory, and native multi-runtime distribution.
 
 ## 1. Goals
 
@@ -17,7 +17,7 @@
 - A distributed scheduler with durable remote queues.
 - Automatic GitHub repository creation or publishing is outside the runtime orchestration scope.
 - Automatic deployment to production.
-- Guaranteed cross-platform parity for every plugin component.
+- Guaranteed cross-platform parity for every runtime feature or delegation surface.
 
 ## 3. Logical layers
 
@@ -81,7 +81,7 @@ The orchestrator:
 
 ### Layer F — Platform adapters
 
-Antigravity is the first adapter. Portable skills and canonical contracts remain independent of Antigravity-specific manifests.
+Antigravity remains the backward-compatible plugin adapter. Codex CLI, GitHub Copilot CLI / supported VS Code agent mode, and Claude Code CLI are generated from the same canonical role instructions and skills. Native tool permissions and delegation remain runtime-specific.
 
 ## 4. Independent agent plugin contract
 
@@ -138,6 +138,20 @@ The orchestrator may continue discovery and preparation while waiting, but must 
 
 An agent response saying "done" is not evidence by itself.
 
-## 9. Distribution topology (v0.2.0)
+## 9. Distribution topology (v0.4.0)
 
 All specialist agents, shared skills, and constitution rules are bundled into one Antigravity plugin in `hd159/ai-agent`. Canonical source modules live under `modules/<module-id>/`; the build script assembles their agents, skills, and rules into root-level directories so one `agy plugin install https://github.com/hd159/ai-agent` command installs the complete ecosystem. Team presets are logical composition manifests, not separate plugin distributions.
+
+
+## 10. Hybrid multi-runtime distribution
+
+The ecosystem uses one canonical repository. The existing Antigravity plugin remains version 0.3.2 for backward compatibility; the shared ecosystem and source modules advance to 0.4.0.
+
+The native adapter builder generates:
+- Codex CLI: AGENTS.md, .codex/agents/*.toml, and .agents/skills/.
+- GitHub Copilot CLI / supported VS Code agent mode: .github/copilot-instructions.md, .github/agents/*.agent.md, and .agents/skills/.
+- Claude Code CLI: CLAUDE.md, .claude/agents/*.md, and .claude/skills/.
+
+The installer merges root instructions inside explicit managed markers, records installer-owned paths under .agent-ecosystem/adapters/, refuses to overwrite unmanaged conflicting profiles or skills, and supports safe uninstall. Generated adapter files are derived artifacts, not new sources of truth.
+
+See [Multi-Platform Adapter Architecture](MULTI-PLATFORM-ADAPTERS.md) for build, validation, runtime boundaries, and versioning.
