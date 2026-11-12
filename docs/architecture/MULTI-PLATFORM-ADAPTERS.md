@@ -2,7 +2,7 @@
 
 ## Goal
 
-Keep one canonical AI Agent Ecosystem repository while generating native project configuration for Antigravity, Codex, GitHub Copilot, and Claude Code. Do not maintain independent copies of agent logic or reusable skill procedures.
+Keep one canonical AI Agent Ecosystem repository while generating native project configuration for Antigravity, Codex, GitHub Copilot, Claude Code, and Cursor. Do not maintain independent copies of agent logic or reusable skill procedures.
 
 ## Source of truth
 
@@ -22,8 +22,9 @@ The adapter builder reads the canonical agent frontmatter, removes only the Anti
 | Codex local clients (CLI, desktop app, IDE extension) | AGENTS.md | .codex/agents/*.toml | .agents/skills/*/SKILL.md |
 | Copilot CLI / supported VS Code agent mode / GitHub.com custom agent assignment (no subagent delegation) | .github/copilot-instructions.md | .github/agents/*.agent.md | .github/skills/*/SKILL.md |
 | Claude Code CLI | CLAUDE.md | .claude/agents/*.md | .claude/skills/*/SKILL.md |
+| Cursor Editor / CLI / Cloud Agents | .cursor/rules/ai-agent-ecosystem.mdc | .cursor/agents/*.md | .cursor/skills/*/SKILL.md |
 
-Codex TOML uses name, description, and developer_instructions. Copilot profiles use native Markdown frontmatter with name, description, and include-custom-instructions: true so Copilot subagents load repository instructions; Claude profiles use name and description. Tool restrictions are omitted from non-Antigravity profiles so each runtime applies its own configured tool and permission policy. Copilot skills use .github/skills to keep adapter-owned skill files isolated when Codex and Copilot are both installed in the same project.
+Codex TOML uses name, description, and developer_instructions. Copilot profiles use native Markdown frontmatter with name, description, and include-custom-instructions: true so Copilot subagents load repository instructions; Claude profiles use name and description. Tool restrictions are omitted from non-Antigravity profiles so each runtime applies its own configured tool and permission policy. Copilot skills use .github/skills to keep adapter-owned skill files isolated when Codex and Copilot are both installed in the same project. Cursor uses .cursor/skills and Markdown subagent profiles in .cursor/agents. Its always-applied project rule is an MDC file with description and alwaysApply: true. The rule is installed as an exclusively managed file rather than merged with user content, because MDC frontmatter must remain at the beginning of the file.
 
 Copilot support is surface-dependent. Custom-agent and skill support does not imply subagent support on every surface; the current feature matrix does not list subagents for GitHub.com. The generated adapter supports Copilot CLI and supported VS Code agent mode with native delegation where enabled. On GitHub.com, the same profile and skills can be selected for custom-agent execution, but it cannot orchestrate native subagents there.
 
@@ -40,7 +41,7 @@ python .\scripts\validate_capabilities.py
 python -m unittest discover -s tests -v
 ~~~
 
-Build output is written to dist/ and is reproducible. The adapter validator builds into a temporary directory and checks native layouts, agent inventories, skill payload parity, and Codex TOML parsing.
+Build output is written to dist/ and is reproducible. The adapter validator builds into a temporary directory and checks native layouts, agent inventories, skill payload parity, Codex TOML parsing, and Cursor MDC frontmatter.
 
 ## Safe project installation
 
@@ -54,9 +55,10 @@ python .\scripts\install_adapter.py --adapter all --target ..\my-project
 python .\scripts\install_adapter.py --adapter codex --target ..\my-project
 python .\scripts\install_adapter.py --adapter copilot --target ..\my-project
 python .\scripts\install_adapter.py --adapter claude-code --target ..\my-project
+python .\scripts\install_adapter.py --adapter cursor --target ..\my-project
 ~~~
 
-The installer uses explicit managed markers in root instruction files. It records installed paths in .agent-ecosystem/adapters/<adapter>.json. On updates it replaces only registered files; unowned collisions with different content are reported and left untouched. Uninstall removes only registered files and the managed instruction block. Dry-run performs no writes.
+The installer uses explicit managed markers in merged root instruction files for Codex, Copilot, and Claude Code. Cursor's MDC rule is a standalone exclusively managed file to preserve frontmatter at byte zero. It records installed paths in .agent-ecosystem/adapters/<adapter>.json. On updates it replaces only registered files; unowned collisions are reported and left untouched. Uninstall removes only registered files and managed instruction blocks. Dry-run performs no writes.
 
 ## Shared memory and concurrency
 
@@ -76,7 +78,7 @@ The Team Orchestrator remains the single writer of execution/state.json. Special
 
 - Ecosystem release: 0.4.0.
 - Antigravity plugin: remains 0.3.2 for backward compatibility.
-- Codex, Copilot, and Claude Code adapter manifests: 0.4.0.
+- Codex, Copilot, Claude Code, and Cursor adapter manifests: 0.4.0.
 - Canonical module versions track the ecosystem release.
 - The root plugin builder reads adapters.antigravity.version rather than assuming every adapter shares the ecosystem version.
 
