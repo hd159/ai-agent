@@ -80,7 +80,7 @@ Two distinct reviews:
 
 ## 7. Runtime behavior
 
-If subagent invocation is unavailable, generate dispatch-ready task files and stop at ready_for_dispatch. Never simulate delegation or invent results.
+If subagent invocation is unavailable, the Orchestrator may perform the work directly only if its own required capabilities are verified and the task is within its role and approved scope. Otherwise mark the dependent work blocked and report the exact missing/denied capability and remediation. Do not generate dispatch-ready task files, dependency graphs, full-code specifications, or handoff packages as an automatic fallback. Create such artifacts only when the user explicitly requests planning or handoff deliverables. Never simulate delegation or invent results.
 
 ## 8. Persistent memory lifecycle
 
