@@ -2,7 +2,7 @@
 
 **Ecosystem:** `0.4.0` — Hybrid multi-runtime agent framework  
 **Antigravity plugin:** `0.3.2` (backward-compatible)  
-**Runtimes:** Antigravity, Codex CLI, GitHub Copilot CLI / VS Code, Claude Code CLI  
+**Runtimes:** Antigravity, Codex (CLI / desktop / IDE), GitHub Copilot, Claude Code CLI  
 **License:** MIT
 
 A complete multi-agent engineering team maintained in **one canonical GitHub repository**. It preserves the installable Antigravity plugin and generates native agent profiles, instructions, and reusable skills for Codex, GitHub Copilot, and Claude Code.
