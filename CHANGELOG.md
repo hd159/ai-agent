@@ -2,12 +2,12 @@
 
 ## 0.4.0 — Hybrid multi-runtime adapters
 
-- Add native Codex local-client, GitHub Copilot CLI / VS Code / GitHub.com custom-agent, and Claude Code adapters generated from the existing canonical agent and skill sources.
+- Add native Codex local-client, GitHub Copilot CLI / VS Code / GitHub.com custom-agent, Claude Code, and Cursor adapters generated from the existing canonical agent and skill sources.
 - Preserve the Antigravity plugin at version 0.3.2, including the explicit 13-tool manifest, commandExecutionPolicy: auto, and existing install command.
-- Add native agent profile generation: Codex TOML, Copilot Markdown agent profiles, and Claude Code subagents.
-- Generate native instruction files and install all 19 shared skills into each runtime's supported project skill directory.
+- Add native agent profile generation: Codex TOML, Copilot Markdown agent profiles, Claude Code subagents, and Cursor custom subagents with MDC project rules.
+- Generate native instruction files and install all 19 shared skills into each runtime's supported project skill directory, including Cursor's .cursor/skills.
 - Add safe project installer with dry-run, managed instruction blocks, conflict protection, update ownership registry, and uninstall.
-- Add native adapter validation and cross-platform installer tests.
+- Add native adapter validation for Cursor MDC metadata and cross-platform installer tests for exclusive Cursor rule ownership.
 - Expand CI validation across Windows, macOS, and Linux; test Python 3.10, 3.11, and 3.12 on Linux plus Python 3.12 on Windows and macOS.
 - Keep project memory and task/handoff/verification contracts shared across runtimes.
 
