@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+PACKAGE = "plugins/ai-agent-ecosystem"
 
 
 def validate(root: Path = ROOT) -> list[str]:
@@ -24,24 +24,27 @@ def validate(root: Path = ROOT) -> list[str]:
             return {}
 
     codex_market = load(".agents/plugins/marketplace.json")
-    codex_plugin = load(".codex-plugin/plugin.json")
+    codex_plugin = load(f"{PACKAGE}/.codex-plugin/plugin.json")
     cursor_market = load(".cursor-plugin/marketplace.json")
-    cursor_plugin = load(".cursor-plugin/plugin.json")
+    cursor_plugin = load(f"{PACKAGE}/.cursor-plugin/plugin.json")
     catalog = load("ecosystem.json")
     expected_version = catalog.get("version")
 
-    if codex_market.get("name") != "ai-agent-ecosystem":
-        errors.append("Codex marketplace name mismatch")
     codex_entries = codex_market.get("plugins", [])
-    if len(codex_entries) != 1:
-        errors.append("Codex marketplace must expose exactly one ecosystem plugin")
+    if codex_market.get("name") != "ai-agent-ecosystem" or len(codex_entries) != 1:
+        errors.append("Codex marketplace must expose exactly one ai-agent-ecosystem plugin")
     else:
         entry = codex_entries[0]
+        source = entry.get("source", {})
         if entry.get("name") != "ai-agent-ecosystem":
             errors.append("Codex marketplace plugin name mismatch")
-        source = entry.get("source", {})
-        if source.get("source") != "url" or source.get("url") != "https://github.com/hd159/ai-agent":
-            errors.append("Codex marketplace must reference the repository-root plugin using a Git URL source")
+        if (
+            source.get("source") != "git-subdir"
+            or source.get("url") != "https://github.com/hd159/ai-agent"
+            or source.get("path") != f"./{PACKAGE}"
+            or source.get("ref") != "main"
+        ):
+            errors.append("Codex marketplace must use the documented Git subdirectory source")
         policy = entry.get("policy", {})
         if policy.get("installation") != "AVAILABLE" or policy.get("authentication") != "ON_INSTALL":
             errors.append("Codex marketplace installation/authentication policy mismatch")
@@ -53,42 +56,36 @@ def validate(root: Path = ROOT) -> list[str]:
     if codex_plugin.get("version") != expected_version:
         errors.append("Codex plugin version does not match ecosystem.json")
     if codex_plugin.get("skills") != "./skills/":
-        errors.append("Codex plugin must package the canonical root skills directory")
-    interface = codex_plugin.get("interface", {})
-    if interface.get("displayName") != "AI Agent Ecosystem":
-        errors.append("Codex plugin interface displayName mismatch")
-    if not (root / "skills").is_dir():
+        errors.append("Codex plugin must package skills from ./skills/")
+    if not (root / PACKAGE / "skills").is_dir():
         errors.append("Codex plugin skills directory is missing")
+    codex_interface = codex_plugin.get("interface", {})
+    if codex_interface.get("displayName") != "AI Agent Ecosystem":
+        errors.append("Codex plugin interface displayName mismatch")
 
-    if cursor_market.get("name") != "ai-agent-ecosystem":
-        errors.append("Cursor marketplace name mismatch")
-    owner = cursor_market.get("owner", {})
-    if not owner.get("name"):
-        errors.append("Cursor marketplace owner.name is required")
     cursor_entries = cursor_market.get("plugins", [])
-    if len(cursor_entries) != 1:
-        errors.append("Cursor marketplace must expose exactly one ecosystem plugin")
+    if cursor_market.get("name") != "ai-agent-ecosystem" or len(cursor_entries) != 1:
+        errors.append("Cursor marketplace must expose exactly one ai-agent-ecosystem plugin")
     else:
         entry = cursor_entries[0]
-        if entry.get("name") != "ai-agent-ecosystem" or entry.get("source") != ".":
-            errors.append("Cursor marketplace must point to the root Cursor plugin using source='.'")
+        if entry.get("name") != "ai-agent-ecosystem" or entry.get("source") != PACKAGE:
+            errors.append("Cursor marketplace must point to the nested native Cursor plugin")
         if entry.get("version") != expected_version:
             errors.append("Cursor marketplace entry version mismatch")
+    if not cursor_market.get("owner", {}).get("name"):
+        errors.append("Cursor marketplace owner.name is required")
 
     if cursor_plugin.get("name") != "ai-agent-ecosystem":
         errors.append("Cursor plugin identity mismatch")
     if cursor_plugin.get("version") != expected_version:
         errors.append("Cursor plugin version does not match ecosystem.json")
-    for key, expected in (
-        ("agents", "./cursor-plugin/agents/"),
-        ("rules", "./cursor-plugin/rules/"),
-        ("skills", "./skills/"),
-    ):
-        if cursor_plugin.get(key) != expected:
-            errors.append(f"Cursor plugin {key} path mismatch: expected {expected}")
+    for key in ("agents", "rules", "skills"):
+        if cursor_plugin.get(key) != f"./{key}/":
+            errors.append(f"Cursor plugin {key} path must be ./{key}/")
 
-    agents_dir = root / "cursor-plugin/agents"
-    agent_files = sorted(agents_dir.glob("*.md")) if agents_dir.is_dir() else []
+    package_root = root / PACKAGE
+    agent_dir = package_root / "agents"
+    agent_files = sorted(agent_dir.glob("*.md")) if agent_dir.is_dir() else []
     expected_agents = set(load("contracts/agent-tool-policy.json").get("agents", []))
     actual_agents = {path.stem for path in agent_files}
     if actual_agents != expected_agents:
@@ -105,7 +102,7 @@ def validate(root: Path = ROOT) -> list[str]:
             if forbidden in content:
                 errors.append(f"{path.relative_to(root)}: Antigravity-only metadata leaked into Cursor plugin")
 
-    rule = root / "cursor-plugin/rules/ai-agent-ecosystem.mdc"
+    rule = package_root / "rules" / "ai-agent-ecosystem.mdc"
     if not rule.is_file():
         errors.append("Cursor plugin always-applied rule is missing")
     else:
@@ -119,11 +116,13 @@ def validate(root: Path = ROOT) -> list[str]:
 
     skills = sorted((root / "modules").glob("*/skills/*/SKILL.md"))
     expected_skills = {path.parent.name for path in skills}
-    actual_skills = {path.parent.name for path in (root / "skills").glob("*/SKILL.md")} if (root / "skills").is_dir() else set()
+    actual_skills = {
+        path.parent.name for path in (package_root / "skills").glob("*/SKILL.md")
+    } if (package_root / "skills").is_dir() else set()
     if actual_skills != expected_skills:
         errors.append(f"Marketplace skill inventory mismatch: expected={sorted(expected_skills)}, actual={sorted(actual_skills)}")
     for source in skills:
-        target = root / "skills" / source.parent.name / "SKILL.md"
+        target = package_root / "skills" / source.parent.name / "SKILL.md"
         if not target.is_file() or target.read_bytes() != source.read_bytes():
             errors.append(f"Marketplace skill payload differs from canonical source: {source.parent.name}")
 
@@ -137,7 +136,7 @@ def main() -> int:
         for error in errors:
             print("ERROR:", error)
         return 1
-    print("MARKETPLACE VALIDATION PASSED: Codex and Cursor manifests, 7 Cursor agents, 1 rule, and shared skills")
+    print("MARKETPLACE VALIDATION PASSED: Codex and Cursor manifests, 7 Cursor agents, 1 rule, and 19 shared skills")
     print("Codex plugin packages skills only; use the Codex native adapter installer for AGENTS.md and .codex/agents profiles.")
     return 0
 
