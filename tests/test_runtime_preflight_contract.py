@@ -13,7 +13,7 @@ class RuntimePreflightContractTests(unittest.TestCase):
         ):
             self.assertIn(state, skill)
         self.assertIn("do not dispatch", skill.lower())
-        self.assertIn("real host tools", skill.lower())
+        self.assertIn("actual host tools available", skill.lower())
 
     def test_orchestrator_requires_preflight_before_dispatch(self):
         source = (ROOT / "modules/team-orchestrator/agents/team-orchestrator.md").read_text()
