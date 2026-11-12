@@ -8,7 +8,7 @@ import tempfile
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
-ADAPTERS = ("codex", "copilot", "claude-code")
+ADAPTERS = ("codex", "copilot", "claude-code", "cursor")
 BEGIN_MARKER = "<!-- BEGIN AI AGENT ECOSYSTEM MANAGED INSTRUCTIONS -->"
 END_MARKER = "<!-- END AI AGENT ECOSYSTEM MANAGED INSTRUCTIONS -->"
 
@@ -16,6 +16,13 @@ LAYOUTS = {
     "codex": {"instructions": "AGENTS.md", "agents": ".codex/agents", "skills": ".agents/skills", "extension": ".toml"},
     "copilot": {"instructions": ".github/copilot-instructions.md", "agents": ".github/agents", "skills": ".github/skills", "extension": ".agent.md"},
     "claude-code": {"instructions": "CLAUDE.md", "agents": ".claude/agents", "skills": ".claude/skills", "extension": ".md"},
+    "cursor": {
+        "instructions": ".cursor/rules/ai-agent-ecosystem.mdc",
+        "agents": ".cursor/agents",
+        "skills": ".cursor/skills",
+        "extension": ".md",
+        "merge_instructions": False,
+    },
 }
 
 RUNTIME_NOTES = {
@@ -37,6 +44,13 @@ RUNTIME_NOTES = {
         "## Runtime execution and delegation\n"
         "- Use Claude Code's native Agent mechanism only when it is exposed and authorized in the current session.\n"
         "- Give each delegated task one owner, bounded paths, explicit acceptance criteria, and a handoff contract.\n"
+        "- Do not invent tool names or claim a subagent was invoked without a real invocation.\n"
+        "- Agent profiles do not grant filesystem, shell, network, MCP, or approval permissions.\n"
+    ),
+    "cursor": (
+        "## Runtime execution and delegation\n"
+        "- Use Cursor's native subagent delegation only when it is exposed and authorized in the current Editor, CLI, or Cloud Agent session.\n"
+        "- Use the custom profiles in .cursor/agents/ for specialist work and preserve bounded task ownership and handoff contracts.\n"
         "- Do not invent tool names or claim a subagent was invoked without a real invocation.\n"
         "- Agent profiles do not grant filesystem, shell, network, MCP, or approval permissions.\n"
     ),
@@ -134,7 +148,7 @@ def _common_instructions(root: Path, adapter: str) -> str:
         raise FileNotFoundError(f"Missing canonical constitution: {rule_path}")
     constitution = rule_path.read_text(encoding="utf-8").strip()
     skill_root = LAYOUTS[adapter]["skills"]
-    return (
+    content = (
         f"# AI Agent Ecosystem — {adapter}\n\n"
         "<!-- Generated from hd159/ai-agent. Edit canonical source, then rebuild. -->\n\n"
         f"{constitution}\n\n"
@@ -168,6 +182,15 @@ def _common_instructions(root: Path, adapter: str) -> str:
         "- Preserve user changes and existing project instructions. Ask before destructive, production-impacting, "
         "or out-of-scope actions.\n"
     )
+    if adapter == "cursor":
+        return (
+            "---\n"
+            "description: Shared AI Agent Ecosystem instructions for this project\n"
+            "alwaysApply: true\n"
+            "---\n\n"
+            + content
+        )
+    return content
 
 
 def _render_agent(adapter: str, name: str, description: str, body: str) -> str:
@@ -443,7 +466,7 @@ def install_adapter(
             if destination.is_symlink():
                 conflicts.append(f"{relative}: symlink detected; left untouched")
                 continue
-            if relative == instruction_file:
+            if relative == instruction_file and layout.get("merge_instructions", True):
                 if destination.exists() and not destination.is_file():
                     conflicts.append(f"{relative}: destination exists and is not a regular file; left untouched")
                     continue
@@ -504,7 +527,7 @@ def install_adapter(
             if path.is_symlink():
                 conflicts.append(f"{relative}: symlink detected; left untouched")
                 continue
-            if relative == old_registry.get("instructions_file"):
+            if relative == old_registry.get("instructions_file") and LAYOUTS[adapter].get("merge_instructions", True):
                 try:
                     updated_text, changed = _remove_managed_block(
                         path.read_bytes().decode("utf-8"),
