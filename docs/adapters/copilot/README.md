@@ -15,7 +15,6 @@ The Copilot adapter generates repository instructions, custom agent profiles, an
     qa-agent.agent.md
     team-orchestrator.agent.md
     uiux-design-agent.agent.md
-.github/
   skills/
     <skill-name>/
       SKILL.md
