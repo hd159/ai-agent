@@ -273,6 +273,15 @@ def _remove_managed_block(existing: str) -> tuple[str, bool]:
     return (remaining + "\n" if remaining else ""), True
 
 
+def _is_managed_relative(adapter: str, relative: str) -> bool:
+    layout = LAYOUTS[adapter]
+    return (
+        relative == layout["instructions"]
+        or relative.startswith(layout["agents"].rstrip("/") + "/")
+        or relative.startswith(layout["skills"].rstrip("/") + "/")
+    )
+
+
 def _safe_target(target: Path, relative: str) -> Path:
     rel = PurePosixPath(relative)
     if rel.is_absolute() or ".." in rel.parts or "\\" in relative or "\x00" in relative:
@@ -316,12 +325,22 @@ def install_adapter(
     if uninstall:
         if not registry.is_file():
             return {"adapter": adapter, "removed": [], "conflicts": [], "message": "No installer registry found"}
+        if registry.is_symlink():
+            raise ValueError("Installer registry is a symlink; refusing to follow it")
         previous = _read_json(registry)
+        if previous.get("adapter") != adapter:
+            raise ValueError("Installer registry adapter identity mismatch")
         removed = []
         conflicts = []
         for relative in previous.get("managed_files", []):
+            if not _is_managed_relative(adapter, relative):
+                conflicts.append(f"{relative}: registry path is outside adapter-owned locations; left untouched")
+                continue
             path = _safe_target(target, relative)
             if not path.exists():
+                continue
+            if path.is_symlink():
+                conflicts.append(f"{relative}: symlink detected; left untouched")
                 continue
             if relative == previous.get("instructions_file"):
                 try:
@@ -349,10 +368,14 @@ def install_adapter(
             _cleanup_empty_parents(registry, target)
         return {"adapter": adapter, "removed": removed, "conflicts": conflicts}
 
+    if registry.is_symlink():
+        raise ValueError("Installer registry is a symlink; refusing to follow it")
     with tempfile.TemporaryDirectory(prefix=f"ai-agent-{adapter}-") as temporary:
         bundle = Path(temporary) / adapter
         build_adapter(root, adapter, bundle)
         old_registry = _read_json(registry) if registry.is_file() else {}
+        if old_registry and old_registry.get("adapter") != adapter:
+            raise ValueError("Installer registry adapter identity mismatch")
         old_files = set(old_registry.get("managed_files", []))
         instruction_file = LAYOUTS[adapter]["instructions"]
         managed_files = []
@@ -367,6 +390,9 @@ def install_adapter(
         for source in source_files:
             relative = source.relative_to(bundle).as_posix()
             destination = _safe_target(target, relative)
+            if destination.is_symlink():
+                conflicts.append(f"{relative}: symlink detected; left untouched")
+                continue
             if relative == instruction_file:
                 existing = destination.read_text(encoding="utf-8") if destination.is_file() else ""
                 try:
@@ -412,8 +438,14 @@ def install_adapter(
 
         stale = old_files - current_relatives
         for relative in sorted(stale):
+            if not _is_managed_relative(adapter, relative):
+                conflicts.append(f"{relative}: stale registry path is outside adapter-owned locations; left untouched")
+                continue
             path = _safe_target(target, relative)
             if not path.exists():
+                continue
+            if path.is_symlink():
+                conflicts.append(f"{relative}: symlink detected; left untouched")
                 continue
             if relative == old_registry.get("instructions_file"):
                 try:
