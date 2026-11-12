@@ -1,10 +1,11 @@
 # AI Agent Ecosystem
 
-**Version:** `0.3.2` — Single-repository Antigravity plugin  
-**Runtime:** Google Antigravity (`agy`)  
+**Ecosystem:** `0.4.0` — Hybrid multi-runtime agent framework  
+**Antigravity plugin:** `0.3.2` (backward-compatible)  
+**Runtimes:** Antigravity, Codex (CLI / desktop / IDE), GitHub Copilot, Claude Code CLI, Cursor  
 **License:** MIT
 
-A complete multi-agent engineering team distributed as **one GitHub repository and one installable Antigravity plugin**. The bundle includes Architecture, Product Design, Frontend, Backend, Infrastructure, QA, and Team Orchestrator agents, plus shared engineering skills and constitution rules.
+A complete multi-agent engineering team maintained in **one canonical GitHub repository**. It preserves the installable Antigravity plugin and generates native agent profiles, instructions, and reusable skills for Codex, GitHub Copilot, Claude Code, and Cursor.
 
 ## Install — one command
 
@@ -27,6 +28,25 @@ agy plugin uninstall ai-agent
 ~~~
 
 All specialists ship together. You do **not** need to install or clone nine separate repositories, copy plugin folders, or run a local folder installer.
+
+## Install a native adapter in an existing project
+
+The Antigravity plugin remains installable with the original command above. For other coding agents, clone this repository and use the native adapter installer:
+
+```powershell
+python .\scripts\install_adapter.py --adapter all --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter all --target ..\my-project
+
+# Or install only one runtime
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project
+python .\scripts\install_adapter.py --adapter copilot --target ..\my-project
+python .\scripts\install_adapter.py --adapter claude-code --target ..\my-project
+python .\scripts\install_adapter.py --adapter cursor --target ..\my-project
+```
+
+Run with `--dry-run` before installing. Existing root instructions are preserved inside managed blocks; Cursor receives a dedicated `.cursor/rules/ai-agent-ecosystem.mdc` file because MDC frontmatter must remain at the file start. Unmanaged conflicting agent, rule, or skill files are not overwritten. Re-run the install command to update. Use `--uninstall` to remove only installer-managed files.
+
+See [Native Runtime Adapters](docs/adapters/README.md) and [Multi-Platform Adapter Architecture](docs/architecture/MULTI-PLATFORM-ADAPTERS.md).
 
 ## Selecting an agent
 
@@ -69,7 +89,7 @@ Also included:
 
 ## Repository design
 
-This repository is both the canonical source and the installable plugin:
+This repository is the canonical source and remains the installable Antigravity plugin. Native adapters are generated from the same source:
 
 ~~~text
 ai-agent/
@@ -78,9 +98,10 @@ ai-agent/
 ├── skills/                     # Generated bundle: all 19 skills
 ├── rules/                      # Generated shared agent rules
 ├── modules/                    # Canonical source modules for each specialist
+├── dist/                       # Generated native adapter bundles (gitignored)
 ├── teams/                      # Logical team composition presets
-├── contracts/                  # Agent/task/team/handoff/memory schemas
-├── docs/                       # Architecture, security, and adapter docs
+├── contracts/                  # Agent/task/team/handoff/memory and platform adapter contracts
+├── docs/                       # Architecture, security, and docs/adapters/ runtime guides
 ├── evals/                      # Agent and workflow evaluation scenarios
 ├── templates/                  # Project, execution, and artifact templates
 └── scripts/                    # Build, bootstrap, install helper, and validators
@@ -147,18 +168,26 @@ For the complete read/resume/checkpoint protocol, see [Persistent Project Memory
 
 Requirements: Python 3.10+ (quality gate CLI also requires `python -m pip install -r requirements-dev.txt`).
 
-Build the single plugin bundle after changing agents, skills, or rules:
+Build the backward-compatible Antigravity plugin after changing agents, skills, or rules:
 
 ~~~powershell
 python .\scripts\build_single_plugin.py
 ~~~
 
-Validate the source and generated installable plugin:
+Build and validate native adapters:
+
+~~~powershell
+python .\scripts\build_adapters.py --adapter all
+python .\scripts\validate_adapters.py
+~~~
+
+Validate the source and generated installable plugin and adapters:
 
 ~~~powershell
 python .\scripts\validate_repo.py
 python .\scripts\validate_plugin.py
 python .\scripts\validate_agent_tools.py
+python .\scripts\validate_capabilities.py
 python .\scripts\build_single_plugin.py --check
 python -m unittest discover -s tests -v
 ~~~
@@ -209,6 +238,8 @@ The user documentation is organized by the lifecycle of adopting and using the e
 | [Architecture Documentation Standard](docs/ARCHITECTURE-DOCUMENTATION-STANDARD.md) | Audit versioning, current/target architecture, C4, ADRs, findings register, scoring, and evidence |
 | [Quality Gates](docs/QUALITY-GATES.md) | Executable task, evidence, state and release gate checks |
 | [Prompt Cookbook](docs/PROMPT-COOKBOOK.md) | Reusable prompts for initialization, resume, feature work, bug fixes, architecture/security review, QA, and release |
+| [Native Runtime Adapters](docs/adapters/README.md) | Generate and safely install native Codex, Copilot, Claude Code, and Cursor profiles, rules, and skills |
+| [Multi-Platform Adapter Architecture](docs/architecture/MULTI-PLATFORM-ADAPTERS.md) | Canonical sources, native layouts, versioning, capability boundaries, and installer safety |
 
 ### Architecture and project templates
 
@@ -221,8 +252,8 @@ The documentation is generic and belongs in this ecosystem repository. Product-s
 
 ## Design principles
 
-1. **One repository, one install.** All agents, skills, and rules are distributed together from this repository.
-2. **Modular source, unified runtime.** Specialist source modules remain separated under `modules/`; the build script assembles one root plugin bundle.
+1. **One repository, native distributions.** Antigravity remains a single plugin; other runtimes receive native project adapters generated from the same repository.
+2. **Modular source, runtime adapters.** Specialist source modules remain separated under `modules/`; each adapter builds only its host-native files.
 3. **Shared skills, not duplicated procedures.** Skills are portable and reusable across specialist agents.
 4. **Project teams are configuration.** A team manifest selects roles and workflow stages without requiring separate plugin repositories.
 5. **Persistent, evidence-based continuity.** Project state survives chat sessions through versionable files, task contracts, handoffs, and checkpoints.
@@ -231,11 +262,13 @@ The documentation is generic and belongs in this ecosystem repository. Product-s
 
 ## Current limitations
 
-- Native subagent delegation depends on Antigravity runtime support and agent discovery.
+- Native subagent delegation depends on the active runtime, product surface, version, and host policy.
 - The team manifest is declarative; it does not create a distributed scheduler.
 - Session checkpointing is an explicit agent workflow, not a guaranteed host shutdown hook. The orchestrator must checkpoint at task boundaries and before returning control.
 - Git-backed memory is project-local. Multi-user, multi-workspace centralized memory is outside the current scope.
-- Codex and Claude Code adapters remain future work.
+- Copilot subagent execution depends on the selected surface and version; generated profiles do not guarantee runtime delegation.
+- Native tool permissions, shell access, MCP connectivity, and approvals remain controlled by each host runtime.
+- The installer is a local project-file installer; it does not publish marketplace extensions or centrally configure user/organization-level runtime settings.
 
 ## References
 

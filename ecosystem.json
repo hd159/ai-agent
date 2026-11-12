@@ -1,23 +1,22 @@
 {
   "schema_version": "1.0.0",
   "ecosystem": "ai-agent-ecosystem",
-  "version": "0.3.2",
-  "distribution": "single-github-repository-single-antigravity-plugin",
+  "version": "0.4.0",
+  "distribution": "hybrid-single-repository-multi-runtime-adapters",
   "repository": "https://github.com/hd159/ai-agent",
   "notes": [
-    "All specialist agents, shared skills, and constitution rules are bundled into one installable Antigravity plugin.",
-    "The modules/* directories are canonical source modules; scripts/build_single_plugin.py assembles their agents, skills, and rules at the repository root.",
-    "Install the complete ecosystem with agy plugin install https://github.com/hd159/ai-agent.",
-    "Team presets select logical agent roles; they do not require separate GitHub repositories or separate plugin installations.",
-    "Project-local memory is persisted in the target application's .agent-ecosystem directory and versioned with that project's Git repository.",
-    "All seven agents explicitly declare the verified 13 Antigravity built-in tools and commandExecutionPolicy: auto; inheritMcp and inheritCustomizations are enabled.",
-    "v0.3 adds independent QA verification records, schema and execution-state validation, Git freshness checks and release readiness gates.",
-    "All seven agents, 19 bundled skills, shared rule and MCP inheritance are statically audited; runtime tool rights require a real host smoke test."
+    "AI Agent Ecosystem 0.4.0 uses one GitHub repository as the canonical source and generates native adapters for Codex, GitHub Copilot, Claude Code, and Cursor.",
+    "The Antigravity adapter remains backward-compatible at plugin version 0.3.2; root plugin.json is intentionally not bumped with the ecosystem release.",
+    "Canonical agent role instructions remain in modules/*/agents/*.md; platform-specific runtime tool sections are stripped when generating non-Antigravity profiles.",
+    "All 19 reusable Agent Skills are copied into each adapter's native skill directory; Cursor uses .cursor/skills/ and source skill content remains canonical under modules/*/skills/.",
+    "Project-local memory remains in the target project's .agent-ecosystem directory and is shared through existing JSON/Markdown contracts.",
+    "Native adapters do not grant host permissions. Runtime tools, approval policies, sandboxing, MCP connectivity, and delegation must be verified in each runtime and surface.",
+    "Installers preserve existing instruction content through managed blocks where the host format allows it; Cursor uses a dedicated exclusively managed MDC rule. Unmanaged conflicting files are never overwritten."
   ],
   "modules": [
     {
       "id": "agent-constitution",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "display_name": "Agent Constitution",
       "description": "Shared behavioral standards for specialist agents, including simplicity, scoped changes, explicit assumptions, and evidence-based completion.",
       "components": {
@@ -29,7 +28,7 @@
     },
     {
       "id": "architecture-agent",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "display_name": "Architecture Agent",
       "description": "Plans product and system architecture, defines module boundaries, records technical decisions, and decomposes approved scope into owned implementation tasks.",
       "components": {
@@ -41,7 +40,7 @@
     },
     {
       "id": "backend-agent",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "display_name": "Backend Agent",
       "description": "Designs and implements backend domain logic, APIs, persistence, validation, integrations, authorization, and backend tests against approved architecture.",
       "components": {
@@ -53,7 +52,7 @@
     },
     {
       "id": "core-engineering-skills",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "display_name": "Core Engineering Skills",
       "description": "Portable skills for product discovery, architecture, task planning, API and data design, TDD, debugging, review, and verification.",
       "components": {
@@ -65,7 +64,7 @@
     },
     {
       "id": "frontend-agent",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "display_name": "Frontend Agent",
       "description": "Designs and implements frontend application structure, accessible UI, state management, API integration, and frontend tests against approved design and contracts.",
       "components": {
@@ -77,7 +76,7 @@
     },
     {
       "id": "infrastructure-agent",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "display_name": "Infrastructure Agent",
       "description": "Designs and implements cloud infrastructure, environments, CI/CD, deployment configuration, secrets integration, observability, and operational readiness.",
       "components": {
@@ -89,7 +88,7 @@
     },
     {
       "id": "qa-agent",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "display_name": "QA Agent",
       "description": "Creates independent test strategies, validates acceptance criteria, tests critical user journeys, and reports reproducible defects and release risks.",
       "components": {
@@ -101,7 +100,7 @@
     },
     {
       "id": "team-orchestrator",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "display_name": "Team Orchestrator",
       "description": "Compose project teams from specialist agents, create dependency-aware task plans, coordinate handoffs, and maintain persistent project memory and session continuity.",
       "components": {
@@ -113,7 +112,7 @@
     },
     {
       "id": "uiux-design-agent",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "display_name": "UI/UX Design Agent",
       "description": "Researches user needs, designs user journeys and information architecture, defines interaction patterns, and produces implementation-ready design specifications.",
       "components": {
@@ -123,5 +122,88 @@
       },
       "kind": "source-module"
     }
-  ]
+  ],
+  "adapters": {
+    "antigravity": {
+      "version": "0.3.2",
+      "status": "backward-compatible",
+      "instructions_file": "modules/*/agents/*.md",
+      "agent_directory": "agents",
+      "skill_directory": "skills",
+      "install": "agy plugin install https://github.com/hd159/ai-agent",
+      "notes": [
+        "Preserve the existing single-plugin manifest and exact 13-tool runtime contract.",
+        "Antigravity plugin.json remains version 0.3.2 while the shared ecosystem advances to 0.4.0."
+      ]
+    },
+    "codex": {
+      "version": "0.4.0",
+      "status": "supported",
+      "surfaces": [
+        "Codex CLI",
+        "Codex desktop app",
+        "Codex IDE extension"
+      ],
+      "instructions_file": "AGENTS.md",
+      "agent_directory": ".codex/agents",
+      "skill_directory": ".agents/skills",
+      "agent_format": "TOML with name, description, developer_instructions",
+      "notes": [
+        "Custom agent profiles do not grant tools or permissions.",
+        "Native delegation is used only when the current Codex session exposes it."
+      ]
+    },
+    "copilot": {
+      "version": "0.4.0",
+      "status": "supported",
+      "surfaces": [
+        "GitHub Copilot CLI",
+        "VS Code agent mode",
+        "GitHub.com custom agent assignment (no subagent delegation)"
+      ],
+      "instructions_file": ".github/copilot-instructions.md",
+      "agent_directory": ".github/agents",
+      "skill_directory": ".github/skills",
+      "agent_format": "Markdown YAML frontmatter and instructions",
+      "notes": [
+        "Subagent support is surface-dependent; GitHub.com custom-agent support does not imply subagent execution.",
+        "Agent profile tool restrictions are omitted so the runtime controls available tools."
+      ]
+    },
+    "claude-code": {
+      "version": "0.4.0",
+      "status": "supported",
+      "surfaces": [
+        "Claude Code CLI"
+      ],
+      "instructions_file": "CLAUDE.md",
+      "agent_directory": ".claude/agents",
+      "skill_directory": ".claude/skills",
+      "agent_format": "Markdown YAML frontmatter and instructions",
+      "notes": [
+        "Tool restrictions are omitted so the runtime applies its configured permissions.",
+        "Use the native Agent mechanism only when exposed and authorized."
+      ]
+    },
+    "cursor": {
+      "version": "0.4.0",
+      "status": "supported",
+      "surfaces": [
+        "Cursor Editor",
+        "Cursor CLI",
+        "Cursor Cloud Agents"
+      ],
+      "instructions_file": ".cursor/rules/ai-agent-ecosystem.mdc",
+      "instruction_mode": "exclusive-managed-file",
+      "agent_directory": ".cursor/agents",
+      "skill_directory": ".cursor/skills",
+      "agent_format": "Markdown YAML frontmatter with name and description",
+      "notes": [
+        "Project rules use native MDC frontmatter with alwaysApply: true.",
+        "Custom subagents are generated in .cursor/agents/ and skills in .cursor/skills/.",
+        "The dedicated Cursor skill directory avoids sharing installer ownership with Codex and Claude adapters.",
+        "Native delegation and tools remain controlled by the active Cursor surface and its permissions."
+      ]
+    }
+  }
 }

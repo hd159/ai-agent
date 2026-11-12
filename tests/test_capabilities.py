@@ -73,6 +73,13 @@ class CapabilityAuditTests(unittest.TestCase):
         path.write_text(path.read_text(encoding="utf-8").replace("name: capability-smoke-test", "name: other"), encoding="utf-8")
         self.assertTrue(any("invalid name/description" in e for e in self.errors()))
 
+    def test_antigravity_plugin_version_remains_backward_compatible(self):
+        path = self.root / "plugin.json"
+        obj = json.loads(path.read_text(encoding="utf-8"))
+        obj["version"] = "0.4.0"
+        path.write_text(json.dumps(obj), encoding="utf-8")
+        self.assertTrue(any("0.3.2" in e for e in self.errors()))
+
     def test_cannot_ship_plugin_disabled(self):
         path = self.root / "plugin.json"
         obj = json.loads(path.read_text(encoding="utf-8"))

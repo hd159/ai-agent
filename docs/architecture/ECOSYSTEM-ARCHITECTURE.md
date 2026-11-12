@@ -1,23 +1,23 @@
 # Ecosystem Architecture
 
-**Status:** Accepted for v0.2.0  
-**Scope:** Reusable specialist agents, portable skills, project teams, and Antigravity distribution.
+**Status:** Accepted for v0.4.0  
+**Scope:** Reusable specialist agents, portable skills, project teams, shared project memory, and native multi-runtime distribution.
 
 ## 1. Goals
 
-- Create focused specialist agents that remain modular in source and are distributed together in one installable plugin.
+- Create focused specialist agents that remain modular in source and are distributed together through native runtime adapters generated from one repository.
 - Separate role identity from reusable capabilities.
 - Compose teams per project without creating a new agent for every project.
 - Make task ownership, dependencies, boundaries, and completion evidence explicit.
 - Keep core knowledge portable across compatible agent runtimes.
 
-## 2. Non-goals for v0.2.0
+## 2. Non-goals for v0.4.0
 
 - A cloud-hosted multi-tenant agent control plane.
 - A distributed scheduler with durable remote queues.
 - Automatic GitHub repository creation or publishing is outside the runtime orchestration scope.
 - Automatic deployment to production.
-- Guaranteed cross-platform parity for every plugin component.
+- Guaranteed cross-platform parity for every runtime feature or delegation surface.
 
 ## 3. Logical layers
 
@@ -81,7 +81,7 @@ The orchestrator:
 
 ### Layer F — Platform adapters
 
-Antigravity is the first adapter. Portable skills and canonical contracts remain independent of Antigravity-specific manifests.
+Antigravity remains the backward-compatible plugin adapter. Codex local clients, GitHub Copilot CLI / supported VS Code agent mode, Claude Code CLI, and Cursor Editor / CLI / Cloud Agents are generated from the same canonical role instructions and skills. Native tool permissions and delegation remain runtime-specific.
 
 ## 4. Independent agent plugin contract
 
@@ -114,9 +114,9 @@ Parallel execution is allowed only for independent tasks. Shared files and contr
 If the host runtime supports native subagent invocation, the orchestrator may delegate bounded tasks to installed specialists.
 
 If it does not:
-- Generate task contracts and a dependency graph.
-- Mark tasks as `ready_for_dispatch`, not `in_progress`.
-- Ask the user or an external runner to launch the work.
+- The orchestrator may execute bounded work itself only when its own required capabilities are verified and the task is within the approved project scope.
+- If required capabilities are unavailable, block the dependent implementation and report the exact blocker.
+- Do not silently substitute planning-only task contracts or dependency graphs for requested implementation; create planning-only artifacts only when the user explicitly asks.
 - Never imply that agents were called when they were not.
 
 ## 7. Human approval gates
@@ -138,6 +138,21 @@ The orchestrator may continue discovery and preparation while waiting, but must 
 
 An agent response saying "done" is not evidence by itself.
 
-## 9. Distribution topology (v0.2.0)
+## 9. Distribution topology (v0.4.0)
 
-All specialist agents, shared skills, and constitution rules are bundled into one Antigravity plugin in `hd159/ai-agent`. Canonical source modules live under `modules/<module-id>/`; the build script assembles their agents, skills, and rules into root-level directories so one `agy plugin install https://github.com/hd159/ai-agent` command installs the complete ecosystem. Team presets are logical composition manifests, not separate plugin distributions.
+The Antigravity adapter remains a single plugin in `hd159/ai-agent` and is installed with one `agy plugin install https://github.com/hd159/ai-agent` command. The other runtime adapters are generated project files; see section 10. Canonical source modules live under `modules/<module-id>/`. Team presets are logical composition manifests, not separate plugin distributions.
+
+
+## 10. Hybrid multi-runtime distribution
+
+The ecosystem uses one canonical repository. The existing Antigravity plugin remains version 0.3.2 for backward compatibility; the shared ecosystem and source modules advance to 0.4.0.
+
+The native adapter builder generates:
+- Codex CLI: AGENTS.md, .codex/agents/*.toml, and .agents/skills/.
+- GitHub Copilot CLI / supported VS Code agent mode: .github/copilot-instructions.md, .github/agents/*.agent.md, and .github/skills/.
+- Claude Code CLI: CLAUDE.md, .claude/agents/*.md, and .claude/skills/.
+- Cursor: .cursor/rules/ai-agent-ecosystem.mdc, .cursor/agents/*.md, and .cursor/skills/.
+
+The installer merges root instructions inside explicit managed markers for Codex, Copilot, and Claude Code. Cursor receives a dedicated exclusively managed MDC rule so frontmatter remains at the start of the file. All adapters record installer-owned paths under .agent-ecosystem/adapters/, refuse to overwrite unmanaged conflicting profiles or skills, and support safe uninstall. Generated adapter files are derived artifacts, not new sources of truth.
+
+See [Multi-Platform Adapter Architecture](MULTI-PLATFORM-ADAPTERS.md) for build, validation, runtime boundaries, and versioning.
