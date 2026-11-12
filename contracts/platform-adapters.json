@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "ecosystem_version": "0.4.0",
+  "distribution": "hybrid-single-repository-multi-runtime-adapters",
+  "canonical_sources": {
+    "agents": "modules/*/agents/*.md",
+    "skills": "modules/*/skills/*/SKILL.md",
+    "constitution": "modules/agent-constitution/rules/AGENTS.md",
+    "project_memory": ".agent-ecosystem/"
+  },
+  "adapters": {
+    "antigravity": {
+      "version": "0.3.2",
+      "status": "backward-compatible",
+      "instructions_file": "modules/*/agents/*.md",
+      "agent_directory": "agents/",
+      "skill_directory": "skills/",
+      "tool_policy": "contracts/agent-tool-policy.json",
+      "install_command": "agy plugin install https://github.com/hd159/ai-agent"
+    },
+    "codex": {
+      "version": "0.4.0",
+      "status": "supported",
+      "surfaces": ["Codex CLI"],
+      "instructions_file": "AGENTS.md",
+      "agent_directory": ".codex/agents/",
+      "agent_extension": ".toml",
+      "agent_required_fields": ["name", "description", "developer_instructions"],
+      "skill_directory": ".agents/skills/",
+      "delegation": "Use only native subagent invocation exposed by the active Codex session."
+    },
+    "copilot": {
+      "version": "0.4.0",
+      "status": "supported",
+      "surfaces": ["GitHub Copilot CLI", "VS Code agent mode"],
+      "instructions_file": ".github/copilot-instructions.md",
+      "agent_directory": ".github/agents/",
+      "agent_extension": ".agent.md",
+      "agent_frontmatter": ["name", "description"],
+      "skill_directory": ".agents/skills/",
+      "delegation": "Surface-dependent; probe the active Copilot host. GitHub.com custom agents do not imply subagent support."
+    },
+    "claude-code": {
+      "version": "0.4.0",
+      "status": "supported",
+      "surfaces": ["Claude Code CLI"],
+      "instructions_file": "CLAUDE.md",
+      "agent_directory": ".claude/agents/",
+      "agent_extension": ".md",
+      "agent_frontmatter": ["name", "description"],
+      "skill_directory": ".claude/skills/",
+      "delegation": "Use the native Agent mechanism only when exposed and authorized."
+    }
+  },
+  "installer_policy": {
+    "instruction_files": "Merge ecosystem instructions inside explicit managed markers; preserve user-authored content outside the markers.",
+    "agent_and_skill_files": "Never overwrite an existing unmanaged file with different content. Update only files recorded in .agent-ecosystem/adapters/<adapter>.json.",
+    "uninstall": "Remove only registered managed files and managed instruction blocks. Preserve unrelated project files and project memory.",
+    "dry_run": "Must not create or modify any project file."
+  },
+  "capability_policy": {
+    "tool_names": "Do not copy Antigravity tool names or allowlists into other platform manifests.",
+    "permissions": "Generated profiles do not grant host permissions, shell access, MCP connectivity, or approval rights.",
+    "verification": "Run real read, write, terminal, MCP, and delegation probes separately in each target runtime and surface."
+  }
+}
