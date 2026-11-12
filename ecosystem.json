@@ -11,7 +11,7 @@
     "All 19 reusable Agent Skills are copied into each adapter's native skill directory; Cursor uses .cursor/skills/ and source skill content remains canonical under modules/*/skills/.",
     "Project-local memory remains in the target project's .agent-ecosystem directory and is shared through existing JSON/Markdown contracts.",
     "Native adapters do not grant host permissions. Runtime tools, approval policies, sandboxing, MCP connectivity, and delegation must be verified in each runtime and surface.",
-    "Installers preserve existing root instruction files through managed blocks and never overwrite unmanaged conflicting agent or skill files."
+    "Installers preserve existing instruction content through managed blocks where the host format allows it; Cursor uses a dedicated exclusively managed MDC rule. Unmanaged conflicting files are never overwritten."
   ],
   "modules": [
     {
