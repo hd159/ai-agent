@@ -15,9 +15,9 @@
 - Specialist agents remain modular canonical source files under `modules/<module-id>/agents/`.
 - Shared skills remain canonical under the appropriate source module's `skills/` directory.
 - Universal rules remain canonical under `modules/agent-constitution/rules/`.
-- The canonical distribution unit is one GitHub repository. Antigravity remains a root-level installable plugin; Codex, Copilot, and Claude Code receive generated native project adapters.
+- The canonical distribution unit is one GitHub repository. Antigravity remains a root-level installable plugin; Codex, Copilot, Claude Code, and Cursor receive generated native project adapters.
 - `scripts/build_single_plugin.py` assembles the backward-compatible Antigravity root bundle.
-- `scripts/build_adapters.py` generates native Codex, Copilot, and Claude Code layouts from the same agent and skill sources.
+- `scripts/build_adapters.py` generates native Codex, Copilot, Claude Code, and Cursor layouts from the same agent and skill sources.
 - Native project files are installed with `scripts/install_adapter.py`; generated `dist/` output is not a second source of truth.
 
 ## 3. Agent frontmatter (Antigravity)
@@ -53,7 +53,7 @@ inheritCustomizations: true
 ---
 ```
 
-The Antigravity frontmatter must retain the exact 13-tool list from contracts/agent-tool-policy.json and commandExecutionPolicy: auto. This frontmatter is not portable to Codex, Copilot, or Claude Code; adapters generate native profiles for those runtimes. The body must define:
+The Antigravity frontmatter must retain the exact 13-tool list from contracts/agent-tool-policy.json and commandExecutionPolicy: auto. This frontmatter is not portable to Codex, Copilot, Claude Code, or Cursor; adapters generate native profiles for those runtimes. The body must define:
 1. Identity and mission.
 2. Responsibilities.
 3. Boundaries and escalation conditions.
@@ -89,14 +89,14 @@ The ecosystem and its canonical source modules use one Semantic Version. Runtime
 
 - Ecosystem v0.4.0: canonical contracts, shared agent instructions, skills, installers, and validators.
 - Antigravity adapter v0.3.2: remains pinned to preserve the existing plugin manifest and install workflow.
-- Codex, Copilot, and Claude Code adapters v0.4.0: native profiles generated from the shared source.
+- Codex, Copilot, Claude Code, and Cursor adapters v0.4.0: native profiles generated from the shared source.
 - PATCH: instruction corrections.
 - MINOR: backward-compatible capabilities.
 - MAJOR: incompatible contract or behavior changes.
 
 ## 6. Compatibility
 
-Canonical skills should avoid host-specific tool names. Put runtime-specific invocation details in `adapters/<platform>/`.
+Canonical skills should avoid host-specific tool names. Put runtime-specific invocation details in `docs/adapters/<platform>/`.
 
 The Antigravity plugin manifests and agent frontmatter are platform-specific by design.
 
@@ -107,8 +107,8 @@ The Antigravity plugin manifests and agent frontmatter are platform-specific by 
 - The repository root retains the backward-compatible Antigravity plugin files.
 - Nested `modules/<module-id>/` folders remain canonical source modules and are not separate plugin repositories.
 - `scripts/build_single_plugin.py` deterministically generates the Antigravity bundle; use `--check` in CI to detect stale files.
-- `scripts/build_adapters.py` deterministically generates native Codex, Copilot, and Claude Code project layouts.
-- `scripts/install_adapter.py` safely merges native files into an existing project, records owned paths, and supports uninstall without overwriting unmanaged files.
+- `scripts/build_adapters.py` deterministically generates native Codex, Copilot, Claude Code, and Cursor project layouts.
+- `scripts/install_adapter.py` safely installs native files into an existing project, records owned paths, and supports uninstall without overwriting unmanaged files. Cursor MDC rules are installed as exclusive managed files to preserve required frontmatter.
 - Team manifests are logical composition contracts; they do not install separate repositories or act as a distributed scheduler.
 
 
