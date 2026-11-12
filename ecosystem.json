@@ -5,10 +5,10 @@
   "distribution": "hybrid-single-repository-multi-runtime-adapters",
   "repository": "https://github.com/hd159/ai-agent",
   "notes": [
-    "AI Agent Ecosystem 0.4.0 uses one GitHub repository as the canonical source and generates native adapters for Codex, GitHub Copilot, and Claude Code.",
+    "AI Agent Ecosystem 0.4.0 uses one GitHub repository as the canonical source and generates native adapters for Codex, GitHub Copilot, Claude Code, and Cursor.",
     "The Antigravity adapter remains backward-compatible at plugin version 0.3.2; root plugin.json is intentionally not bumped with the ecosystem release.",
     "Canonical agent role instructions remain in modules/*/agents/*.md; platform-specific runtime tool sections are stripped when generating non-Antigravity profiles.",
-    "All 19 reusable Agent Skills are copied into each adapter's native skill directory; source skill content remains canonical under modules/*/skills/.",
+    "All 19 reusable Agent Skills are copied into each adapter's native skill directory; Cursor uses .cursor/skills/ and source skill content remains canonical under modules/*/skills/.",
     "Project-local memory remains in the target project's .agent-ecosystem directory and is shared through existing JSON/Markdown contracts.",
     "Native adapters do not grant host permissions. Runtime tools, approval policies, sandboxing, MCP connectivity, and delegation must be verified in each runtime and surface.",
     "Installers preserve existing root instruction files through managed blocks and never overwrite unmanaged conflicting agent or skill files."
@@ -183,6 +183,26 @@
       "notes": [
         "Tool restrictions are omitted so the runtime applies its configured permissions.",
         "Use the native Agent mechanism only when exposed and authorized."
+      ]
+    },
+    "cursor": {
+      "version": "0.4.0",
+      "status": "supported",
+      "surfaces": [
+        "Cursor Editor",
+        "Cursor CLI",
+        "Cursor Cloud Agents"
+      ],
+      "instructions_file": ".cursor/rules/ai-agent-ecosystem.mdc",
+      "instruction_mode": "exclusive-managed-file",
+      "agent_directory": ".cursor/agents",
+      "skill_directory": ".cursor/skills",
+      "agent_format": "Markdown YAML frontmatter with name and description",
+      "notes": [
+        "Project rules use native MDC frontmatter with alwaysApply: true.",
+        "Custom subagents are generated in .cursor/agents/ and skills in .cursor/skills/.",
+        "The dedicated Cursor skill directory avoids sharing installer ownership with Codex and Claude adapters.",
+        "Native delegation and tools remain controlled by the active Cursor surface and its permissions."
       ]
     }
   }
