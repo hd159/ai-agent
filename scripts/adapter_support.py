@@ -254,12 +254,19 @@ def build_all_adapters(root: Path, output_root: Path) -> list[dict]:
     return [build_adapter(root, adapter, output_root / adapter) for adapter in ADAPTERS]
 
 
-def _managed_block(incoming: str) -> str:
-    return f"{BEGIN_MARKER}\n{incoming.strip()}\n{END_MARKER}"
+def _managed_block(incoming: str, newline: str) -> str:
+    normalized = incoming.replace("\r\n", "\n").replace("\n", newline)
+    body = normalized.strip("\r\n")
+    return f"{BEGIN_MARKER}{newline}{body}{newline}{END_MARKER}"
 
 
-def _merge_managed_block(existing: str, incoming: str) -> str:
-    block = _managed_block(incoming)
+def _merge_managed_block(
+    existing: str,
+    incoming: str,
+    prefix_newline_added: bool | None = None,
+) -> tuple[str, bool]:
+    newline = "\r\n" if "\r\n" in existing else "\n"
+    block = _managed_block(incoming, newline)
     has_begin = BEGIN_MARKER in existing
     has_end = END_MARKER in existing
     if has_begin != has_end:
@@ -267,23 +274,34 @@ def _merge_managed_block(existing: str, incoming: str) -> str:
     if has_begin:
         start = existing.index(BEGIN_MARKER)
         end = existing.index(END_MARKER, start) + len(END_MARKER)
-        return existing[:start] + block + existing[end:]
-    if existing.strip():
-        return existing.rstrip() + "\n\n" + block + "\n"
-    return block + "\n"
+        return existing[:start] + block + existing[end:], bool(prefix_newline_added)
+    if existing:
+        added = not existing.endswith(("\n", "\r"))
+        separator = newline if added else ""
+        return existing + separator + block + newline, added
+    return block + newline, False
 
 
-def _remove_managed_block(existing: str) -> tuple[str, bool]:
+def _remove_managed_block(
+    existing: str,
+    prefix_newline_added: bool = False,
+) -> tuple[str, bool]:
     has_begin = BEGIN_MARKER in existing
     has_end = END_MARKER in existing
     if not has_begin and not has_end:
         return existing, False
     if has_begin != has_end:
         raise ValueError("Existing managed instruction file has an incomplete ownership marker pair")
+    newline = "\r\n" if "\r\n" in existing else "\n"
     start = existing.index(BEGIN_MARKER)
     end = existing.index(END_MARKER, start) + len(END_MARKER)
-    remaining = (existing[:start] + existing[end:]).strip()
-    return (remaining + "\n" if remaining else ""), True
+    prefix = existing[:start]
+    suffix = existing[end:]
+    if suffix == newline:
+        suffix = ""
+    if prefix_newline_added and prefix.endswith(newline):
+        prefix = prefix[:-len(newline)]
+    return prefix + suffix, True
 
 
 def _is_managed_relative(adapter: str, relative: str) -> bool:
@@ -368,7 +386,10 @@ def install_adapter(
                 continue
             if relative == previous.get("instructions_file"):
                 try:
-                    updated, changed = _remove_managed_block(path.read_text(encoding="utf-8"))
+                    updated, changed = _remove_managed_block(
+                        path.read_bytes().decode("utf-8"),
+                        bool(previous.get("instruction_prefix_newline_added", False)),
+                    )
                 except ValueError as exc:
                     conflicts.append(f"{relative}: {exc}")
                     continue
@@ -402,6 +423,7 @@ def install_adapter(
             raise ValueError("Installer registry adapter identity mismatch")
         old_files = set(old_registry.get("managed_files", []))
         instruction_file = LAYOUTS[adapter]["instructions"]
+        instruction_prefix_newline_added = False
         managed_files = []
         installed = []
         updated = []
@@ -425,9 +447,13 @@ def install_adapter(
                 if destination.exists() and not destination.is_file():
                     conflicts.append(f"{relative}: destination exists and is not a regular file; left untouched")
                     continue
-                existing = destination.read_text(encoding="utf-8") if destination.is_file() else ""
+                existing = destination.read_bytes().decode("utf-8") if destination.is_file() else ""
                 try:
-                    merged = _merge_managed_block(existing, source.read_text(encoding="utf-8"))
+                    merged, instruction_prefix_newline_added = _merge_managed_block(
+                        existing,
+                        source.read_text(encoding="utf-8"),
+                        old_registry.get("instruction_prefix_newline_added"),
+                    )
                 except ValueError as exc:
                     conflicts.append(f"{relative}: {exc}")
                     continue
@@ -480,7 +506,10 @@ def install_adapter(
                 continue
             if relative == old_registry.get("instructions_file"):
                 try:
-                    updated_text, changed = _remove_managed_block(path.read_text(encoding="utf-8"))
+                    updated_text, changed = _remove_managed_block(
+                        path.read_bytes().decode("utf-8"),
+                        bool(old_registry.get("instruction_prefix_newline_added", False)),
+                    )
                 except ValueError as exc:
                     conflicts.append(f"{relative}: {exc}")
                     continue
@@ -498,6 +527,7 @@ def install_adapter(
                 "adapter": adapter,
                 "adapter_version": _read_json(bundle / "adapter.json")["adapter_version"],
                 "instructions_file": instruction_file,
+                "instruction_prefix_newline_added": instruction_prefix_newline_added,
                 "managed_files": sorted(managed_files),
             }
             _write_text(registry, json.dumps(registry_data, indent=2) + "\n")
