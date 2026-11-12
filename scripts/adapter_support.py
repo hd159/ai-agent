@@ -192,7 +192,18 @@ def _render_agent(adapter: str, name: str, description: str, body: str) -> str:
 def build_adapter(root: Path, adapter: str, destination: Path) -> dict:
     if adapter not in ADAPTERS:
         raise ValueError(f"Unsupported adapter '{adapter}'. Choose from: {', '.join(ADAPTERS)}")
+    if destination.is_symlink():
+        raise ValueError(f"Refusing to replace a symlink build destination: {destination}")
     if destination.exists():
+        if not destination.is_dir():
+            raise ValueError(f"Build destination is not a directory: {destination}")
+        existing_files = list(destination.iterdir())
+        if existing_files:
+            existing_manifest = destination / "adapter.json"
+            if not existing_manifest.is_file():
+                raise ValueError(f"Refusing to replace an unmanaged build directory: {destination}")
+            if _read_json(existing_manifest).get("adapter") != adapter:
+                raise ValueError(f"Build directory belongs to another adapter: {destination}")
         shutil.rmtree(destination)
     destination.mkdir(parents=True)
 
