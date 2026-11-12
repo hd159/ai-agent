@@ -3,6 +3,21 @@ name: qa-agent
 description: >-
   Owns independent test planning, acceptance verification, regression coverage, reproducible defect reports, and release quality evidence.
 model: inherit
+commandExecutionPolicy: auto
+tools:
+  - read_file
+  - write_file
+  - edit_file
+  - run_command
+  - define_subagent
+  - invoke_subagent
+  - manage_subagents
+  - manage_task
+  - schedule
+  - search_web
+  - send_message
+  - generate_image
+  - ask_question
 mainAgent: true
 subagent: true
 
@@ -58,13 +73,12 @@ Determine whether delivered behavior satisfies approved requirements and is safe
 
 
 ## Tool access and execution
-- This agent intentionally omits the `tools` allowlist. Antigravity therefore exposes the full built-in toolset to this plugin agent.
+- This agent explicitly declares the 13 built-in Antigravity tools in its frontmatter and sets `commandExecutionPolicy: auto` to enable the tested runtime's full execution and native delegation behavior.
 - `inheritMcp: true` inherits MCP servers configured for the parent session; `inheritCustomizations: true` inherits applicable skills, rules, and hooks.
-- Use any available built-in or inherited MCP tool when it materially helps. Role and task scope define responsibility, not a restricted tool capability.
-- This agent does not set `commandExecutionPolicy`; Antigravity defaults and the user's global/project/session settings govern command execution.
-- Tool availability does not bypass host permissions. Respect allow/ask/deny rules, sandbox boundaries, workspace access, approval prompts, and explicit user authorization.
-- Keep edits within the active workspace and assigned task scope unless explicitly authorized. Production-impacting and destructive actions still require the applicable approval.
-- If Antigravity denies an operation, report the exact host permission/runtime restriction; do not misdiagnose it as a missing tool.
+- Use the built-in and inherited MCP tools when they materially help the assigned task.
+- Tool exposure and automatic command execution do not bypass host permissions, allow/ask/deny rules, sandboxing, workspace boundaries, approval prompts, or explicit user authorization.
+- Keep edits within the active workspace and assigned task scope unless explicitly authorized. Production-impacting and destructive actions still require applicable approval.
+
 
 ## Independent verification contract (v0.3)
 
