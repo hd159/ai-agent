@@ -75,8 +75,8 @@ class AdapterBuildTests(unittest.TestCase):
         self.assertEqual(len(profiles), 7)
         for path in profiles:
             content = path.read_text(encoding="utf-8")
-            self.assertTrue(content.startswith("---\\n"))
-            frontmatter = content.split("\\n---", 1)[0]
+            self.assertTrue(content.startswith("---\n"))
+            frontmatter = content.split("\n---", 1)[0]
             self.assertIn(f"name: {path.stem}", frontmatter)
             self.assertIn("description:", frontmatter)
             self.assertNotIn("tools:", frontmatter)
@@ -210,7 +210,7 @@ class AdapterInstallerTests(unittest.TestCase):
     def test_cursor_existing_rule_collision_is_preserved(self):
         rule = self.project / ".cursor/rules/ai-agent-ecosystem.mdc"
         rule.parent.mkdir(parents=True)
-        original = "---\\ndescription: User-owned Cursor rule\\nalwaysApply: true\\n---\\nKeep my instructions.\\n"
+        original = "---\ndescription: User-owned Cursor rule\nalwaysApply: true\n---\nKeep my instructions.\n"
         rule.write_text(original, encoding="utf-8")
         result = install_adapter("cursor", self.project, root=ROOT)
         self.assertTrue(any(".cursor/rules/ai-agent-ecosystem.mdc" in item for item in result["conflicts"]))
