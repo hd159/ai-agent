@@ -57,6 +57,12 @@ class AdapterBuildTests(unittest.TestCase):
             self.assertTrue(profile["description"])
             self.assertTrue(profile["developer_instructions"])
 
+    def test_copilot_subagents_inherit_repository_instructions(self):
+        build_all_adapters(ROOT, self.output)
+        agent_dir = self.output / "copilot" / ".github" / "agents"
+        for path in agent_dir.glob("*.agent.md"):
+            self.assertIn("include-custom-instructions: true", path.read_text(encoding="utf-8"))
+
     def test_non_antigravity_profiles_have_no_antigravity_frontmatter(self):
         build_all_adapters(ROOT, self.output)
         for adapter in ("copilot", "claude-code"):
