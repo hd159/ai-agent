@@ -79,7 +79,7 @@ python .\scripts\validate_agent_tools.py
 python .\scripts\validate_capabilities.py
 ~~~
 
-Validate native Codex, Copilot, and Claude Code adapter layouts, agent profiles, and skill parity:
+Validate native Codex, Copilot, Claude Code, and Cursor adapter layouts, agent profiles, MDC rules, and skill parity:
 
 ~~~powershell
 python .\scripts\validate_adapters.py
@@ -102,7 +102,7 @@ Requirements: Python 3.10+.
 
 ## 4. Native runtime adapters (v0.4)
 
-Build native Codex, Copilot, and Claude Code bundles from the canonical agent and skill sources:
+Build native Codex, Copilot, Claude Code, and Cursor bundles from the canonical agent and skill sources:
 
 ~~~powershell
 python .\scripts\build_adapters.py --adapter all
@@ -120,6 +120,7 @@ python .\scripts\install_adapter.py --adapter all --target ..\my-project
 python .\scripts\install_adapter.py --adapter codex --target ..\my-project
 python .\scripts\install_adapter.py --adapter copilot --target ..\my-project
 python .\scripts\install_adapter.py --adapter claude-code --target ..\my-project
+python .\scripts\install_adapter.py --adapter cursor --target ..\my-project
 ~~~
 
 Update by repeating the install command. Uninstall only files recorded as managed by the adapter installer:
@@ -128,7 +129,7 @@ Update by repeating the install command. Uninstall only files recorded as manage
 python .\scripts\install_adapter.py --adapter all --target ..\my-project --uninstall
 ~~~
 
-The installer preserves existing root instruction content with managed markers, refuses to overwrite unmanaged conflicting agent/skill files, and records owned paths under .agent-ecosystem/adapters/. Use --dry-run to preview changes without writing.
+The installer preserves existing root instruction content with managed markers for Codex, Copilot, and Claude Code. Cursor's MDC rule is a dedicated managed file because its frontmatter must remain at the start. It refuses to overwrite unmanaged conflicting files and records owned paths under .agent-ecosystem/adapters/. Use --dry-run to preview changes without writing.
 
 See [Native Runtime Adapters](adapters/README.md) for runtime-specific locations and limitations.
 
