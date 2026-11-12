@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build native Codex, GitHub Copilot, and Claude Code adapter bundles."""
+"""Build native Codex, GitHub Copilot, Claude Code, and Cursor adapter bundles."""
 from __future__ import annotations
 
 import argparse
