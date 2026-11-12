@@ -1,6 +1,6 @@
 # AI Agent Ecosystem
 
-**Version:** `0.3.1` — Single-repository Antigravity plugin  
+**Version:** `0.3.2` — Single-repository Antigravity plugin  
 **Runtime:** Google Antigravity (`agy`)  
 **License:** MIT
 
@@ -38,8 +38,7 @@ If the custom agent can only read files despite Turbo, see [Agent Diagnostics](d
 
 ## Capability validation
 
-All seven bundled agents have no `tools` allowlist, declare `inheritMcp: true`
-and `inheritCustomizations: true`, and discover 19 bundled skills on demand.
+All seven bundled agents explicitly declare the same 13 built-in Antigravity tools, set `commandExecutionPolicy: auto`, and keep `mainAgent: true`, `subagent: true`, `inheritMcp: true`, and `inheritCustomizations: true`. They discover 19 bundled skills on demand.
 MCP servers are inherited from the user environment; no MCP server ships with this plugin.
 
 ~~~powershell
@@ -92,18 +91,18 @@ The root `agents/`, `skills/`, `rules/`, and `plugin.json` are generated from th
 
 ## Agent tool access and mandatory preflight
 
-All seven bundled agents omit a per-agent `tools` allowlist, so the plugin requests Antigravity's documented default built-in tool exposure. Keep their YAML frontmatter valid and omit the `tools` property entirely. Their YAML frontmatter intentionally omits the `tools` property; for bundled plugin agents, Antigravity documents omission as the default that exposes all built-in tools. Do not add a partial list or `tools: []`, because that would restrict the agent.
+Live Antigravity runtime testing confirmed that omitting `tools` when `subagent: true` is present exposes only a six-tool read-only baseline. Therefore every canonical agent explicitly declares the complete 13-tool list in `contracts/agent-tool-policy.json`. The validator enforces exact names and order; do not omit the list or replace it with a partial allowlist.
 
 Every agent also sets:
 - `inheritMcp: true` — inherit MCP servers and tools configured for the parent session.
 - `inheritCustomizations: true` — inherit applicable workspace skills, rules, and hooks.
-- `commandExecutionPolicy` is intentionally omitted — the plugin does not pin a per-agent command execution policy.
+- `commandExecutionPolicy: auto` — enables the tested runtime's full command-execution behavior. Host security controls still apply.
 
 **The agent's role defines responsibility, not tool availability.** UI/UX, QA, Frontend, Backend, Infrastructure, Architecture, and Orchestrator can all use available built-in tools and inherited MCP tools when useful.
 
 The user remains in control of execution and security through Antigravity settings: permission presets, allow/ask/deny rules, terminal auto-execution, sandboxing, workspace boundaries, non-workspace file access, and MCP permissions. Tool exposure does not prove an operation is authorized or succeeds. Before implementation or dispatch, run `/capability-smoke-test` in the exact agent/session/workspace and block dependent work until required operations are verified. The framework detects and gates missing capabilities; it cannot grant host permissions.
 
-The full-access contract is defined in [contracts/agent-tool-policy.json](contracts/agent-tool-policy.json) and checked by [scripts/validate_agent_tools.py](scripts/validate_agent_tools.py). If an operation is denied or not exposed, diagnose the host permission/runtime restriction rather than assuming the agent can work around it. Run `/capability-smoke-test` before each task that needs write, terminal, MCP or delegation access. A read-only probe cannot establish write permission.
+The explicit runtime contract is defined in [contracts/agent-tool-policy.json](contracts/agent-tool-policy.json) and checked by [scripts/validate_agent_tools.py](scripts/validate_agent_tools.py). If an operation is denied or not exposed, diagnose the host permission/runtime restriction rather than assuming the agent can work around it. Run `/capability-smoke-test` before each task that needs write, terminal, MCP or delegation access. A read-only probe cannot establish write permission.
 
 ## Persistent Project Memory
 
