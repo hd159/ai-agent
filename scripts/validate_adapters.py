@@ -104,6 +104,8 @@ def validate(root: Path = ROOT) -> tuple[list[str], dict]:
                         continue
                     if name != path.name.removesuffix(layout["extension"]) or not description:
                         errors.append(f"{path.relative_to(bundle)}: invalid native agent frontmatter")
+                    if adapter == "copilot" and "include-custom-instructions: true" not in text:
+                        errors.append(f"{path.relative_to(bundle)}: Copilot subagents must include repository custom instructions")
                 if not body.strip():
                     errors.append(f"{path.relative_to(bundle)}: empty native agent instructions")
                 if "commandExecutionPolicy:" in text or "inheritCustomizations:" in text:
