@@ -102,5 +102,26 @@
     "tool_names": "Do not copy Antigravity tool names or allowlists into other platform manifests.",
     "permissions": "Generated profiles do not grant host permissions, shell access, MCP connectivity, or approval rights.",
     "verification": "Run real read, write, terminal, MCP, and delegation probes separately in each target runtime and surface."
+  },
+  "marketplaces": {
+    "codex": {
+      "catalog": ".agents/plugins/marketplace.json",
+      "package": "plugins/ai-agent-ecosystem/",
+      "manifest": "plugins/ai-agent-ecosystem/.codex-plugin/plugin.json",
+      "components": [
+        "skills"
+      ],
+      "note": "Codex plugin packages do not declare Cursor-style agent or rule components; install AGENTS.md and .codex/agents through the native adapter."
+    },
+    "cursor": {
+      "catalog": ".cursor-plugin/marketplace.json",
+      "package": "plugins/ai-agent-ecosystem/",
+      "manifest": "plugins/ai-agent-ecosystem/.cursor-plugin/plugin.json",
+      "components": [
+        "agents",
+        "rules",
+        "skills"
+      ]
+    }
   }
 }
