@@ -49,11 +49,15 @@ def build_cursor_components(root: Path = ROOT, destination: Path | None = None, 
             "under skills/ and load only the relevant SKILL.md files.",
         )
         expected["rules/ai-agent-ecosystem.mdc"] = rule_content.encode("utf-8")
+        source_skills = bundle / ".cursor" / "skills"
+        for skill_file in sorted(source_skills.glob("*/SKILL.md")):
+            expected[f"skills/{skill_file.parent.name}/SKILL.md"] = skill_file.read_bytes()
         generated = {
             "generator": "scripts/build_marketplace_components.py",
             "ecosystem_version": json.loads((root / "ecosystem.json").read_text(encoding="utf-8"))["version"],
             "agents": sorted(path.stem for path in source_agents.glob("*.md")),
             "rules": ["ai-agent-ecosystem.mdc"],
+            "skills": sorted(path.parent.name for path in source_skills.glob("*/SKILL.md")),
         }
         expected[MARKER] = (json.dumps(generated, indent=2) + "\n").encode("utf-8")
 
@@ -94,7 +98,7 @@ def build_cursor_components(root: Path = ROOT, destination: Path | None = None, 
             unexpected = actual - set(expected)
             if unexpected:
                 return [f"refusing to delete unowned files: {sorted(unexpected)}"]
-            for name in ("agents", "rules"):
+            for name in ("agents", "rules", "skills"):
                 child = destination / name
                 if child.is_symlink():
                     return [f"refusing to replace symlink: {child}"]
