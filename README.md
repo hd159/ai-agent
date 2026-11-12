@@ -33,7 +33,7 @@ All specialists ship together. You do **not** need to install or clone nine sepa
 
 The repository now exposes two platform-native marketplace catalogs. Add the GitHub repository directly; do not point Codex at the nested plugin folder.
 
-**Codex:** In Add plugin marketplace, set Source to `https://github.com/hd159/ai-agent`, Git ref to `main`, and leave **Sparse paths empty**. The catalog is `.agents/plugins/marketplace.json`. You can also run:
+**Codex:** In Add plugin marketplace, set Source to `https://github.com/hd159/ai-agent`, Git ref to `main`, and leave **Sparse paths empty**. The catalog is `.agents/plugins/marketplace.json` and references the nested plugin folder inside the same checkout. You can also run:
 
 ```bash
 codex plugin marketplace add hd159/ai-agent --ref main
