@@ -19,8 +19,8 @@ The adapter builder reads the canonical agent frontmatter, removes only the Anti
 | Runtime | Always-on instructions | Specialist agents | Skills |
 |---|---|---|---|
 | Antigravity | Plugin rules and agent prompts | agents/*.md | skills/*/SKILL.md |
-| Codex CLI | AGENTS.md | .codex/agents/*.toml | .agents/skills/*/SKILL.md |
-| Copilot CLI / supported VS Code agent mode | .github/copilot-instructions.md | .github/agents/*.agent.md | .github/skills/*/SKILL.md |
+| Codex local clients (CLI, desktop app, IDE extension) | AGENTS.md | .codex/agents/*.toml | .agents/skills/*/SKILL.md |
+| Copilot CLI / supported VS Code agent mode / GitHub.com custom agent assignment (no subagent delegation) | .github/copilot-instructions.md | .github/agents/*.agent.md | .github/skills/*/SKILL.md |
 | Claude Code CLI | CLAUDE.md | .claude/agents/*.md | .claude/skills/*/SKILL.md |
 
 Codex TOML uses name, description, and developer_instructions. Copilot profiles use native Markdown frontmatter with name, description, and include-custom-instructions: true so Copilot subagents load repository instructions; Claude profiles use name and description. Tool restrictions are omitted from non-Antigravity profiles so each runtime applies its own configured tool and permission policy. Copilot skills use .github/skills to keep adapter-owned skill files isolated when Codex and Copilot are both installed in the same project.
