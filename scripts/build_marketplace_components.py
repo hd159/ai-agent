@@ -15,11 +15,11 @@ MARKER = ".generated-by-ai-agent-ecosystem.json"
 
 def build_cursor_components(root: Path = ROOT, destination: Path | None = None, check: bool = False) -> list[str]:
     root = root.resolve()
-    destination = (destination or root / "cursor-plugin").resolve()
+    raw_destination = destination or root / "cursor-plugin"
+    if raw_destination.is_symlink():
+        return [f"refusing symlink destination: {raw_destination}"]
+    destination = raw_destination.resolve()
     errors: list[str] = []
-
-    if destination.is_symlink():
-        return [f"refusing symlink destination: {destination}"]
     if destination.exists() and not destination.is_dir():
         return [f"destination is not a directory: {destination}"]
 
@@ -34,10 +34,20 @@ def build_cursor_components(root: Path = ROOT, destination: Path | None = None, 
         source_agents = bundle / ".cursor" / "agents"
         source_rule = bundle / ".cursor" / "rules" / "ai-agent-ecosystem.mdc"
         for path in sorted(source_agents.glob("*.md")):
-            expected[f"agents/{path.name}"] = path.read_bytes()
+            content = path.read_text(encoding="utf-8")
+            content = content.replace(
+                "Use the custom profiles in .cursor/agents/",
+                "Use the custom profiles in cursor-plugin/agents/",
+            )
+            expected[f"agents/{path.name}"] = content.encode("utf-8")
         if not source_rule.is_file():
             return ["canonical Cursor adapter did not generate ai-agent-ecosystem.mdc"]
-        expected["rules/ai-agent-ecosystem.mdc"] = source_rule.read_bytes()
+        rule_content = source_rule.read_text(encoding="utf-8")
+        rule_content = rule_content.replace(
+            "under .cursor/skills/ and load only the relevant SKILL.md files.",
+            "under skills/ and load only the relevant SKILL.md files.",
+        )
+        expected["rules/ai-agent-ecosystem.mdc"] = rule_content.encode("utf-8")
         generated = {
             "generator": "scripts/build_marketplace_components.py",
             "ecosystem_version": json.loads((root / "ecosystem.json").read_text(encoding="utf-8"))["version"],
@@ -75,6 +85,14 @@ def build_cursor_components(root: Path = ROOT, destination: Path | None = None, 
                 return [f"invalid generated ownership marker: {exc}"]
             if previous.get("generator") != generated["generator"]:
                 return [f"generated ownership marker mismatch: {destination}"]
+            actual = {
+                path.relative_to(destination).as_posix()
+                for path in destination.rglob("*")
+                if path.is_file()
+            }
+            unexpected = actual - set(expected)
+            if unexpected:
+                return [f"refusing to delete unowned files: {sorted(unexpected)}"]
             for name in ("agents", "rules"):
                 child = destination / name
                 if child.is_symlink():
