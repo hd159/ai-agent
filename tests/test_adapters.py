@@ -101,7 +101,7 @@ class AdapterBuildTests(unittest.TestCase):
 
     def test_non_antigravity_profiles_have_no_antigravity_frontmatter(self):
         build_all_adapters(ROOT, self.output)
-        for adapter in ("copilot", "claude-code"):
+        for adapter in ("copilot", "claude-code", "cursor"):
             agent_dir = self.output / adapter / LAYOUTS[adapter]["agents"]
             for path in agent_dir.iterdir():
                 content = path.read_text(encoding="utf-8")
