@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Static capability audit for bundled agents, skills, rules, and MCP inheritance.
-
-Does not prove that host runtime exposes tools or grants permissions.
-"""
+"""Static capability audit for bundled agents, skills, rules, and MCP inheritance."""
 from __future__ import annotations
 
 import argparse
@@ -53,9 +50,9 @@ def audit(root: Path) -> tuple[list[str], dict]:
     errors = []
     stats = {"agents": 0, "skills": 0, "rules": 0, "bundled_mcp_servers": 0}
     try:
-        policy = json.loads((root / "contracts/agent-tool-policy.json").read_text())
-        manifest = json.loads((root / "plugin.json").read_text())
-        catalog = json.loads((root / "ecosystem.json").read_text())
+        policy = json.loads((root / "contracts/agent-tool-policy.json").read_text(encoding="utf-8"))
+        manifest = json.loads((root / "plugin.json").read_text(encoding="utf-8"))
+        catalog = json.loads((root / "ecosystem.json").read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         return [f"Missing/invalid manifest, policy or catalog: {exc}"], stats
 
@@ -63,8 +60,21 @@ def audit(root: Path) -> tuple[list[str], dict]:
         errors.append("plugin manifest is disabled or has the wrong name")
     if manifest.get("version") != catalog.get("version"):
         errors.append("plugin and ecosystem versions differ")
+    if manifest.get("version") != "0.3.2":
+        errors.append("plugin version must be 0.3.2")
     if "skills" in manifest and manifest["skills"] not in ("skills", "./skills", ["skills"], ["./skills"]):
         errors.append("plugin skills override may hide bundled skills")
+
+    policy_fm = policy.get("frontmatter", {})
+    expected_tools = policy_fm.get("tools")
+    if not isinstance(expected_tools, list) or len(expected_tools) != 13 or len(set(expected_tools)) != 13:
+        errors.append("agent-tool-policy.json: frontmatter.tools must contain exactly 13 unique tool names")
+        expected_tools = []
+    if policy_fm.get("commandExecutionPolicy") != "auto":
+        errors.append("agent-tool-policy.json: commandExecutionPolicy must be 'auto'")
+    for key in ("mainAgent", "subagent", "inheritMcp", "inheritCustomizations"):
+        if policy_fm.get(key) is not True:
+            errors.append(f"agent-tool-policy.json: {key} must be true")
 
     expected = set(policy.get("agents", []))
     sources = list((root / "modules").glob("*/agents/*.md"))
@@ -80,9 +90,13 @@ def audit(root: Path) -> tuple[list[str], dict]:
         for key in ("mainAgent", "subagent", "inheritMcp", "inheritCustomizations"):
             if data.get(key) is not True:
                 errors.append(f"{path.relative_to(root)}: {key} must be true")
-        for forbidden in ("tools", "commandExecutionPolicy", "mcpServers", "skills"):
-            if forbidden in data:
-                errors.append(f"{path.relative_to(root)}: {forbidden} restricts/deviates from full inherited access")
+        if data.get("tools") != expected_tools:
+            errors.append(f"{path.relative_to(root)}: tools must exactly match the 13-tool policy list")
+        if data.get("commandExecutionPolicy") != "auto":
+            errors.append(f"{path.relative_to(root)}: commandExecutionPolicy must be 'auto'")
+        for key in ("mcpServers", "skills"):
+            if key in data:
+                errors.append(f"{path.relative_to(root)}: {key} overrides are not permitted")
         generated = root / "agents" / path.name
         if not generated.exists() or generated.read_bytes() != path.read_bytes():
             errors.append(f"agents/{path.name}: generated copy missing or different")
@@ -111,7 +125,7 @@ def audit(root: Path) -> tuple[list[str], dict]:
     packaged_rule = root / "rules/AGENTS.md"
     if not source_rule.exists() or not packaged_rule.exists():
         errors.append("missing always-on AGENTS.md rule")
-    elif source_rule.read_bytes() != packaged_rule.read_bytes() or not packaged_rule.read_text().strip():
+    elif source_rule.read_bytes() != packaged_rule.read_bytes() or not packaged_rule.read_text(encoding="utf-8").strip():
         errors.append("always-on AGENTS.md is empty or out of sync")
     else:
         stats["rules"] = 1
@@ -124,7 +138,7 @@ def audit(root: Path) -> tuple[list[str], dict]:
     mcp = root / "mcp_config.json"
     if mcp.exists():
         try:
-            obj = json.loads(mcp.read_text())
+            obj = json.loads(mcp.read_text(encoding="utf-8"))
             servers = obj.get("mcpServers")
             if not isinstance(servers, dict):
                 errors.append("mcp_config.json: mcpServers must be an object")

@@ -1,6 +1,6 @@
 {
   "displayName": "Backend Agent",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Designs and implements backend domain logic, APIs, persistence, validation, integrations, authorization, and backend tests against approved architecture.",
   "author": {
     "name": "AI Agent Ecosystem contributors"

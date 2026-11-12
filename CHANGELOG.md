@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.2 — Explicit Antigravity runtime tool access
+
+- Declare the exact 13 built-in Antigravity tools in all seven canonical agent manifests.
+- Set commandExecutionPolicy: auto while preserving mainAgent, subagent, MCP and customization inheritance.
+- Update static validators and regression tests to enforce the explicit tool contract and UTF-8-safe file reads.
+- Document the live runtime finding: omitting tools on subagents yields a six-tool read-only baseline.
+- Rebuild and validate the single-plugin root bundle from canonical modules.
+
+
 ## Unreleased — Fail-closed runtime capability preflight
 
 - Require task-specific real tool probes before implementation, dispatch, terminal work, or project-memory writes.

@@ -1,12 +1,28 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "platform": "Google Antigravity",
-  "purpose": "Give every bundled agent the full built-in Antigravity toolset and inherit the parent session's MCP servers and customizations; leave execution authorization to host/user settings.",
+  "purpose": "Declare the explicitly verified 13-tool Antigravity runtime set for all bundled agents, enable automatic command execution policy, and inherit parent MCP servers and customizations.",
   "frontmatter": {
-    "tools": "omitted — Antigravity's bundled-plugin default exposes all built-in tools",
+    "tools": [
+      "read_file",
+      "write_file",
+      "edit_file",
+      "run_command",
+      "define_subagent",
+      "invoke_subagent",
+      "manage_subagents",
+      "manage_task",
+      "schedule",
+      "search_web",
+      "send_message",
+      "generate_image",
+      "ask_question"
+    ],
+    "commandExecutionPolicy": "auto",
+    "mainAgent": true,
+    "subagent": true,
     "inheritMcp": true,
-    "inheritCustomizations": true,
-    "commandExecutionPolicy": "omitted — do not pin a per-agent execution policy"
+    "inheritCustomizations": true
   },
   "agents": [
     "team-orchestrator",
@@ -25,15 +41,13 @@
     "https://antigravity.google/docs/hooks"
   ],
   "notes": [
-    "Do not add a tools property or tools: []; omission is intentional and grants the full built-in toolset to bundled plugin agents.",
-    "inheritMcp: true lets each agent inherit MCP servers and tools configured for its parent session.",
-    "inheritCustomizations: true inherits applicable workspace skills, rules, and hooks.",
-    "commandExecutionPolicy is omitted so the plugin does not impose a per-agent execution mode; Antigravity defaults and user/global/project/session settings govern execution.",
-    "Tool availability is not authorization. Antigravity host permissions, allow/ask/deny rules, sandboxing, workspace boundaries, and approval prompts remain authoritative.",
-    "Agent roles define responsibility and task ownership, not tool access. The Orchestrator remains the coordinator and single writer of shared execution state.",
-    "Keep canonical module agents and generated root agents synchronized.",
-    "All bundled skills are discoverable on demand; no per-agent skill allowlist is declared.",
+    "The live Antigravity runtime was tested: omitting tools from a plugin agent manifest when subagent: true is present restricts the agent to a six-tool read-only baseline.",
+    "Every canonical agent must explicitly declare the exact 13 built-in tools in the order listed in frontmatter.tools.",
+    "commandExecutionPolicy: auto is required for full command execution behavior in the tested runtime.",
+    "Keep mainAgent: true, subagent: true, inheritMcp: true, and inheritCustomizations: true on all seven canonical agents.",
+    "Host permissions, sandboxing, workspace boundaries, and explicit approval requirements remain authoritative; tool exposure and auto command policy do not bypass host security controls.",
+    "Keep canonical module agents and generated root agents synchronized by running scripts/build_single_plugin.py.",
     "No MCP servers are bundled by default. inheritMcp exposes only connected/authorized user-configured MCP tools.",
-    "Static validation cannot prove runtime rights. Run /capability-smoke-test in a fresh session for each agent."
+    "Static validation checks the declared contract; runtime behavior must still be smoke-tested in Antigravity."
   ]
 }

@@ -64,13 +64,13 @@ Repeat the same smoke test in a new session with the **default built-in agent**,
 | CLI works but App does not | App session or plugin activation | Start a new App conversation and inspect App plugin details |
 | Write/terminal tool exists but is denied | Actual host policy | Review permission prompt, sandbox or workspace rules |
 
-## 5. Tool metadata is not a runtime test
+## 5. Explicit tool declaration required by the tested runtime
 
-This plugin intentionally omits the `tools` frontmatter field. The Antigravity **Build plugins** documentation says bundled agents without a `tools` list receive all built-in tools; the separate **Custom subagents** reference lists a different default for its subagent interface. A read-only session may indicate a surface-specific difference, old loaded definition, or other host limitation. Do not claim a definite root cause until the runtime tools and installed plugin copy are inspected.
+Live Antigravity runtime testing confirmed that omitting `tools` while `subagent: true` is present restricts a plugin agent to a six-tool read-only baseline (`read_file`, `search_web`, `manage_task`, `schedule`, `generate_image`, `send_message`). Explicitly declaring the 13 built-in tool primitives and `commandExecutionPolicy: auto` unlocks full execution and native subagent delegation in the tested runtime. This is the repository's required manifest contract from v0.3.2 onward.
 
 References: https://antigravity.google/docs/build-plugins and https://antigravity.google/docs/subagents
 
-The user controls allow/ask/deny, sandbox, workspace access, and other host execution permissions. Those settings do not alter which tools were exposed to the session.
+`commandExecutionPolicy: auto` does not bypass host permission prompts, allow/ask/deny rules, sandboxing, workspace access, or explicit approval requirements. The tool list controls exposure; host policy still controls authorization.
 
 ## 6. Diagnostics to collect
 
