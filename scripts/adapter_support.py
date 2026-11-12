@@ -275,9 +275,15 @@ def _remove_managed_block(existing: str) -> tuple[str, bool]:
 
 def _safe_target(target: Path, relative: str) -> Path:
     rel = PurePosixPath(relative)
-    if rel.is_absolute() or ".." in rel.parts:
+    if rel.is_absolute() or ".." in rel.parts or "\\" in relative or "\x00" in relative:
         raise ValueError(f"Unsafe generated path: {relative}")
-    return target.joinpath(*rel.parts)
+    if rel.parts and ":" in rel.parts[0]:
+        raise ValueError(f"Unsafe generated path: {relative}")
+    candidate = target.joinpath(*rel.parts)
+    resolved = candidate.resolve(strict=False)
+    if resolved != target and target not in resolved.parents:
+        raise ValueError(f"Generated path escapes target through a symlink: {relative}")
+    return candidate
 
 
 def _write_text(path: Path, content: str) -> None:
@@ -305,7 +311,7 @@ def install_adapter(
     if adapter not in ADAPTERS:
         raise ValueError(f"Unsupported adapter '{adapter}'. Choose from: {', '.join(ADAPTERS)}")
     target = target.resolve()
-    registry = target / ".agent-ecosystem" / "adapters" / f"{adapter}.json"
+    registry = _safe_target(target, f".agent-ecosystem/adapters/{adapter}.json")
 
     if uninstall:
         if not registry.is_file():
@@ -330,6 +336,9 @@ def install_adapter(
                 else:
                     conflicts.append(f"{relative}: ownership markers missing; left untouched")
             else:
+                if not path.is_file():
+                    conflicts.append(f"{relative}: managed path is no longer a regular file; left untouched")
+                    continue
                 if not dry_run:
                     path.unlink()
                 removed.append(relative)
@@ -365,19 +374,23 @@ def install_adapter(
                 except ValueError as exc:
                     conflicts.append(f"{relative}: {exc}")
                     continue
+                existed_before = destination.is_file()
                 if merged == existing:
                     unchanged.append(relative)
                 else:
                     if not dry_run:
                         _write_text(destination, merged)
-                    (updated if destination.exists() else installed).append(relative)
+                    (updated if existed_before else installed).append(relative)
                 managed_files.append(relative)
                 continue
 
             new_bytes = source.read_bytes()
             if destination.exists():
                 if relative in old_files:
-                    if destination.is_file() and destination.read_bytes() == new_bytes:
+                    if not destination.is_file():
+                        conflicts.append(f"{relative}: managed path is no longer a regular file; left untouched")
+                        continue
+                    if destination.read_bytes() == new_bytes:
                         unchanged.append(relative)
                     else:
                         if not dry_run:
