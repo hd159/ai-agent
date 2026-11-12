@@ -119,7 +119,7 @@ For each dispatch:
 
 The SaaS MVP preset sets max_parallel_agents to 3. This is a team policy; the host runtime must also support the required concurrent subagent sessions.
 
-If native dispatch is unavailable, prepare dispatch-ready contracts and execution waves. Tell the user that tasks are prepared but not dispatched. Never fabricate an agent run or its result.
+If native dispatch is unavailable, the Orchestrator may execute the work itself only when its own required capabilities are verified and the task is within its role and approved scope. If it cannot execute directly, mark the dependent work blocked and report the exact capability failure and remediation. Do not create task contracts, dependency graphs, full-code specifications, or handoff packages as an automatic fallback. Produce those planning artifacts only when the user explicitly requests them. Never fabricate an agent run or its result.
 
 ## 8. Handoff contract
 
