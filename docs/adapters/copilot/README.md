@@ -15,13 +15,13 @@ The Copilot adapter generates repository instructions, custom agent profiles, an
     qa-agent.agent.md
     team-orchestrator.agent.md
     uiux-design-agent.agent.md
-.agents/
+.github/
   skills/
     <skill-name>/
       SKILL.md
 ~~~
 
-The agent profiles use native Markdown frontmatter with name, description, and include-custom-instructions: true so Copilot subagents receive repository custom instructions. Tool restrictions are intentionally omitted: the active Copilot surface controls which tools are available. Shared skills use .agents/skills, a supported project-level location.
+The agent profiles use native Markdown frontmatter with name, description, and include-custom-instructions: true so Copilot subagents receive repository custom instructions. Tool restrictions are intentionally omitted: the active Copilot surface controls which tools are available. Skills use .github/skills, GitHub Copilot's native project-level location. This keeps adapter-owned files isolated when multiple runtimes are installed in one project.
 
 ## Install into a project
 
