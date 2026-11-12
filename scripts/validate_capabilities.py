@@ -161,7 +161,7 @@ def main() -> int:
             print(" -", error)
         return 1
     print(f"PASS: {stats['agents']} agents, {stats['skills']} skills, {stats['rules']} always-on rule, {stats['bundled_mcp_servers']} bundled MCP servers")
-    print("Static only. Host permissions/MCP connectivity must be checked in Antigravity runtime.")
+    print("Static only. Host permissions, MCP connectivity, and delegation must be checked in each runtime and surface.")
     return 0
 
 
