@@ -2,10 +2,10 @@
 
 **Ecosystem:** `0.4.0` — Hybrid multi-runtime agent framework  
 **Antigravity plugin:** `0.3.2` (backward-compatible)  
-**Runtimes:** Antigravity, Codex (CLI / desktop / IDE), GitHub Copilot, Claude Code CLI  
+**Runtimes:** Antigravity, Codex (CLI / desktop / IDE), GitHub Copilot, Claude Code CLI, Cursor  
 **License:** MIT
 
-A complete multi-agent engineering team maintained in **one canonical GitHub repository**. It preserves the installable Antigravity plugin and generates native agent profiles, instructions, and reusable skills for Codex, GitHub Copilot, and Claude Code.
+A complete multi-agent engineering team maintained in **one canonical GitHub repository**. It preserves the installable Antigravity plugin and generates native agent profiles, instructions, and reusable skills for Codex, GitHub Copilot, Claude Code, and Cursor.
 
 ## Install — one command
 
@@ -41,9 +41,10 @@ python .\scripts\install_adapter.py --adapter all --target ..\my-project
 python .\scripts\install_adapter.py --adapter codex --target ..\my-project
 python .\scripts\install_adapter.py --adapter copilot --target ..\my-project
 python .\scripts\install_adapter.py --adapter claude-code --target ..\my-project
+python .\scripts\install_adapter.py --adapter cursor --target ..\my-project
 ```
 
-Run with `--dry-run` before installing. Existing root instructions are preserved inside managed blocks; unmanaged conflicting agent or skill files are not overwritten. Re-run the install command to update. Use `--uninstall` to remove only installer-managed files.
+Run with `--dry-run` before installing. Existing root instructions are preserved inside managed blocks; Cursor receives a dedicated `.cursor/rules/ai-agent-ecosystem.mdc` file because MDC frontmatter must remain at the file start. Unmanaged conflicting agent, rule, or skill files are not overwritten. Re-run the install command to update. Use `--uninstall` to remove only installer-managed files.
 
 See [Native Runtime Adapters](docs/adapters/README.md) and [Multi-Platform Adapter Architecture](docs/architecture/MULTI-PLATFORM-ADAPTERS.md).
 
@@ -237,7 +238,7 @@ The user documentation is organized by the lifecycle of adopting and using the e
 | [Architecture Documentation Standard](docs/ARCHITECTURE-DOCUMENTATION-STANDARD.md) | Audit versioning, current/target architecture, C4, ADRs, findings register, scoring, and evidence |
 | [Quality Gates](docs/QUALITY-GATES.md) | Executable task, evidence, state and release gate checks |
 | [Prompt Cookbook](docs/PROMPT-COOKBOOK.md) | Reusable prompts for initialization, resume, feature work, bug fixes, architecture/security review, QA, and release |
-| [Native Runtime Adapters](docs/adapters/README.md) | Generate and safely install native Codex, Copilot, and Claude Code profiles and skills |
+| [Native Runtime Adapters](docs/adapters/README.md) | Generate and safely install native Codex, Copilot, Claude Code, and Cursor profiles, rules, and skills |
 | [Multi-Platform Adapter Architecture](docs/architecture/MULTI-PLATFORM-ADAPTERS.md) | Canonical sources, native layouts, versioning, capability boundaries, and installer safety |
 
 ### Architecture and project templates
