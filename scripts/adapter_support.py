@@ -51,6 +51,7 @@ RUNTIME_NOTES = {
         "## Runtime execution and delegation\n"
         "- Use Cursor's native subagent delegation only when it is exposed and authorized in the current Editor, CLI, or Cloud Agent session.\n"
         "- Use the custom profiles in .cursor/agents/ for specialist work and preserve bounded task ownership and handoff contracts.\n"
+        "- Cursor subagents start with a clean context; include the necessary background, constraints, owned paths, acceptance criteria, and relevant decisions in each delegation prompt.\n"
         "- Do not invent tool names or claim a subagent was invoked without a real invocation.\n"
         "- Agent profiles do not grant filesystem, shell, network, MCP, or approval permissions.\n"
     ),
