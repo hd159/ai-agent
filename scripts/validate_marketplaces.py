@@ -38,13 +38,8 @@ def validate(root: Path = ROOT) -> list[str]:
         source = entry.get("source", {})
         if entry.get("name") != "ai-agent-ecosystem":
             errors.append("Codex marketplace plugin name mismatch")
-        if (
-            source.get("source") != "git-subdir"
-            or source.get("url") != "https://github.com/hd159/ai-agent"
-            or source.get("path") != f"./{PACKAGE}"
-            or source.get("ref") != "main"
-        ):
-            errors.append("Codex marketplace must use the documented Git subdirectory source")
+        if source.get("source") != "local" or source.get("path") != f"./{PACKAGE}":
+            errors.append("Codex marketplace must reference the nested local package relative to the repository root")
         policy = entry.get("policy", {})
         if policy.get("installation") != "AVAILABLE" or policy.get("authentication") != "ON_INSTALL":
             errors.append("Codex marketplace installation/authentication policy mismatch")
