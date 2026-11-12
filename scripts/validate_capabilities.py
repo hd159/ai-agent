@@ -58,10 +58,11 @@ def audit(root: Path) -> tuple[list[str], dict]:
 
     if manifest.get("disabled") is True or manifest.get("name") != "ai-agent":
         errors.append("plugin manifest is disabled or has the wrong name")
-    if manifest.get("version") != catalog.get("version"):
-        errors.append("plugin and ecosystem versions differ")
+    antigravity_version = catalog.get("adapters", {}).get("antigravity", {}).get("version", catalog.get("version"))
+    if manifest.get("version") != antigravity_version:
+        errors.append("plugin version must match ecosystem adapters.antigravity.version")
     if manifest.get("version") != "0.3.2":
-        errors.append("plugin version must be 0.3.2")
+        errors.append("backward-compatible Antigravity plugin version must remain 0.3.2")
     if "skills" in manifest and manifest["skills"] not in ("skills", "./skills", ["skills"], ["./skills"]):
         errors.append("plugin skills override may hide bundled skills")
 
