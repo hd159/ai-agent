@@ -1,34 +1,36 @@
-# Antigravity Adapter
+# Antigravity Adapter — v0.3.2 (backward-compatible)
 
-Antigravity is the first supported runtime. The complete ecosystem is shipped as one installable plugin.
+Antigravity remains the existing first-party plugin adapter. Ecosystem v0.4.0 adds Codex, GitHub Copilot, and Claude Code adapters without changing the Antigravity plugin's version, manifest contract, or installation command.
 
 ## Install from GitHub
 
-```powershell
+~~~powershell
 agy plugin install https://github.com/hd159/ai-agent
 agy plugin list
 agy agents
-```
+~~~
 
-This single install includes the Team Orchestrator, Architecture, UI/UX, Frontend, Backend, Infrastructure, and QA agents, all 16 skills, and shared constitution rules.
+The root plugin.json intentionally remains version 0.3.2. The shared ecosystem catalog is version 0.4.0; this is not a request to upgrade or reinterpret the Antigravity manifest.
 
 ## Team preset
 
-The `teams/saas-mvp/team.json` file describes logical team membership and workflow. It does not require installing separate repositories. To run the convenience helper from a clone of this repository:
+The teams/saas-mvp/team.json file describes logical team membership and workflow. It does not require installing separate repositories.
 
-```powershell
+~~~powershell
 python .\scripts\install_team.py --team saas-mvp
-```
+~~~
+
+## Runtime contract
+
+All seven Antigravity agent manifests retain the explicit 13 built-in tools, commandExecutionPolicy: auto, mainAgent, subagent, MCP inheritance, and customization inheritance. See contracts/agent-tool-policy.json and docs/AGENT-DIAGNOSTICS.md.
+
+Native delegation and file writes still depend on the active Antigravity runtime, workspace, and host permissions. Run the capability-smoke-test in the exact agent/session/workspace. Static validation does not grant permissions.
 
 ## Update and uninstall
 
-Run the same GitHub install command again to update the bundle:
+Run the same GitHub install command again to update the plugin:
 
-```powershell
+~~~powershell
 agy plugin install https://github.com/hd159/ai-agent
 agy plugin uninstall ai-agent
-```
-
-## Runtime caveat
-
-Native subagent delegation depends on the installed Antigravity runtime and permissions. The Team Orchestrator includes a fallback that creates task contracts when native delegation is unavailable.
+~~~
