@@ -39,7 +39,23 @@ def validate(root: Path = ROOT) -> tuple[list[str], dict]:
     errors = []
     stats = {"adapters": 0, "agents_per_adapter": 0, "skills_per_adapter": 0}
     policy = json.loads((root / "contracts/agent-tool-policy.json").read_text(encoding="utf-8"))
+    platform_contract = json.loads((root / "contracts/platform-adapters.json").read_text(encoding="utf-8"))
+    catalog = json.loads((root / "ecosystem.json").read_text(encoding="utf-8"))
     expected_agents = set(policy.get("agents", []))
+    if platform_contract.get("ecosystem_version") != catalog.get("version"):
+        errors.append("platform-adapters.json ecosystem_version does not match ecosystem.json")
+    for adapter in ADAPTERS:
+        declared = platform_contract.get("adapters", {}).get(adapter, {})
+        catalog_adapter = catalog.get("adapters", {}).get(adapter, {})
+        layout = LAYOUTS[adapter]
+        if declared.get("version") != catalog_adapter.get("version"):
+            errors.append(f"{adapter}: platform-adapters.json version mismatch")
+        if declared.get("instructions_file") != layout["instructions"]:
+            errors.append(f"{adapter}: platform-adapters.json instructions path mismatch")
+        if declared.get("agent_directory", "").rstrip("/") != layout["agents"]:
+            errors.append(f"{adapter}: platform-adapters.json agent directory mismatch")
+        if declared.get("skill_directory", "").rstrip("/") != layout["skills"]:
+            errors.append(f"{adapter}: platform-adapters.json skill directory mismatch")
     expected_skills = {path.parent.name for path in (root / "modules").glob("*/skills/*/SKILL.md")}
 
     with tempfile.TemporaryDirectory(prefix="ai-agent-adapter-validation-") as temporary:
