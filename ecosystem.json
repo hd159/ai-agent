@@ -160,7 +160,7 @@
       ],
       "instructions_file": ".github/copilot-instructions.md",
       "agent_directory": ".github/agents",
-      "skill_directory": ".agents/skills",
+      "skill_directory": ".github/skills",
       "agent_format": "Markdown YAML frontmatter and instructions",
       "notes": [
         "Subagent support is surface-dependent; GitHub.com custom-agent support does not imply subagent execution.",
