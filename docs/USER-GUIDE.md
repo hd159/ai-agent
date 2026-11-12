@@ -1,6 +1,6 @@
 # AI Agent Ecosystem — User Guide
 
-This guide explains how to install the reusable agent team, open a project, initialize project memory, delegate work, and resume work across sessions.
+This guide explains how to install the reusable agent team in Antigravity, Codex, GitHub Copilot, or Claude Code, open a project, initialize shared project memory, delegate work, and resume across sessions.
 
 ## 1. What is installed?
 
@@ -35,7 +35,18 @@ agy plugin uninstall ai-agent
 
 After updating, restart Antigravity and start a new session to load the updated agent definition. Check `agy plugin list --json` and `agy agents`. In the Antigravity App select Team Orchestrator using the agent selector (or Customizations > Installed > ai-agent > Agents). Do not type `@team-orchestrator` in the App composer; its `@` search does not select primary agents. In the CLI, use `agy --agent team-orchestrator` from the product repository root.
 
-## 3. Open the correct workspace
+## 3. Install Codex, Copilot, or Claude Code adapter
+
+For non-Antigravity runtimes, clone the ai-agent repository and install the adapter into the target project. Preview changes first:
+
+~~~powershell
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project
+~~~
+
+Choose copilot or claude-code for the other native formats. The installer preserves existing root instructions, avoids overwriting unmanaged conflicting profiles/skills, and records ownership under .agent-ecosystem/adapters/. See [Native Runtime Adapters](adapters/README.md) for details. Start a new runtime session after installation and run the capability-smoke-test skill where available.
+
+## 4. Open the correct workspace
 
 Open the root directory of the application you want the agents to work on, for example:
 
@@ -45,7 +56,7 @@ C:\work\certvault
 
 The active workspace should be the product repository, not the ai-agent plugin source repository. In a multi-root workspace, confirm which root contains the files the task should change.
 
-## 4. New project vs existing project
+## 5. New project vs existing project
 
 First check whether the project already has a non-empty .agent-ecosystem directory.
 
@@ -56,7 +67,7 @@ First check whether the project already has a non-empty .agent-ecosystem directo
 
 A new project usually starts with discovery, MVP scope, architecture, and approval. An existing project starts with source inspection, architecture recovery, audit reconciliation, and current-state reporting.
 
-## 5. Start work with Team Orchestrator
+## 6. Start work with Team Orchestrator
 
 Select Team Orchestrator in the Antigravity App agent picker, or run `agy --agent team-orchestrator` in the CLI. CLI `@` can message an existing subagent; App `@` does not select a primary custom agent.
 
@@ -85,7 +96,7 @@ Show project status from state.json and verify it against the current Git
 state. Summarize completed, active, blocked, and next tasks.
 ~~~
 
-## 6. Which agent should I call?
+## 7. Which agent should I call?
 
 Use Team Orchestrator for work that spans roles, has dependencies, needs a plan, or should be tracked across sessions.
 
@@ -102,7 +113,7 @@ Call a specialist directly for a focused, bounded task:
 
 A specialist assignment should include the goal, relevant files, constraints, acceptance criteria, and whether implementation is authorized.
 
-## 7. Common work modes
+## 8. Common work modes
 
 ### New feature
 
@@ -126,7 +137,7 @@ Ask Architecture Agent to inspect actual source and compare it with existing arc
 
 Ask QA and Infrastructure to verify release readiness, rollback, migrations, monitoring, secrets, and operational risks. Production-impacting actions require explicit user approval.
 
-## 8. How task delegation works
+## 9. How task delegation works
 
 Orchestrator creates a task contract before dispatch. A task should include:
 
