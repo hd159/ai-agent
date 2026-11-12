@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "ai-agent-ecosystem",
-      "source": ".",
+      "source": "plugins/ai-agent-ecosystem",
       "description": "Seven specialist agents, shared engineering rules, and 19 reusable skills.",
       "version": "0.4.0",
       "author": {
