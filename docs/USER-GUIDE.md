@@ -159,7 +159,7 @@ Only report a task as dispatched after a real subagent invocation. Only report i
 
 The default SaaS MVP team allows at most three parallel specialists. Do not allow parallel agents to edit overlapping paths. Use isolated branch/worktree execution for parallel code changes when supported by the host; otherwise serialize conflicting work.
 
-## 9. Persistent project memory
+## 10. Persistent project memory
 
 Project memory lives in the application's repository:
 
@@ -192,16 +192,37 @@ Project memory lives in the application's repository:
 
 At meaningful task boundaries and before handing control back, Orchestrator must update the affected task, reconcile state.json, create a dated session journal, and read the files back. Never store credentials, tokens, private keys, or secrets in project memory.
 
-## 10. Agent tools and permissions
+## 11. Agent tools and permissions
 
-Every bundled agent receives the **full Antigravity built-in toolset**. Agent frontmatter must remain valid YAML; never leave a tool-list item behind after removing the `tools:` key. The plugin intentionally omits the `tools` property from each agent's YAML frontmatter. For bundled plugin agents, Antigravity documents this as the default that exposes all built-in tools. Do not add a role-specific subset or `tools: []`.
+Every Antigravity plugin agent explicitly declares the **exact 13 built-in tools** and sets `commandExecutionPolicy: auto`. Keep these fields on all seven agents:
 
-Each agent also declares:
-- `inheritMcp: true`: inherit MCP servers and tools configured for the parent session.
-- `inheritCustomizations: true`: inherit applicable skills, rules, and hooks.
-- No `commandExecutionPolicy`: the plugin does not pin a per-agent command execution policy.
+~~~yaml
+mainAgent: true
+subagent: true
+commandExecutionPolicy: auto
+tools:
+  - read_file
+  - write_file
+  - edit_file
+  - run_command
+  - define_subagent
+  - invoke_subagent
+  - manage_subagents
+  - manage_task
+  - schedule
+  - search_web
+  - send_message
+  - generate_image
+  - ask_question
+inheritMcp: true
+inheritCustomizations: true
+~~~
 
-The role of an agent defines its responsibility and task ownership, **not** which tools it is allowed to see. All seven agents can use available file, search, terminal, task, collaboration, question, image, and inherited MCP tools when useful.
+Do not remove the `tools` list or change the execution policy to an implicit default. Live Antigravity runtime testing confirmed that omitting `tools` while `subagent: true` is present exposes only a six-tool read-only baseline. Explicitly declaring the 13 tools and `commandExecutionPolicy: auto` unlocks the tested full execution and native delegation behavior.
+
+This is specific to the Antigravity adapter. Codex, Copilot, and Claude Code adapters intentionally use each host's native agent profile format and do not copy Antigravity tool names or policies.
+
+The agent role defines responsibility and task ownership, **not which tools the host exposes**. The manifest describes tool exposure; it does not authorize an operation or guarantee that it succeeds.
 
 ### User-controlled permissions
 
@@ -215,7 +236,7 @@ On Windows, configure the relevant controls in Antigravity's Agent Settings / pe
 
 If an agent cannot perform an operation:
 1. Confirm the latest plugin version is installed and the updated agent was discovered.
-2. Check that its frontmatter omits `tools` and has `inheritMcp: true`.
+2. Check that its frontmatter declares the exact 13-tool list, `commandExecutionPolicy: auto`, and both inheritance fields.
 3. Confirm the correct product repository is the active workspace.
 4. Inspect the exact Antigravity permission prompt or denial.
 5. Fix the user-controlled host permission only if you want to authorize that operation; do not narrow the plugin's toolset to work around it.
@@ -226,9 +247,7 @@ Official references:
 - [Agent settings](https://antigravity.google/docs/agent-settings)
 - [Permissions](https://antigravity.google/docs/permissions)
 
-## 11. End a session
-
-## 11. End a session
+## 12. End a session
 
 Ask:
 
@@ -241,16 +260,16 @@ me exactly what is persisted and where the next session should resume.
 
 A session checkpoint is an explicit agent action. Do not assume the host automatically saves a complete project journal when a conversation ends.
 
-## 12. Validate tasks and release readiness
+## 13. Validate tasks and release readiness
 
 When using project memory, install CLI dependencies in the `ai-agent` source clone with `python -m pip install -r requirements-dev.txt`. Then run `python scripts/quality_gate.py validate --project <project-root>`, `python scripts/quality_gate.py task --project <project-root> --task-id <TASK-ID>`, or `python scripts/quality_gate.py release --project <project-root>`.
 
 Verification records are stored under the **product** `.agent-ecosystem/execution/verification/` directory. QA must be independent from implementation. The orchestrator cannot mark tasks completed without passing verification. Full details and caveats: [Quality Gates](QUALITY-GATES.md).
 
-## 13. Agent discovery and runtime troubleshooting
+## 14. Agent discovery and runtime troubleshooting
 
 See [Agent Diagnostics](AGENT-DIAGNOSTICS.md) when App `@` reports no matches or the selected agent says it cannot write files/run commands. These are separate issues. A successful plugin validation does not demonstrate actual runtime tool access.
 
-## 14. Capability audit for all agents
+## 15. Capability audit for all agents
 
-From a local ai-agent clone run `python scripts/validate_capabilities.py` after `python -m pip install -r requirements-dev.txt`. It validates seven full-tool agent declarations, 19 discoverable skills, shared rules and MCP inheritance. Then invoke `/capability-smoke-test` separately in a fresh session for each agent to verify actual host tool access. MCP tools exist only when connected and authorized by the user.
+From a local ai-agent clone run `python scripts/validate_capabilities.py` and `python scripts/validate_adapters.py` after installing `requirements-dev.txt`. Static checks validate the Antigravity 13-tool declaration and native profile layouts. Then invoke `/capability-smoke-test` separately in a fresh session for each Antigravity agent. For Codex, Copilot, and Claude Code, test the equivalent real operations in the exact runtime and surface. MCP tools exist only when connected and authorized by the user.
