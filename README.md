@@ -1,10 +1,11 @@
 # AI Agent Ecosystem
 
-**Version:** `0.3.2` — Single-repository Antigravity plugin  
-**Runtime:** Google Antigravity (`agy`)  
+**Ecosystem:** `0.4.0` — Hybrid multi-runtime agent framework  
+**Antigravity plugin:** `0.3.2` (backward-compatible)  
+**Runtimes:** Antigravity, Codex CLI, GitHub Copilot CLI / VS Code, Claude Code CLI  
 **License:** MIT
 
-A complete multi-agent engineering team distributed as **one GitHub repository and one installable Antigravity plugin**. The bundle includes Architecture, Product Design, Frontend, Backend, Infrastructure, QA, and Team Orchestrator agents, plus shared engineering skills and constitution rules.
+A complete multi-agent engineering team maintained in **one canonical GitHub repository**. It preserves the installable Antigravity plugin and generates native agent profiles, instructions, and reusable skills for Codex, GitHub Copilot, and Claude Code.
 
 ## Install — one command
 
@@ -27,6 +28,21 @@ agy plugin uninstall ai-agent
 ~~~
 
 All specialists ship together. You do **not** need to install or clone nine separate repositories, copy plugin folders, or run a local folder installer.
+
+## Install a native adapter in an existing project
+
+The Antigravity plugin remains installable with the original command above. For other coding agents, clone this repository and use the native adapter installer:
+
+```powershell
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project
+python .\scripts\install_adapter.py --adapter copilot --target ..\my-project
+python .\scripts\install_adapter.py --adapter claude-code --target ..\my-project
+```
+
+Run with `--dry-run` before installing. Existing root instructions are preserved inside managed blocks; unmanaged conflicting agent or skill files are not overwritten. Re-run the install command to update. Use `--uninstall` to remove only installer-managed files.
+
+See [Native Runtime Adapters](docs/adapters/README.md) and [Multi-Platform Adapter Architecture](docs/architecture/MULTI-PLATFORM-ADAPTERS.md).
 
 ## Selecting an agent
 
@@ -69,7 +85,7 @@ Also included:
 
 ## Repository design
 
-This repository is both the canonical source and the installable plugin:
+This repository is the canonical source and remains the installable Antigravity plugin. Native adapters are generated from the same source:
 
 ~~~text
 ai-agent/
@@ -78,6 +94,8 @@ ai-agent/
 ├── skills/                     # Generated bundle: all 19 skills
 ├── rules/                      # Generated shared agent rules
 ├── modules/                    # Canonical source modules for each specialist
+├── adapters/                   # Runtime adapter documentation and contracts
+├── dist/                       # Generated native adapter bundles (gitignored)
 ├── teams/                      # Logical team composition presets
 ├── contracts/                  # Agent/task/team/handoff/memory schemas
 ├── docs/                       # Architecture, security, and adapter docs
@@ -147,13 +165,20 @@ For the complete read/resume/checkpoint protocol, see [Persistent Project Memory
 
 Requirements: Python 3.10+ (quality gate CLI also requires `python -m pip install -r requirements-dev.txt`).
 
-Build the single plugin bundle after changing agents, skills, or rules:
+Build the backward-compatible Antigravity plugin after changing agents, skills, or rules:
 
 ~~~powershell
 python .\scripts\build_single_plugin.py
 ~~~
 
-Validate the source and generated installable plugin:
+Build and validate native adapters:
+
+~~~powershell
+python .\scripts\build_adapters.py --adapter all
+python .\scripts\validate_adapters.py
+~~~
+
+Validate the source and generated installable plugin and adapters:
 
 ~~~powershell
 python .\scripts\validate_repo.py
@@ -235,7 +260,8 @@ The documentation is generic and belongs in this ecosystem repository. Product-s
 - The team manifest is declarative; it does not create a distributed scheduler.
 - Session checkpointing is an explicit agent workflow, not a guaranteed host shutdown hook. The orchestrator must checkpoint at task boundaries and before returning control.
 - Git-backed memory is project-local. Multi-user, multi-workspace centralized memory is outside the current scope.
-- Codex and Claude Code adapters remain future work.
+- Copilot subagent execution depends on the selected surface and version; generated profiles do not guarantee runtime delegation.
+- Native tool permissions, shell access, MCP connectivity, and approvals remain controlled by each host runtime.
 
 ## References
 
