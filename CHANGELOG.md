@@ -2,7 +2,7 @@
 
 ## 0.4.0 — Hybrid multi-runtime adapters
 
-- Add native Codex CLI, GitHub Copilot CLI / VS Code, and Claude Code adapters generated from the existing canonical agent and skill sources.
+- Add native Codex local-client, GitHub Copilot CLI / VS Code / GitHub.com custom-agent, and Claude Code adapters generated from the existing canonical agent and skill sources.
 - Preserve the Antigravity plugin at version 0.3.2, including the explicit 13-tool manifest, commandExecutionPolicy: auto, and existing install command.
 - Add native agent profile generation: Codex TOML, Copilot Markdown agent profiles, and Claude Code subagents.
 - Generate native instruction files and install all 19 shared skills into each runtime's supported project skill directory.
