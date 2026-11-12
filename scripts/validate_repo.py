@@ -158,6 +158,14 @@ required = [
     "docs/ARCHITECTURE-DOCUMENTATION-STANDARD.md",
     "docs/PROMPT-COOKBOOK.md",
     "docs/architecture/PERSISTENT-PROJECT-MEMORY.md",
+    "contracts/platform-adapters.json",
+    "scripts/adapter_support.py",
+    "scripts/build_adapters.py",
+    "scripts/install_adapter.py",
+    "scripts/validate_adapters.py",
+    "tests/test_adapters.py",
+    "docs/architecture/MULTI-PLATFORM-ADAPTERS.md",
+    "docs/adapters/copilot/README.md",
 ]
 for relative in required:
     if not (ROOT / relative).exists():
