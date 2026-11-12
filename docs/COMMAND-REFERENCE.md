@@ -1,6 +1,6 @@
 # Command Reference
 
-This page distinguishes Antigravity CLI commands, repository maintenance scripts, and natural-language agent prompts.
+This page covers Antigravity CLI commands, native adapter build/install commands, repository validation, and natural-language agent prompts.
 
 ## 1. Antigravity plugin commands
 
@@ -76,6 +76,7 @@ Validate full built-in tool access, MCP inheritance, host-managed execution poli
 
 ~~~powershell
 python .\scripts\validate_agent_tools.py
+python .\scripts\validate_adapters.py
 ~~~
 
 Run all checks:
@@ -89,7 +90,36 @@ python .\scripts\validate_agent_tools.py
 
 Requirements: Python 3.10+.
 
-## 4. Optional one-command installer helper
+## 4. Native runtime adapters (v0.4)
+
+Build native Codex, Copilot, and Claude Code bundles from the canonical agent and skill sources:
+
+~~~powershell
+python .\scripts\build_adapters.py --adapter all
+python .\scripts\build_adapters.py --adapter codex
+python .\scripts\validate_adapters.py
+~~~
+
+Install an adapter into a target project. Run dry-run first:
+
+~~~powershell
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project
+python .\scripts\install_adapter.py --adapter copilot --target ..\my-project
+python .\scripts\install_adapter.py --adapter claude-code --target ..\my-project
+~~~
+
+Update by repeating the install command. Uninstall only files recorded as managed by the adapter installer:
+
+~~~powershell
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project --uninstall
+~~~
+
+The installer preserves existing root instruction content with managed markers, refuses to overwrite unmanaged conflicting agent/skill files, and records owned paths under .agent-ecosystem/adapters/. Use --dry-run to preview changes without writing.
+
+See [Native Runtime Adapters](adapters/README.md) for runtime-specific locations and limitations.
+
+## 5. Optional one-command installer helper
 
 ~~~powershell
 python .\scripts\install_team.py --team saas-mvp --dry-run
@@ -104,7 +134,7 @@ Other options:
 - --no-preflight: skip the git ls-remote repository reachability check.
 - --dry-run: print the command without installing.
 
-## 5. Natural-language prompts (not CLI commands)
+## 6. Natural-language prompts (not CLI commands)
 
 Use Team Orchestrator in the Antigravity agent picker:
 
@@ -120,7 +150,7 @@ Use Team Orchestrator in the Antigravity agent picker:
 
 These are example prompts, not slash commands. In Antigravity App, select the primary agent via the agent selector, not the `@` menu. In the CLI, use `agy --agent team-orchestrator` or `/agents`. CLI `@` only messages an existing subagent. See [Agent Diagnostics](AGENT-DIAGNOSTICS.md).
 
-## 6. Common Windows path mistake
+## 7. Common Windows path mistake
 
 If PowerShell is currently at C:\Users\ADMIN, this command will fail because scripts/init_project.py is not in that directory:
 
@@ -135,11 +165,11 @@ cd "$env:USERPROFILE\Desktop\project_1\ai-agent"
 python .\scripts\init_project.py --team saas-mvp --target "$env:USERPROFILE\Desktop\project_1\certvault"
 ~~~
 
-## 7. Generated-file ownership
+## 8. Generated-file ownership
 
 Canonical agent source files live under modules/<module>/agents/. The root agents/ directory is generated. Skills and rules at the root are also generated. Edit canonical sources, run build_single_plugin.py, and validate the generated bundle. Do not hand-edit generated files.
 
-## 8. Quality gate commands (v0.3)
+## 9. Quality gate commands (v0.3)
 
 ```powershell
 python -m pip install -r requirements-dev.txt
@@ -153,7 +183,7 @@ python -m unittest discover -s tests -v
 
 `validate` checks every completed task and canonical project state; `task` verifies an independent QA record for one in-review/completed task; `release` requires all tasks completed and recorded mandatory approvals. See [Quality Gates](QUALITY-GATES.md). A passing artifact check is not a substitute for independently executed CI checks or actual human approval.
 
-## 9. Full capability checks
+## 10. Full capability checks
 
 ~~~powershell
 python -m pip install -r requirements-dev.txt
