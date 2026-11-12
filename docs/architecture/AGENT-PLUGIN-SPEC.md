@@ -33,13 +33,27 @@ description: >-
 model: inherit
 mainAgent: true
 subagent: true
-commandExecutionPolicy: sandbox
+commandExecutionPolicy: auto
+tools:
+  - read_file
+  - write_file
+  - edit_file
+  - run_command
+  - define_subagent
+  - invoke_subagent
+  - manage_subagents
+  - manage_task
+  - schedule
+  - search_web
+  - send_message
+  - generate_image
+  - ask_question
 inheritMcp: true
 inheritCustomizations: true
 ---
 ```
 
-The body must define:
+The Antigravity frontmatter must retain the exact 13-tool list from contracts/agent-tool-policy.json and commandExecutionPolicy: auto. This frontmatter is not portable to Codex, Copilot, or Claude Code; adapters generate native profiles for those runtimes. The body must define:
 1. Identity and mission.
 2. Responsibilities.
 3. Boundaries and escalation conditions.
