@@ -381,6 +381,7 @@ def install_adapter(
 ) -> dict:
     if adapter not in ADAPTERS:
         raise ValueError(f"Unsupported adapter '{adapter}'. Choose from: {', '.join(ADAPTERS)}")
+    layout = LAYOUTS[adapter]
     target = target.resolve()
     if target.exists() and not target.is_dir():
         raise ValueError(f"Target project path is not a directory: {target}")
