@@ -118,7 +118,8 @@ def validate(root: Path = ROOT) -> tuple[list[str], dict]:
                 source_files = sorted((root / "modules").glob(f"*/skills/{skill}/**/*"))
                 source_files = [path for path in source_files if path.is_file()]
                 for source in source_files:
-                    relative = source.relative_to(source.parents[1])
+                    skill_root = next(parent for parent in source.parents if parent.name == skill)
+                    relative = source.relative_to(skill_root)
                     target = skill_dir / skill / relative
                     if not target.is_file() or target.read_bytes() != source.read_bytes():
                         errors.append(f"{adapter}: skill payload mismatch for {skill}/{relative}")
