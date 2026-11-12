@@ -29,6 +29,25 @@ agy plugin uninstall ai-agent
 
 All specialists ship together. You do **not** need to install or clone nine separate repositories, copy plugin folders, or run a local folder installer.
 
+## Native Plugin Marketplaces — Codex and Cursor
+
+The repository now exposes two platform-native marketplace catalogs. Add the GitHub repository directly; do not point Codex at the nested plugin folder.
+
+**Codex:** In Add plugin marketplace, set Source to `https://github.com/hd159/ai-agent`, Git ref to `main`, and leave **Sparse paths empty**. The catalog is `.agents/plugins/marketplace.json`. You can also run:
+
+```bash
+codex plugin marketplace add hd159/ai-agent --ref main
+codex plugin marketplace list
+```
+
+Then open `/plugins` in Codex and install **AI Agent Ecosystem**.
+
+**Cursor:** Import `https://github.com/hd159/ai-agent` as a Team Marketplace from Dashboard → Plugins → Team Marketplaces → Add Marketplace → Import from Repo. Then install the plugin from Cursor Customize. Team marketplaces require Cursor Teams or Enterprise. For individual local testing, use `~/.cursor/plugins/local/ai-agent-ecosystem`.
+
+**Capability difference:** Codex's plugin package distributes the 19 shared skills; it does not install the seven custom-agent TOML profiles or `AGENTS.md`. Use the Codex native adapter installer for those. Cursor's plugin package includes 7 custom agents, 1 always-applied rule, and 19 skills.
+
+See [Dual Native Plugin Marketplaces](docs/marketplaces/README.md) for exact steps, the sparse-path explanation, local Cursor setup, and runtime boundaries.
+
 ## Install a native adapter in an existing project
 
 The Antigravity plugin remains installable with the original command above. For other coding agents, clone this repository and use the native adapter installer:
