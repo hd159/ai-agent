@@ -11,6 +11,7 @@ from pathlib import Path
 from adapter_support import ROOT, build_adapter
 
 MARKER = ".generated-by-ai-agent-ecosystem.json"
+PLATFORM_MANIFESTS = {".codex-plugin/plugin.json", ".cursor-plugin/plugin.json"}
 
 
 def build_cursor_components(root: Path = ROOT, destination: Path | None = None, check: bool = False) -> list[str]:
@@ -68,6 +69,7 @@ def build_cursor_components(root: Path = ROOT, destination: Path | None = None, 
                 path.relative_to(destination).as_posix()
                 for path in destination.rglob("*")
                 if path.is_file()
+                and path.relative_to(destination).as_posix() not in PLATFORM_MANIFESTS
             }
             if actual != set(expected):
                 errors.append(
@@ -94,6 +96,7 @@ def build_cursor_components(root: Path = ROOT, destination: Path | None = None, 
                 path.relative_to(destination).as_posix()
                 for path in destination.rglob("*")
                 if path.is_file()
+                and path.relative_to(destination).as_posix() not in PLATFORM_MANIFESTS
             }
             unexpected = actual - set(expected)
             if unexpected:
