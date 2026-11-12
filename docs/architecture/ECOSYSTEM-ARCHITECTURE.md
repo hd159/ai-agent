@@ -5,13 +5,13 @@
 
 ## 1. Goals
 
-- Create focused specialist agents that remain modular in source and are distributed together in one installable plugin.
+- Create focused specialist agents that remain modular in source and are distributed together through native runtime adapters generated from one repository.
 - Separate role identity from reusable capabilities.
 - Compose teams per project without creating a new agent for every project.
 - Make task ownership, dependencies, boundaries, and completion evidence explicit.
 - Keep core knowledge portable across compatible agent runtimes.
 
-## 2. Non-goals for v0.2.0
+## 2. Non-goals for v0.4.0
 
 - A cloud-hosted multi-tenant agent control plane.
 - A distributed scheduler with durable remote queues.
@@ -114,9 +114,9 @@ Parallel execution is allowed only for independent tasks. Shared files and contr
 If the host runtime supports native subagent invocation, the orchestrator may delegate bounded tasks to installed specialists.
 
 If it does not:
-- Generate task contracts and a dependency graph.
-- Mark tasks as `ready_for_dispatch`, not `in_progress`.
-- Ask the user or an external runner to launch the work.
+- The orchestrator may execute bounded work itself only when its own required capabilities are verified and the task is within the approved project scope.
+- If required capabilities are unavailable, block the dependent implementation and report the exact blocker.
+- Do not silently substitute planning-only task contracts or dependency graphs for requested implementation; create planning-only artifacts only when the user explicitly asks.
 - Never imply that agents were called when they were not.
 
 ## 7. Human approval gates
@@ -140,7 +140,7 @@ An agent response saying "done" is not evidence by itself.
 
 ## 9. Distribution topology (v0.4.0)
 
-All specialist agents, shared skills, and constitution rules are bundled into one Antigravity plugin in `hd159/ai-agent`. Canonical source modules live under `modules/<module-id>/`; the build script assembles their agents, skills, and rules into root-level directories so one `agy plugin install https://github.com/hd159/ai-agent` command installs the complete ecosystem. Team presets are logical composition manifests, not separate plugin distributions.
+The Antigravity adapter remains a single plugin in `hd159/ai-agent` and is installed with one `agy plugin install https://github.com/hd159/ai-agent` command. The other runtime adapters are generated project files; see section 10. Canonical source modules live under `modules/<module-id>/`. Team presets are logical composition manifests, not separate plugin distributions.
 
 
 ## 10. Hybrid multi-runtime distribution
