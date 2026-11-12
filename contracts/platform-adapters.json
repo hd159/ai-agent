@@ -95,7 +95,7 @@
   "installer_policy": {
     "instruction_files": "Merge ecosystem instructions inside explicit managed markers for Codex, Copilot, and Claude Code; install the Cursor MDC rule as a separate exclusively managed file so required frontmatter remains at the start of the file.",
     "agent_and_skill_files": "Never overwrite an existing unmanaged file with different content. Update only files recorded in .agent-ecosystem/adapters/<adapter>.json.",
-    "uninstall": "Remove only registered managed files and managed instruction blocks. Preserve unrelated project files and project memory.",
+    "uninstall": "Remove only registered managed files, merged instruction blocks, and the exclusively managed Cursor MDC rule. Preserve unrelated project files and project memory.",
     "dry_run": "Must not create or modify any project file."
   },
   "capability_policy": {
