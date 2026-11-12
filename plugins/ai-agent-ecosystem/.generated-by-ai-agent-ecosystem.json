@@ -1,0 +1,37 @@
+{
+  "generator": "scripts/build_marketplace_components.py",
+  "ecosystem_version": "0.4.0",
+  "agents": [
+    "architecture-agent",
+    "backend-agent",
+    "frontend-agent",
+    "infrastructure-agent",
+    "qa-agent",
+    "team-orchestrator",
+    "uiux-design-agent"
+  ],
+  "rules": [
+    "ai-agent-ecosystem.mdc"
+  ],
+  "skills": [
+    "api-contract-design",
+    "capability-smoke-test",
+    "code-review",
+    "compose-team",
+    "create-project-plan",
+    "create-task-graph",
+    "database-design",
+    "dependency-aware-parallelism",
+    "deployment-readiness",
+    "mvp-scoping",
+    "product-discovery",
+    "project-memory",
+    "review-handoff",
+    "session-checkpoint",
+    "system-architecture",
+    "systematic-debugging",
+    "task-decomposition",
+    "test-driven-development",
+    "verification-before-completion"
+  ]
+}
