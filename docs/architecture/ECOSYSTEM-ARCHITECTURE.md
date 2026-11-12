@@ -81,7 +81,7 @@ The orchestrator:
 
 ### Layer F — Platform adapters
 
-Antigravity remains the backward-compatible plugin adapter. Codex CLI, GitHub Copilot CLI / supported VS Code agent mode, and Claude Code CLI are generated from the same canonical role instructions and skills. Native tool permissions and delegation remain runtime-specific.
+Antigravity remains the backward-compatible plugin adapter. Codex local clients, GitHub Copilot CLI / supported VS Code agent mode, Claude Code CLI, and Cursor Editor / CLI / Cloud Agents are generated from the same canonical role instructions and skills. Native tool permissions and delegation remain runtime-specific.
 
 ## 4. Independent agent plugin contract
 
@@ -151,7 +151,8 @@ The native adapter builder generates:
 - Codex CLI: AGENTS.md, .codex/agents/*.toml, and .agents/skills/.
 - GitHub Copilot CLI / supported VS Code agent mode: .github/copilot-instructions.md, .github/agents/*.agent.md, and .github/skills/.
 - Claude Code CLI: CLAUDE.md, .claude/agents/*.md, and .claude/skills/.
+- Cursor: .cursor/rules/ai-agent-ecosystem.mdc, .cursor/agents/*.md, and .cursor/skills/.
 
-The installer merges root instructions inside explicit managed markers, records installer-owned paths under .agent-ecosystem/adapters/, refuses to overwrite unmanaged conflicting profiles or skills, and supports safe uninstall. Generated adapter files are derived artifacts, not new sources of truth.
+The installer merges root instructions inside explicit managed markers for Codex, Copilot, and Claude Code. Cursor receives a dedicated exclusively managed MDC rule so frontmatter remains at the start of the file. All adapters record installer-owned paths under .agent-ecosystem/adapters/, refuse to overwrite unmanaged conflicting profiles or skills, and support safe uninstall. Generated adapter files are derived artifacts, not new sources of truth.
 
 See [Multi-Platform Adapter Architecture](MULTI-PLATFORM-ADAPTERS.md) for build, validation, runtime boundaries, and versioning.
