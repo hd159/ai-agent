@@ -7,10 +7,8 @@
     {
       "name": "ai-agent-ecosystem",
       "source": {
-        "source": "git-subdir",
-        "url": "https://github.com/hd159/ai-agent",
-        "path": "./plugins/ai-agent-ecosystem",
-        "ref": "main"
+        "source": "local",
+        "path": "./plugins/ai-agent-ecosystem"
       },
       "policy": {
         "installation": "AVAILABLE",
