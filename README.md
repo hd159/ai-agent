@@ -97,11 +97,10 @@ ai-agent/
 ├── skills/                     # Generated bundle: all 19 skills
 ├── rules/                      # Generated shared agent rules
 ├── modules/                    # Canonical source modules for each specialist
-├── adapters/                   # Runtime adapter documentation and contracts
 ├── dist/                       # Generated native adapter bundles (gitignored)
 ├── teams/                      # Logical team composition presets
-├── contracts/                  # Agent/task/team/handoff/memory schemas
-├── docs/                       # Architecture, security, and adapter docs
+├── contracts/                  # Agent/task/team/handoff/memory and platform adapter contracts
+├── docs/                       # Architecture, security, and docs/adapters/ runtime guides
 ├── evals/                      # Agent and workflow evaluation scenarios
 ├── templates/                  # Project, execution, and artifact templates
 └── scripts/                    # Build, bootstrap, install helper, and validators
