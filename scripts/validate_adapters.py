@@ -93,13 +93,13 @@ def validate(root: Path = ROOT) -> tuple[list[str], dict]:
                     if required not in content:
                         errors.append(f"{adapter}: instructions missing {required}")
                 if adapter == "cursor":
-                    if not content.startswith("---\\n"):
+                    if not content.startswith("---\n"):
                         errors.append("cursor: native MDC rule must begin with YAML frontmatter")
                     if "description: Shared AI Agent Ecosystem instructions" not in content:
                         errors.append("cursor: MDC rule is missing its description")
                     if "alwaysApply: true" not in content:
                         errors.append("cursor: MDC rule must alwaysApply")
-                    if content.count("\\n---\\n") < 1:
+                    if content.count("\n---\n") < 1:
                         errors.append("cursor: MDC rule frontmatter is not closed")
 
             agent_dir = bundle / layout["agents"]
