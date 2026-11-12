@@ -181,6 +181,17 @@ required = [
     "docs/adapters/cursor/README.md",
     "docs/adapters/antigravity/README.md",
     "docs/adapters/README.md",
+    ".agents/plugins/marketplace.json",
+    ".cursor-plugin/marketplace.json",
+    "plugins/ai-agent-ecosystem/.codex-plugin/plugin.json",
+    "plugins/ai-agent-ecosystem/.cursor-plugin/plugin.json",
+    "plugins/ai-agent-ecosystem/skills",
+    "plugins/ai-agent-ecosystem/agents",
+    "plugins/ai-agent-ecosystem/rules/ai-agent-ecosystem.mdc",
+    "scripts/build_marketplace_components.py",
+    "scripts/validate_marketplaces.py",
+    "tests/test_marketplaces.py",
+    "docs/marketplaces/README.md",
 ]
 for relative in required:
     if not (ROOT / relative).exists():
