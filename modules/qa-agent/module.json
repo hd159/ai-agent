@@ -1,6 +1,6 @@
 {
   "displayName": "QA Agent",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Creates independent test strategies, validates acceptance criteria, tests critical user journeys, and reports reproducible defects and release risks.",
   "author": {
     "name": "AI Agent Ecosystem contributors"
