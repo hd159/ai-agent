@@ -34,7 +34,10 @@ All specialists ship together. You do **not** need to install or clone nine sepa
 The Antigravity plugin remains installable with the original command above. For other coding agents, clone this repository and use the native adapter installer:
 
 ```powershell
-python .\scripts\install_adapter.py --adapter codex --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter all --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter all --target ..\my-project
+
+# Or install only one runtime
 python .\scripts\install_adapter.py --adapter codex --target ..\my-project
 python .\scripts\install_adapter.py --adapter copilot --target ..\my-project
 python .\scripts\install_adapter.py --adapter claude-code --target ..\my-project
