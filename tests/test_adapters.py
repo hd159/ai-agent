@@ -87,8 +87,8 @@ class AdapterBuildTests(unittest.TestCase):
         build_all_adapters(ROOT, self.output)
         rule = self.output / "cursor" / ".cursor" / "rules" / "ai-agent-ecosystem.mdc"
         content = rule.read_text(encoding="utf-8")
-        self.assertTrue(content.startswith("---\\n"))
-        frontmatter = content.split("\\n---", 1)[0]
+        self.assertTrue(content.startswith("---\n"))
+        frontmatter = content.split("\n---", 1)[0]
         self.assertIn("description: Shared AI Agent Ecosystem instructions", frontmatter)
         self.assertIn("alwaysApply: true", frontmatter)
         self.assertNotIn("<!-- BEGIN AI AGENT ECOSYSTEM MANAGED INSTRUCTIONS -->", content)
