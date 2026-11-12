@@ -68,6 +68,31 @@ class AdapterBuildTests(unittest.TestCase):
             self.assertTrue(profile["description"])
             self.assertTrue(profile["developer_instructions"])
 
+    def test_cursor_agents_use_native_frontmatter_without_antigravity_policy(self):
+        build_all_adapters(ROOT, self.output)
+        agent_dir = self.output / "cursor" / ".cursor" / "agents"
+        profiles = sorted(agent_dir.glob("*.md"))
+        self.assertEqual(len(profiles), 7)
+        for path in profiles:
+            content = path.read_text(encoding="utf-8")
+            self.assertTrue(content.startswith("---\\n"))
+            frontmatter = content.split("\\n---", 1)[0]
+            self.assertIn(f"name: {path.stem}", frontmatter)
+            self.assertIn("description:", frontmatter)
+            self.assertNotIn("tools:", frontmatter)
+            self.assertNotIn("commandExecutionPolicy:", content)
+            self.assertNotIn("inheritCustomizations:", content)
+
+    def test_cursor_project_rule_uses_native_mdc_frontmatter(self):
+        build_all_adapters(ROOT, self.output)
+        rule = self.output / "cursor" / ".cursor" / "rules" / "ai-agent-ecosystem.mdc"
+        content = rule.read_text(encoding="utf-8")
+        self.assertTrue(content.startswith("---\\n"))
+        frontmatter = content.split("\\n---", 1)[0]
+        self.assertIn("description: Shared AI Agent Ecosystem instructions", frontmatter)
+        self.assertIn("alwaysApply: true", frontmatter)
+        self.assertNotIn("<!-- BEGIN AI AGENT ECOSYSTEM MANAGED INSTRUCTIONS -->", content)
+
     def test_copilot_subagents_inherit_repository_instructions(self):
         build_all_adapters(ROOT, self.output)
         agent_dir = self.output / "copilot" / ".github" / "agents"
@@ -159,12 +184,40 @@ class AdapterInstallerTests(unittest.TestCase):
         self.assertTrue((self.project / ".agents/skills/capability-smoke-test/SKILL.md").is_file())
         self.assertTrue((self.project / ".github/skills/capability-smoke-test/SKILL.md").is_file())
         self.assertTrue((self.project / ".claude/skills/capability-smoke-test/SKILL.md").is_file())
+        self.assertTrue((self.project / ".cursor/skills/capability-smoke-test/SKILL.md").is_file())
+        self.assertTrue((self.project / ".cursor/agents/backend-agent.md").is_file())
+        self.assertTrue((self.project / ".cursor/rules/ai-agent-ecosystem.mdc").is_file())
 
         uninstall_adapter = install_adapter("codex", self.project, root=ROOT, uninstall=True)
         self.assertEqual(uninstall_adapter["conflicts"], [])
         self.assertFalse((self.project / ".agents/skills/capability-smoke-test/SKILL.md").exists())
         self.assertTrue((self.project / ".github/skills/capability-smoke-test/SKILL.md").is_file())
         self.assertTrue((self.project / ".claude/skills/capability-smoke-test/SKILL.md").is_file())
+        self.assertTrue((self.project / ".cursor/skills/capability-smoke-test/SKILL.md").is_file())
+        self.assertTrue((self.project / ".cursor/rules/ai-agent-ecosystem.mdc").is_file())
+
+    def test_cursor_uninstall_removes_only_its_owned_rule_and_profiles(self):
+        install_adapter("cursor", self.project, root=ROOT)
+        rule = self.project / ".cursor/rules/ai-agent-ecosystem.mdc"
+        self.assertTrue(rule.is_file())
+        self.assertNotIn(BEGIN_MARKER, rule.read_text(encoding="utf-8"))
+        result = install_adapter("cursor", self.project, root=ROOT, uninstall=True)
+        self.assertEqual(result["conflicts"], [])
+        self.assertFalse(rule.exists())
+        self.assertFalse((self.project / ".cursor/agents/backend-agent.md").exists())
+        self.assertFalse((self.project / ".cursor/skills/capability-smoke-test/SKILL.md").exists())
+
+    def test_cursor_existing_rule_collision_is_preserved(self):
+        rule = self.project / ".cursor/rules/ai-agent-ecosystem.mdc"
+        rule.parent.mkdir(parents=True)
+        original = "---\\ndescription: User-owned Cursor rule\\nalwaysApply: true\\n---\\nKeep my instructions.\\n"
+        rule.write_text(original, encoding="utf-8")
+        result = install_adapter("cursor", self.project, root=ROOT)
+        self.assertTrue(any(".cursor/rules/ai-agent-ecosystem.mdc" in item for item in result["conflicts"]))
+        self.assertEqual(rule.read_text(encoding="utf-8"), original)
+        uninstall = install_adapter("cursor", self.project, root=ROOT, uninstall=True)
+        self.assertEqual(uninstall["conflicts"], [])
+        self.assertEqual(rule.read_text(encoding="utf-8"), original)
 
     def test_install_cli_supports_all_adapters_and_uninstall(self):
         script = ROOT / "scripts/install_adapter.py"
