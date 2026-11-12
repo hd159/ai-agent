@@ -113,7 +113,10 @@ python .\scripts\validate_adapters.py
 Install an adapter into a target project. Run dry-run first:
 
 ~~~powershell
-python .\scripts\install_adapter.py --adapter codex --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter all --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter all --target ..\my-project
+
+# Or install only one runtime
 python .\scripts\install_adapter.py --adapter codex --target ..\my-project
 python .\scripts\install_adapter.py --adapter copilot --target ..\my-project
 python .\scripts\install_adapter.py --adapter claude-code --target ..\my-project
@@ -122,7 +125,7 @@ python .\scripts\install_adapter.py --adapter claude-code --target ..\my-project
 Update by repeating the install command. Uninstall only files recorded as managed by the adapter installer:
 
 ~~~powershell
-python .\scripts\install_adapter.py --adapter codex --target ..\my-project --uninstall
+python .\scripts\install_adapter.py --adapter all --target ..\my-project --uninstall
 ~~~
 
 The installer preserves existing root instruction content with managed markers, refuses to overwrite unmanaged conflicting agent/skill files, and records owned paths under .agent-ecosystem/adapters/. Use --dry-run to preview changes without writing.
