@@ -14,7 +14,7 @@ END_MARKER = "<!-- END AI AGENT ECOSYSTEM MANAGED INSTRUCTIONS -->"
 
 LAYOUTS = {
     "codex": {"instructions": "AGENTS.md", "agents": ".codex/agents", "skills": ".agents/skills", "extension": ".toml"},
-    "copilot": {"instructions": ".github/copilot-instructions.md", "agents": ".github/agents", "skills": ".agents/skills", "extension": ".agent.md"},
+    "copilot": {"instructions": ".github/copilot-instructions.md", "agents": ".github/agents", "skills": ".github/skills", "extension": ".agent.md"},
     "claude-code": {"instructions": "CLAUDE.md", "agents": ".claude/agents", "skills": ".claude/skills", "extension": ".md"},
 }
 
