@@ -61,7 +61,7 @@ class CapabilityAuditTests(unittest.TestCase):
         self.assertTrue(any("inheritCustomizations" in e for e in self.errors()))
 
     def test_denies_per_agent_skill_restrictions(self):
-        self.update_agent(lambda s: s.replace("inheritMcp: true", "skills: []\\ninheritMcp: true"))
+        self.update_agent(lambda s: s.replace("inheritMcp: true", "skills: []\ninheritMcp: true"))
         self.assertTrue(any("skills" in e for e in self.errors()))
 
     def test_missing_bundle_skill(self):
