@@ -76,7 +76,7 @@ This repository is both the canonical source and the installable plugin:
 ai-agent/
 ├── plugin.json                 # Root manifest; agy installs this repository
 ├── agents/                     # Generated bundle: all 7 specialist agents
-├── skills/                     # Generated bundle: all 18 skills
+├── skills/                     # Generated bundle: all 19 skills
 ├── rules/                      # Generated shared agent rules
 ├── modules/                    # Canonical source modules for each specialist
 ├── teams/                      # Logical team composition presets
@@ -90,9 +90,9 @@ ai-agent/
 The root `agents/`, `skills/`, `rules/`, and `plugin.json` are generated from the canonical modules under `modules/`. Do not hand-edit generated files; update the source module and rebuild.
 
 
-## Agent tool access
+## Agent tool access and mandatory preflight
 
-All seven bundled agents receive **the full Antigravity built-in toolset**. Keep their YAML frontmatter valid and omit the `tools` property entirely. Their YAML frontmatter intentionally omits the `tools` property; for bundled plugin agents, Antigravity documents omission as the default that exposes all built-in tools. Do not add a partial list or `tools: []`, because that would restrict the agent.
+All seven bundled agents omit a per-agent `tools` allowlist, so the plugin requests Antigravity's documented default built-in tool exposure. Keep their YAML frontmatter valid and omit the `tools` property entirely. Their YAML frontmatter intentionally omits the `tools` property; for bundled plugin agents, Antigravity documents omission as the default that exposes all built-in tools. Do not add a partial list or `tools: []`, because that would restrict the agent.
 
 Every agent also sets:
 - `inheritMcp: true` — inherit MCP servers and tools configured for the parent session.
@@ -101,9 +101,9 @@ Every agent also sets:
 
 **The agent's role defines responsibility, not tool availability.** UI/UX, QA, Frontend, Backend, Infrastructure, Architecture, and Orchestrator can all use available built-in tools and inherited MCP tools when useful.
 
-The user remains in control of execution and security through Antigravity settings: permission presets, allow/ask/deny rules, terminal auto-execution, sandboxing, workspace boundaries, non-workspace file access, and MCP permissions. Declaring a tool makes it available to the agent; it does not bypass host authorization or approval.
+The user remains in control of execution and security through Antigravity settings: permission presets, allow/ask/deny rules, terminal auto-execution, sandboxing, workspace boundaries, non-workspace file access, and MCP permissions. Tool exposure does not prove an operation is authorized or succeeds. Before implementation or dispatch, run `/capability-smoke-test` in the exact agent/session/workspace and block dependent work until required operations are verified. The framework detects and gates missing capabilities; it cannot grant host permissions.
 
-The full-access contract is defined in [contracts/agent-tool-policy.json](contracts/agent-tool-policy.json) and checked by [scripts/validate_agent_tools.py](scripts/validate_agent_tools.py). If an operation is denied, diagnose the host permission or runtime restriction rather than removing the tool from the agent.
+The full-access contract is defined in [contracts/agent-tool-policy.json](contracts/agent-tool-policy.json) and checked by [scripts/validate_agent_tools.py](scripts/validate_agent_tools.py). If an operation is denied or not exposed, diagnose the host permission/runtime restriction rather than assuming the agent can work around it. Run `/capability-smoke-test` before each task that needs write, terminal, MCP or delegation access. A read-only probe cannot establish write permission.
 
 ## Persistent Project Memory
 
