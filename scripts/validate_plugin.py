@@ -24,7 +24,7 @@ def parse_frontmatter(path: Path) -> dict[str, str]:
     for line in text[4:end].splitlines():
         match = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", line)
         if match:
-            result[match.group(1)] = match.group(2).strip().strip("\\\"'")
+            result[match.group(1)] = match.group(2).strip().strip("\"'")
     return result
 
 
@@ -37,7 +37,7 @@ else:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", manifest.get("name", "")):
             errors.append("plugin.json name must be lowercase kebab-case")
-        if not re.fullmatch(r"\\d+\\.\\d+\\.\\d+", manifest.get("version", "")):
+        if not re.fullmatch(r"\d+\.\d+\.\d+", manifest.get("version", "")):
             errors.append("plugin.json version must use MAJOR.MINOR.PATCH")
         if len(manifest.get("suggestedPrompts", [])) > 3:
             errors.append("plugin.json suggestedPrompts supports at most 3 items")
