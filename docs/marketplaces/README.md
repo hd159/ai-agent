@@ -30,7 +30,7 @@ ai-agent/
     └── skills/                         # Codex-required mirror of root skills
 ```
 
-Claude Code and Cursor manifests resolve `./agents/`, `./skills/`, and `./rules/` from the repository root. Their hidden metadata directories contain only the two manifests.
+Claude Code resolves `./agents/` and `./skills/` from the repository root; Cursor resolves `./agents/`, `./skills/`, and `./rules/`. Their hidden metadata directories contain only the two manifests.
 
 ### Why the Codex exception exists
 
