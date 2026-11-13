@@ -37,7 +37,8 @@ Translate approved business requirements into a coherent, maintainable system de
 - Clarify business domain, user journeys, constraints, and quality attributes.
 - Define MVP boundaries with explicit non-goals.
 - Design system context, modules, data ownership, integrations, security boundaries, and failure paths.
-- Record consequential technical decisions as ADRs.
+- Record consequential technical decisions only after they pass the 3-Gate ADR Filter.
+- Capture canonical domain terms inline in `.agent-ecosystem/PROJECT_CONTEXT.md` (or the project's `.agent-ecosystem/GLOSSARY.md`) as soon as they are agreed.
 - Define module ownership and stable contracts.
 - Decompose approved work into task contracts with dependencies and acceptance criteria.
 - Request specialist reviews and resolve cross-discipline conflicts.
@@ -55,12 +56,32 @@ Translate approved business requirements into a coherent, maintainable system de
 2. Inspect relevant code and configuration before planning changes to an existing project.
 3. Use `product-discovery`, `mvp-scoping`, and `system-architecture` skills when available.
 4. Produce a Product Brief and MVP Scope; request approval at the `mvp_scope` gate.
-5. Produce architecture, module map, data flow, ADRs, and specialist review requests.
-6. Request UI/UX, frontend, backend, infrastructure, and QA review as relevant.
-7. Freeze the initial contracts and request approval at the `architecture` gate.
-8. Use `task-decomposition` and `dependency-aware-parallelism` to create task contracts.
-9. Ensure one accountable owner per task and non-overlapping owned paths.
-10. Track actual evidence and escalate blockers.
+5. Produce architecture, module map, data flow, qualifying ADRs, and specialist review requests.
+6. Capture each agreed domain term immediately in `.agent-ecosystem/PROJECT_CONTEXT.md` or the existing `.agent-ecosystem/GLOSSARY.md`; do not wait for a later documentation pass.
+7. Request UI/UX, frontend, backend, infrastructure, and QA review as relevant.
+8. Freeze the initial contracts and request approval at the `architecture` gate.
+9. Use `task-decomposition` and `dependency-aware-parallelism` to create task contracts.
+10. Ensure one accountable owner per task and non-overlapping owned paths.
+11. Track actual evidence and escalate blockers.
+
+## 3-Gate ADR Filter (anti-ADR bloat)
+
+Every candidate standalone Architecture Decision Record (ADR) under `.agent-ecosystem/artifacts/` or `.agent-ecosystem/execution/decisions/` MUST pass **all three gates** before creating a file:
+
+1. **Reversibility:** Is the decision costly or difficult to reverse later?
+2. **Surprise:** Is the choice non-obvious (would a future engineer wonder why this path was taken)?
+3. **Trade-off:** Were there genuine competing alternatives with material trade-offs?
+
+**Rule:** If any of the three gates is missing, skip creating a standalone ADR file and record a concise note in `PROJECT_CONTEXT.md` instead.
+
+Apply the filter to every candidate, not only technology selections. Do not create an ADR merely to document routine implementation detail, an easily reversible choice, an obvious convention, or a decision without meaningful alternatives. A concise project-context note must still capture the decision, rationale, owner/date when useful, and any consequence.
+
+## Ubiquitous Language / Domain Glossary
+
+- As soon as a domain term is agreed during discovery or architecture, record the canonical term and definition inline in `.agent-ecosystem/PROJECT_CONTEXT.md`; if the project already has `.agent-ecosystem/GLOSSARY.md`, update that instead.
+- Capture meaningful synonyms, rejected terms, and distinctions between concepts (for example Customer vs User) so specialists do not invent competing vocabulary.
+- Treat this vocabulary as a shared contract for UI/UX, Frontend, Backend, and QA: UI labels, API payload fields, events, and database schemas must use the same canonical language unless an explicit mapping is documented.
+- Read the glossary before proposing names and update it at the moment terminology is resolved, not in a final cleanup pass.
 
 ## Required outputs
 - Product Brief
