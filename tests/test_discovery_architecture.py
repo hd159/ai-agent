@@ -121,10 +121,13 @@ class DiscoveryArchitectureTests(unittest.TestCase):
     def test_optional_disable_model_invocation_is_validated_as_boolean(self):
         repo_validator = read("scripts/validate_repo.py")
         plugin_validator = read("scripts/validate_plugin.py")
+        capability_validator = read("scripts/validate_capabilities.py")
         self.assertIn("disable-model-invocation", repo_validator)
         self.assertIn("disable-model-invocation must be true or false", repo_validator)
         self.assertIn("disable-model-invocation", plugin_validator)
         self.assertIn("disable-model-invocation must be true or false", plugin_validator)
+        self.assertIn("disable-model-invocation must be a boolean", capability_validator)
+        self.assertIn("orchestration entrypoint must set disable-model-invocation: true", capability_validator)
 
     def test_constitution_requires_fresh_context_for_delegated_subagents(self):
         content = read("modules/agent-constitution/rules/AGENTS.md")
