@@ -46,7 +46,7 @@ The task is a fully specified, narrowly scoped implementation change with approv
 
 ## Ubiquitous Language
 
-- As soon as a domain term is agreed, record its canonical term and concise definition inline in `.agent-ecosystem/PROJECT_CONTEXT.md`; use or create `.agent-ecosystem/GLOSSARY.md` when the project already maintains a dedicated glossary.
+- As soon as a domain term is agreed, record its canonical term and concise definition inline in `.agent-ecosystem/PROJECT_CONTEXT.md`. If the project already has a dedicated `.agent-ecosystem/GLOSSARY.md`, update it instead; create a separate glossary only when the vocabulary warrants it.
 - Record synonyms, rejected/ambiguous alternatives, and important distinctions where they prevent drift.
 - Use the exact canonical terms consistently in UI labels, user-facing copy, API request/response fields, event names, and database schemas. Share the vocabulary with UI/UX, Frontend, Backend, and QA agents immediately; do not defer glossary capture until the end of discovery.
 
