@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
-"""Build the single installable Antigravity plugin from the specialist modules."""
+"""Build the single canonical root bundle shared by Antigravity and native marketplaces."""
 from __future__ import annotations
-import argparse, json, shutil, sys, tempfile
+
+import argparse
+import json
+import shutil
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# The root bundle is the only distributable copy of agents, skills, and rules.
+# Platform manifests live in metadata-only hidden directories and point back here.
 GENERATED = ("plugin.json", "agents", "skills", "rules")
 
 
@@ -21,18 +27,19 @@ def build(destination: Path) -> list[str]:
     agent_count = 0
     skill_count = 0
     rule_count = 0
+    constitution_source: Path | None = None
 
     for component in sorted(components.iterdir()):
         if not component.is_dir():
             continue
+
         source_agents = component / "agents"
         if source_agents.is_dir():
             for source in sorted(source_agents.glob("*.md")):
                 if source.stem in seen_agents:
                     raise ValueError(f"Duplicate agent name: {source.stem}")
                 seen_agents.add(source.stem)
-                target = agents_dir / source.name
-                shutil.copy2(source, target)
+                shutil.copy2(source, agents_dir / source.name)
                 agent_count += 1
 
         source_skills = component / "skills"
@@ -55,6 +62,26 @@ def build(destination: Path) -> list[str]:
                     raise ValueError(f"Duplicate rule file: {source.name}")
                 shutil.copy2(source, target)
                 rule_count += 1
+                if source.name == "AGENTS.md":
+                    if constitution_source is not None:
+                        raise ValueError("Multiple AGENTS.md constitution sources found")
+                    constitution_source = source
+
+    if constitution_source is None:
+        raise ValueError("Canonical modules/agent-constitution/rules/AGENTS.md is missing")
+
+    # Cursor consumes native MDC frontmatter, while Antigravity keeps its
+    # backward-compatible AGENTS.md rule. Both live in the one root rules/.
+    constitution = constitution_source.read_text(encoding="utf-8")
+    mdc = (
+        "---\n"
+        "description: Shared AI Agent Ecosystem constitution\n"
+        "alwaysApply: true\n"
+        "---\n\n"
+        + constitution.rstrip()
+        + "\n"
+    )
+    (rules_dir / "ai-agent-constitution.mdc").write_text(mdc, encoding="utf-8")
 
     catalog = json.loads((ROOT / "ecosystem.json").read_text(encoding="utf-8"))
     version = catalog.get("adapters", {}).get("antigravity", {}).get("version", catalog["version"])
@@ -75,7 +102,7 @@ def build(destination: Path) -> list[str]:
         "keywords": ["multi-agent", "orchestration", "architecture", "product-design", "frontend", "backend", "devops", "qa", "agent-skills"]
     }
     (destination / "plugin.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    return [f"agents={agent_count}", f"skills={skill_count}", f"rules={rule_count}"]
+    return [f"agents={agent_count}", f"skills={skill_count}", f"rules={rule_count} source rule + ai-agent-constitution.mdc"]
 
 
 def same_generated(temp: Path) -> list[str]:
@@ -89,8 +116,10 @@ def same_generated(temp: Path) -> list[str]:
                 continue
             expected_files = {p.relative_to(expected) for p in expected.rglob("*") if p.is_file()}
             actual_files = {p.relative_to(actual) for p in actual.rglob("*") if p.is_file()}
-            for rel in sorted(expected_files - actual_files): differences.append(f"missing: {relative}/{rel}")
-            for rel in sorted(actual_files - expected_files): differences.append(f"unexpected: {relative}/{rel}")
+            for rel in sorted(expected_files - actual_files):
+                differences.append(f"missing: {relative}/{rel}")
+            for rel in sorted(actual_files - expected_files):
+                differences.append(f"unexpected: {relative}/{rel}")
             for rel in sorted(expected_files & actual_files):
                 if (expected / rel).read_bytes() != (actual / rel).read_bytes():
                     differences.append(f"out of date: {relative}/{rel}")
@@ -103,7 +132,7 @@ def same_generated(temp: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true", help="Fail if generated plugin files are out of date")
+    parser.add_argument("--check", action="store_true", help="Fail if the canonical root bundle is out of date")
     args = parser.parse_args()
     if args.check:
         with tempfile.TemporaryDirectory(prefix="ai-agent-build-") as tmp:
@@ -115,24 +144,28 @@ def main() -> int:
                 return 1
             differences = same_generated(temp)
             if differences:
-                print("PLUGIN BUNDLE OUT OF DATE")
-                for item in differences: print(" -", item)
+                print("ROOT PLUGIN BUNDLE OUT OF DATE")
+                for item in differences:
+                    print(" -", item)
                 print("Run: python scripts/build_single_plugin.py")
                 return 1
-            print("PLUGIN BUNDLE CURRENT:", ", ".join(stats))
+            print("ROOT PLUGIN BUNDLE CURRENT:", ", ".join(stats))
             return 0
 
     for relative in GENERATED:
         target = ROOT / relative
-        if target.is_dir(): shutil.rmtree(target)
-        elif target.exists(): target.unlink()
+        if target.is_dir():
+            shutil.rmtree(target)
+        elif target.exists():
+            target.unlink()
     try:
         stats = build(ROOT)
     except Exception as exc:
         print(f"BUILD FAILED: {exc}")
         return 1
-    print("BUILT SINGLE ANTIGRAVITY PLUGIN:", ", ".join(stats))
+    print("BUILT SINGLE ROOT PLUGIN BUNDLE:", ", ".join(stats))
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())
