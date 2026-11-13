@@ -113,8 +113,19 @@ def audit(root: Path) -> tuple[list[str], dict]:
         description = data.get("description")
         if data.get("name") != name or not isinstance(description, str) or not 1 <= len(description.strip()) <= 1024:
             errors.append(f"{path.relative_to(root)}: invalid name/description")
-        if data.get("disable-model-invocation") is True:
-            errors.append(f"{path.relative_to(root)}: automatic skill invocation disabled")
+        invocation_flag = data.get("disable-model-invocation")
+        if invocation_flag is not None and not isinstance(invocation_flag, bool):
+            errors.append(f"{path.relative_to(root)}: disable-model-invocation must be a boolean")
+        manual_invocation_skills = {
+            "compose-team",
+            "create-task-graph",
+            "capability-smoke-test",
+            "session-checkpoint",
+        }
+        if name in manual_invocation_skills and invocation_flag is not True:
+            errors.append(f"{path.relative_to(root)}: orchestration entrypoint must set disable-model-invocation: true")
+        if invocation_flag is True and name not in manual_invocation_skills:
+            errors.append(f"{path.relative_to(root)}: disable-model-invocation is reserved for explicit orchestration entrypoints")
         generated = root / "skills" / name / "SKILL.md"
         if not generated.exists() or generated.read_bytes() != path.read_bytes():
             errors.append(f"skills/{name}/SKILL.md: generated copy missing or different")
