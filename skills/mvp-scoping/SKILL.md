@@ -29,7 +29,7 @@ Do NOT write application code, scaffold implementation files, or dispatch implem
 7. Define an MVP boundary that can be delivered and tested end-to-end.
 8. Define release criteria and success measures.
 9. Present 2–3 concrete scope approaches when a real choice exists, with explicit value, cost, risk, and trade-offs; lead with a recommendation.
-10. Present the complete discovery/MVP scope design and wait for the user's explicit approval before creating implementation plans or dispatching implementation work.
+10. Present the complete discovery/MVP scope design and wait for explicit user approval before creating implementation plans or dispatching implementation work.
 
 ## Socratic Interview Discipline
 
