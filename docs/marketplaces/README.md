@@ -1,119 +1,111 @@
-# Dual Native Plugin Marketplaces
+# Root-Shared Native Plugin Marketplaces
 
-AI Agent Ecosystem 0.4.0 now publishes one GitHub repository through two separate native marketplace catalogs:
+AI Agent Ecosystem 0.4.0 exposes one canonical component bundle through three native plugin marketplaces:
 
 - Codex: `.agents/plugins/marketplace.json`
+- Claude Code: `.claude-plugin/marketplace.json`
 - Cursor: `.cursor-plugin/marketplace.json`
 
-Both catalogs install the same package directory, `plugins/ai-agent-ecosystem/`, which contains platform-specific manifests and shared skill payloads. This keeps the Antigravity root `plugin.json` untouched.
+All marketplace sources point to the repository root (`./`). The manifests resolve component paths from that same root:
 
-## Package layout
+- Agents: `./agents/`
+- Skills: `./skills/`
+- Rules: `./rules/`
+
+There is no nested `plugins/` component package and no copied agents, skills, or rules under hidden metadata directories.
+
+## Repository layout
 
 ```text
 ai-agent/
-├── .agents/plugins/marketplace.json
-├── .cursor-plugin/marketplace.json
-└── plugins/ai-agent-ecosystem/
-    ├── .codex-plugin/plugin.json
-    ├── .cursor-plugin/plugin.json
-    ├── agents/                 # Cursor custom agents (7)
-    ├── rules/                  # Cursor MDC rule (alwaysApply)
-    └── skills/                 # Shared portable skills (19)
+├── plugin.json                         # Antigravity 0.3.2 (unchanged)
+├── agents/                             # 7 shared specialist agent profiles
+├── skills/                             # 19 shared skills
+├── rules/
+│   ├── AGENTS.md                       # Antigravity-compatible constitution
+│   └── ai-agent-constitution.mdc       # Native Cursor MDC rule
+├── .agents/plugins/marketplace.json   # Codex marketplace catalog
+├── .codex-plugin/plugin.json          # Codex plugin manifest
+├── .claude-plugin/
+│   ├── plugin.json
+│   └── marketplace.json
+└── .cursor-plugin/
+    ├── plugin.json
+    └── marketplace.json
 ```
 
-The package is generated from `modules/*/agents/*.md`, `modules/*/skills/*/SKILL.md`, and the shared constitution. Run:
+The hidden metadata directories contain manifests only:
+
+| Directory | Allowed files |
+|---|---|
+| `.claude-plugin/` | `plugin.json`, `marketplace.json` |
+| `.cursor-plugin/` | `plugin.json`, `marketplace.json` |
+| `.codex-plugin/` | `plugin.json` |
+| `.agents/plugins/` | `marketplace.json` |
+
+The plugin manifests refer to the root bundle. Component paths are not relative to the hidden metadata directory.
+
+## Build and validate
+
+The single plugin builder is the only component generator. It reads canonical module sources and writes the root `agents/`, `skills/`, and `rules/` directories.
 
 ```powershell
-python .\scripts\build_marketplace_components.py
-python .\scripts\build_marketplace_components.py --check
+python .\scripts\build_single_plugin.py
+python .\scripts\build_single_plugin.py --check
+python .\scripts\validate_plugin.py
 python .\scripts\validate_marketplaces.py
+python -m unittest discover -s tests -v
 ```
 
-The builder owns only generated files under `plugins/ai-agent-ecosystem/agents`, `rules`, `skills`, and its ownership marker. It refuses to replace an unmanaged directory or delete unowned files.
+The validator fails if a nested `plugins/ai-agent/` or `plugins/ai-agent-ecosystem/` package returns, if component directories appear under hidden metadata directories, or if any manifest stops pointing to the root bundle.
 
-## Install in Codex
+## Codex
 
-### Codex desktop / Plugins Directory
+The Codex catalog is `.agents/plugins/marketplace.json`. It resolves the local plugin source to the repository root. The root `.codex-plugin/plugin.json` declares `./agents/` and `./skills/`.
 
-In the Add plugin marketplace dialog, use:
+In Codex's Add Plugin Marketplace dialog:
 
 | Field | Value |
 |---|---|
 | Source | `https://github.com/hd159/ai-agent` |
 | Git ref | `main` |
-| Sparse paths | **Leave empty** |
+| Sparse paths | Leave empty |
 
-Do not set Sparse paths to `plugins/ai-agent-ecosystem`. The marketplace catalog is at the repository-level path `.agents/plugins/marketplace.json`; the catalog itself points to the nested plugin package using a Git subdirectory source.
-
-After adding the marketplace, open the Plugins Directory, select **AI Agent Ecosystem**, and install the plugin.
-
-### Codex CLI
+For CLI use:
 
 ```bash
 codex plugin marketplace add hd159/ai-agent --ref main
 codex plugin marketplace list
 ```
 
-Open the Codex plugin browser with `/plugins`, find **AI Agent Ecosystem**, and install it. Use the documented marketplace upgrade command to refresh the source:
+Then open `/plugins` and install **AI Agent Ecosystem**.
 
-```bash
-codex plugin marketplace upgrade ai-agent-ecosystem
-```
+## Claude Code
 
-### Codex capability boundary
+Claude Code reads plugin metadata from `.claude-plugin/plugin.json` and the marketplace catalog from `.claude-plugin/marketplace.json`. The catalog entry uses `"source": "./"`.
 
-The Codex plugin package exposes the 19 reusable skills. The current Codex plugin manifest contract does not provide Cursor-style `agents` or `rules` component declarations. Therefore installing the Codex marketplace plugin does **not** automatically install the seven Codex custom-agent TOML profiles or the project's `AGENTS.md`.
+The plugin manifest declares the shared root component paths. Do not create `.claude-plugin/agents/`, `.claude-plugin/skills/`, or `.claude-plugin/rules/`; those paths would create a second copy and are not the component roots.
 
-To install the complete Codex native project adapter as well:
+Add the GitHub repository as a Claude Code marketplace, then install **ai-agent-ecosystem** from the plugin manager.
 
-```powershell
-python .\scripts\install_adapter.py --adapter codex --target "D:\Projects\MyProject" --dry-run
-python .\scripts\install_adapter.py --adapter codex --target "D:\Projects\MyProject"
-```
+## Cursor
 
-This is additive: the marketplace plugin provides reusable skills; the native adapter provides project instructions and `.codex/agents/*.toml`.
+Cursor reads `.cursor-plugin/plugin.json` and `.cursor-plugin/marketplace.json`. The marketplace entry uses `"source": "./"`; the plugin manifest points to the shared root `agents/`, `skills/`, and `rules/`.
 
-## Install in Cursor
+For Team Marketplace installation:
 
-### Team marketplace
-
-Cursor Team and Enterprise support team marketplaces. To import this repository:
-
-1. Open the Cursor Dashboard and go to **Plugins**.
+1. Open the Cursor Dashboard → **Plugins**.
 2. Under **Team Marketplaces**, choose **Add Marketplace**.
 3. Choose **Import from Repo** and enter `https://github.com/hd159/ai-agent`.
-4. Add and review **AI Agent Ecosystem** in the marketplace.
-5. Configure marketplace access and installation mode.
-6. In Cursor, open **Customize**, find the plugin, and select **Install**.
+4. Add and review **AI Agent Ecosystem**.
+5. In Cursor, open **Customize** and install the plugin.
 
-The Cursor marketplace catalog is `.cursor-plugin/marketplace.json`. Its entry points to `plugins/ai-agent-ecosystem/`, whose `.cursor-plugin/plugin.json` declares the seven agents, shared rule, and skills.
+Cursor Team Marketplace requires Teams or Enterprise. For local plugin testing, use the repository root as the plugin root rather than copying component directories into a separate package.
 
-### Local development / individual use
+## Antigravity compatibility
 
-For local plugin testing, Cursor documents `~/.cursor/plugins/local`. On Windows, one approach is:
-
-```powershell
-git clone https://github.com/hd159/ai-agent.git
-New-Item -ItemType Directory -Force "$env:USERPROFILE\.cursor\plugins\local" | Out-Null
-Copy-Item -Recurse ".\ai-agent\plugins\ai-agent-ecosystem" "$env:USERPROFILE\.cursor\plugins\local\ai-agent-ecosystem"
-```
-
-Restart Cursor or run **Developer: Reload Window**, then open **Customize** and verify the plugin's agents, rules, and skills. Local plugin imports may be restricted by organization policy.
-
-Public Cursor Marketplace listing is a separate submission/review process; a repository marketplace manifest does not automatically publish the plugin to Cursor's public directory.
-
-## Compatibility and security
-
-- Antigravity remains on plugin version 0.3.2; the root `plugin.json` is unchanged.
-- Ecosystem and native plugin packages remain at version 0.4.0.
-- Codex receives the shared skills only through its supported plugin package surface.
-- Cursor receives 7 specialist agents, 1 always-applied MDC rule, and 19 skills.
-- Neither plugin manifest grants shell, filesystem, network, MCP, delegation, or approval permissions.
-- Host permissions and approval policies remain controlled by each application.
-- Marketplace manifests and generated package content are validated in CI. Live installation still needs a smoke test in each host application.
-
-## Official format references
-
-- [Codex plugin packaging and marketplace metadata](https://developers.openai.com/plugins/build/plugins)
-- [Cursor plugins and marketplaces](https://cursor.com/docs/plugins)
-- [Cursor plugin manifest reference](https://prod.cursor.com/docs/reference/plugins)
+- The root Antigravity `plugin.json` remains version `0.3.2`.
+- The root `agents/`, `skills/`, and `rules/AGENTS.md` continue to be generated from canonical module sources.
+- `rules/ai-agent-constitution.mdc` is generated alongside the Antigravity rule for Cursor's native MDC format.
+- No host permissions, tool access, MCP connectivity, or delegation rights are granted by these manifests.
+- Live installation smoke tests are still required in Codex, Claude Code, and Cursor; CI validates manifest shape, root path resolution, and the no-duplication contract.
