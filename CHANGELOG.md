@@ -1,13 +1,13 @@
 # Changelog
 
-## Unreleased — Dual Codex and Cursor plugin marketplaces
+## Unreleased — Root-shared Codex, Claude Code, and Cursor marketplaces
 
-- Add separate native marketplace catalogs at `.agents/plugins/marketplace.json` and `.cursor-plugin/marketplace.json`.
-- Package both platform manifests in one nested plugin directory, avoiding collision with the backward-compatible Antigravity root `plugin.json`.
-- Bundle 19 shared skills for Codex and Cursor; package seven native Cursor agents and one always-applied MDC rule.
-- Add deterministic Cursor marketplace component generation, ownership-safe updates, validators, unit tests, and CI checks.
-- Document Codex Git subdirectory marketplace setup (including leaving sparse paths empty) and Cursor team/local marketplace installation.
-- Keep Codex custom-agent profiles in the existing native adapter installer because Codex plugin packages expose skills/MCP/hooks rather than Cursor-style agent and rule components.
+- Add Claude Code and Cursor marketplace manifests that reference the single root `./agents/`, `./skills/`, and `./rules/` bundle.
+- Keep `.claude-plugin/` and `.cursor-plugin/` metadata-only: each contains only `plugin.json` and `marketplace.json`.
+- Add root `rules/ai-agent-constitution.mdc` for Cursor while retaining the Antigravity-compatible `rules/AGENTS.md`.
+- Remove the redundant nested `plugins/ai-agent-ecosystem/` bundle and the marketplace component-copy builder.
+- Retain only the Codex-required `plugins/ai-agent/` subdirectory with its manifest and 19 mirrored skills. Codex rejects repository-root local plugin sources and its plugin manifest does not define agents/rules components; Codex agent profiles remain in the native adapter.
+- Update the single root plugin builder, validators, platform contract, tests, docs, and CI to enforce the no-duplication layout and Codex's minimal exception.
 
 
 ## 0.4.0 — Hybrid multi-runtime adapters
