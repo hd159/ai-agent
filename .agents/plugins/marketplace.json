@@ -8,7 +8,7 @@
       "name": "ai-agent-ecosystem",
       "source": {
         "source": "local",
-        "path": "./plugins/ai-agent-ecosystem"
+        "path": "."
       },
       "policy": {
         "installation": "AVAILABLE",
