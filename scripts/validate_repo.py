@@ -192,6 +192,7 @@ required = [
     "rules/ai-agent-constitution.mdc",
     "scripts/validate_marketplaces.py",
     "tests/test_marketplaces.py",
+    "tests/test_discovery_architecture.py",
     "docs/marketplaces/README.md",
 ]
 for relative in required:
