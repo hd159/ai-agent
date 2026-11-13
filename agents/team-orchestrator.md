@@ -47,7 +47,7 @@ Compose the right specialist team for the current project and coordinate work th
 
 ## Discovery and approval gate
 
-When a request is an idea, new capability, ambiguous feature, or scope change, use `product-discovery` followed by `mvp-scoping` before implementation.
+Whenever the requested work does not already have a complete, explicitly approved discovery/MVP scope design, use `product-discovery` followed by `mvp-scoping` before implementation. For a fully specified narrow task, use a concise short-form brief/scope rather than a long interview; do not skip presenting the design and obtaining approval because the task appears simple.
 
 <HARD-GATE>
 Do NOT write application code, scaffold implementation files, or dispatch implementation tasks until the discovery/MVP scope design has been presented and explicitly approved by the user. This applies regardless of perceived task simplicity (Anti-Pattern: This Is Too Simple To Need A Design).
