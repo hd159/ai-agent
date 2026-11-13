@@ -128,16 +128,19 @@
     },
     "codex": {
       "catalog": ".agents/plugins/marketplace.json",
-      "manifest": ".codex-plugin/plugin.json",
+      "package": "plugins/ai-agent/",
+      "manifest": "plugins/ai-agent/.codex-plugin/plugin.json",
       "source": {
         "source": "local",
-        "path": "."
+        "path": "./plugins/ai-agent"
       },
-      "components": {
-        "agents": "./agents/",
-        "skills": "./skills/"
-      },
-      "metadata_directory_policy": "Only plugin.json in .codex-plugin/; Codex marketplace catalog remains under .agents/plugins/."
+      "components": [
+        "skills"
+      ],
+      "mirrored_components": [
+        "skills"
+      ],
+      "note": "Codex rejects repository-root marketplace sources and its plugin manifest does not define agents/rules components. The minimal skills-only subdirectory package is required; Codex agent profiles are installed separately through .codex/agents."
     }
   },
   "shared_plugin_bundle": {
@@ -153,6 +156,6 @@
       "rules": "modules/agent-constitution/rules/AGENTS.md"
     },
     "generated_rule": "rules/ai-agent-constitution.mdc",
-    "note": "All native marketplace manifests resolve component paths from the repository root. Do not copy components into hidden metadata directories or nested plugins/ packages."
+    "note": "Claude Code and Cursor reference the root bundle directly. Codex requires a strict subdirectory source, so only its supported skills component is mirrored under plugins/ai-agent/; Codex agent profiles remain in the native .codex/agents adapter."
   }
 }
