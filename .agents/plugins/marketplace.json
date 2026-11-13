@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "ai-agent-ecosystem",
+      "name": "ai-agent",
       "source": {
         "source": "local",
-        "path": "."
+        "path": "./plugins/ai-agent"
       },
       "policy": {
         "installation": "AVAILABLE",
