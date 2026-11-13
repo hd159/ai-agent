@@ -9,11 +9,9 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-# The root bundle is the only distributable copy of agents, skills, and rules.
-# Platform manifests live in metadata-only hidden directories and point back here.
-# Codex requires a strict repository subdirectory for local marketplace sources.
-# Only its supported skills component is mirrored; Codex agents use .codex/agents.
-GENERATED = ("plugin.json", "agents", "skills", "rules", "plugins/ai-agent")
+# These are the only generated distributable components. Every runtime manifest
+# resolves the same agents/, skills/, and rules/ directories from repository root.
+GENERATED = ("plugin.json", ".codex-plugin", "agents", "skills", "rules")
 
 
 def build(destination: Path) -> list[str]:
@@ -21,7 +19,9 @@ def build(destination: Path) -> list[str]:
     agents_dir = destination / "agents"
     skills_dir = destination / "skills"
     rules_dir = destination / "rules"
-    for directory in (agents_dir, skills_dir, rules_dir):
+    codex_manifest_dir = destination / ".codex-plugin"
+
+    for directory in (agents_dir, skills_dir, rules_dir, codex_manifest_dir):
         directory.mkdir(parents=True, exist_ok=True)
 
     seen_agents: set[str] = set()
@@ -72,8 +72,8 @@ def build(destination: Path) -> list[str]:
     if constitution_source is None:
         raise ValueError("Canonical modules/agent-constitution/rules/AGENTS.md is missing")
 
-    # Cursor consumes native MDC frontmatter, while Antigravity keeps its
-    # backward-compatible AGENTS.md rule. Both live in the one root rules/.
+    # Cursor consumes native MDC frontmatter; Antigravity keeps its compatible
+    # AGENTS.md rule. Both are generated from one canonical constitution source.
     constitution = constitution_source.read_text(encoding="utf-8")
     mdc = (
         "---\n"
@@ -86,12 +86,12 @@ def build(destination: Path) -> list[str]:
     (rules_dir / "ai-agent-constitution.mdc").write_text(mdc, encoding="utf-8")
 
     catalog = json.loads((ROOT / "ecosystem.json").read_text(encoding="utf-8"))
-    version = catalog.get("adapters", {}).get("antigravity", {}).get("version", catalog["version"])
+    antigravity_version = catalog.get("adapters", {}).get("antigravity", {}).get("version", catalog["version"])
     manifest = {
         "$schema": "https://antigravity.google/schemas/v1/plugin.json",
         "name": "ai-agent",
         "displayName": "AI Agent Ecosystem",
-        "version": version,
+        "version": antigravity_version,
         "description": "A complete multi-agent engineering team: architecture, product design, frontend, backend, infrastructure, QA, and orchestration, with shared engineering skills and behavioral rules.",
         "repository": "https://github.com/hd159/ai-agent",
         "suggestedPrompts": [
@@ -103,33 +103,28 @@ def build(destination: Path) -> list[str]:
         "license": "MIT",
         "keywords": ["multi-agent", "orchestration", "architecture", "product-design", "frontend", "backend", "devops", "qa", "agent-skills"]
     }
-    (destination / "plugin.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    (destination / "plugin.json").write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8"
+    )
 
-    # Codex marketplace sources must be strict subdirectories of the repository
-    # root. Keep only the minimal supported Codex package at ./plugins/ai-agent.
-    # Codex plugin manifests support skills, not agents or rules.
-    codex_root = destination / "plugins" / "ai-agent"
-    codex_manifest_dir = codex_root / ".codex-plugin"
-    codex_skills_dir = codex_root / "skills"
-    codex_manifest_dir.mkdir(parents=True, exist_ok=True)
-    codex_skills_dir.mkdir(parents=True, exist_ok=True)
-    for skill_dir in sorted(skills_dir.iterdir()):
-        if (skill_dir / "SKILL.md").is_file():
-            shutil.copytree(skill_dir, codex_skills_dir / skill_dir.name)
-
+    # Codex discovers this manifest at the plugin root and resolves skills from
+    # the same root bundle. The agents path is retained as shared ecosystem
+    # metadata; Codex's current core plugin loader consumes the skills path.
     codex_manifest = {
-        "name": "ai-agent",
+        "name": "ai-agent-ecosystem",
         "version": catalog["version"],
-        "description": "AI Agent Ecosystem reusable engineering skills for Codex.",
+        "description": "A shared root bundle of specialist agents, reusable engineering skills, and project rules.",
         "author": {"name": "hd159"},
         "homepage": "https://github.com/hd159/ai-agent",
         "repository": "https://github.com/hd159/ai-agent",
         "license": "MIT",
+        "agents": "./agents/",
         "skills": "./skills/",
         "interface": {
             "displayName": "AI Agent Ecosystem",
-            "shortDescription": "19 reusable engineering skills",
-            "longDescription": "The Codex-compatible skill package. Specialist Codex agents are installed separately through the native project adapter.",
+            "shortDescription": "7 specialist agents and 19 reusable engineering skills",
+            "longDescription": "One canonical root bundle shared across Antigravity, Codex, Claude Code, Copilot CLI, and Cursor.",
             "developerName": "hd159",
             "category": "Developer Tools",
             "websiteURL": "https://github.com/hd159/ai-agent"
@@ -139,11 +134,12 @@ def build(destination: Path) -> list[str]:
         json.dumps(codex_manifest, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8"
     )
+
     return [
         f"agents={agent_count}",
         f"skills={skill_count}",
         f"rules={rule_count} source rule + ai-agent-constitution.mdc",
-        f"codex-plugin-skills={skill_count} (required ./plugins/ai-agent mirror)"
+        "Codex manifest=.codex-plugin/plugin.json (root paths; no component mirrors)"
     ]
 
 
@@ -194,6 +190,8 @@ def main() -> int:
             print("ROOT PLUGIN BUNDLE CURRENT:", ", ".join(stats))
             return 0
 
+    # Remove only the known generated bundle. No marketplace metadata or
+    # canonical modules are touched by the build.
     for relative in GENERATED:
         target = ROOT / relative
         if target.is_dir():
