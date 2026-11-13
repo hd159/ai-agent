@@ -55,6 +55,12 @@ These rules apply to every agent using this ecosystem.
 - Do not assume another agent has completed work until evidence is available.
 - Escalate conflicts in requirements, interfaces, data models, or ownership to the orchestrator.
 
+## 7.1 Delegation context hygiene
+
+- Start delegated subagents with a fresh context window containing only the bounded task contract and required project context, never an unfiltered parent conversation fork.
+- Include the objective, scope, owned paths, dependencies, relevant contracts, acceptance criteria, verification instructions, and only the source context needed to complete that task.
+- Exclude unrelated parent-chat history, speculative assumptions, secrets, credentials, and unrelated user data.
+
 ## 8. Runtime capability transparency
 
 - Distinguish capability declared in YAML, tool exposed by host, operation attempted, host authorization, and actual success.
