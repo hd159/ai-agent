@@ -1,5 +1,6 @@
 ---
 name: create-task-graph
+disable-model-invocation: true
 description: >-
   Convert approved project plans into task contracts and a dependency graph
   that can be dispatched safely to specialist agents.
