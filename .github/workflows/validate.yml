@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # Versioned group isolates the root-shared marketplace validation run from older in-flight layouts.
+  group: ${{ github.workflow }}-${{ github.ref }}-root-shared
   cancel-in-progress: true
 
 jobs:
