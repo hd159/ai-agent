@@ -1,6 +1,6 @@
 # Root-Shared Native Plugin Marketplaces
 
-AI Agent Ecosystem 0.4.0 exposes one canonical root bundle to Claude Code and Cursor, plus the smallest Codex-specific package required by Codex's marketplace path rules.
+AI Agent Ecosystem 0.4.0 keeps one canonical root bundle for Antigravity, Claude Code, and Cursor, plus the smallest Codex-specific package required by Codex's marketplace path rules. Claude Code consumes the root agents and skills; Cursor consumes root agents, skills, and the MDC rule.
 
 Marketplaces:
 
@@ -70,7 +70,8 @@ Claude Code reads `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.j
 
 - `agents: "./agents/"`
 - `skills: "./skills/"`
-- `rules: "./rules/"`
+
+Claude Code plugin manifests do not declare a `rules` component. The shared root `rules/` remains available to Cursor and Antigravity.
 
 Do not create `.claude-plugin/agents/`, `.claude-plugin/skills/`, or `.claude-plugin/rules/`.
 
