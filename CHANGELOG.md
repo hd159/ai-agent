@@ -1,14 +1,13 @@
 # Changelog
 
-## Unreleased — Root-shared Codex, Claude Code, and Cursor marketplaces
+## Unreleased — Root-only marketplaces and stronger design governance
 
-- Add Claude Code and Cursor marketplace manifests that reference the single root `./agents/`, `./skills/`, and `./rules/` bundle.
-- Keep `.claude-plugin/` and `.cursor-plugin/` metadata-only: each contains only `plugin.json` and `marketplace.json`.
-- Add root `rules/ai-agent-constitution.mdc` for Cursor while retaining the Antigravity-compatible `rules/AGENTS.md`.
-- Remove the redundant nested `plugins/ai-agent-ecosystem/` bundle and the marketplace component-copy builder.
-- Retain only the Codex-required `plugins/ai-agent/` subdirectory with its manifest and 19 mirrored skills. Codex rejects repository-root local plugin sources and its plugin manifest does not define agents/rules components; Codex agent profiles remain in the native adapter.
-- Update the single root plugin builder, validators, platform contract, tests, docs, and CI to enforce the no-duplication layout and Codex's minimal exception.
-
+- Remove the Codex-only `plugins/ai-agent/` package and `.agents/plugins/marketplace.json`; Codex core-plugins reuses `.claude-plugin/marketplace.json` with root source `"./"`.
+- Generate root `.codex-plugin/plugin.json` alongside the root Antigravity, Claude Code, Copilot CLI, and Cursor manifests; all component paths point to root `agents/`, `skills/`, and `rules/`.
+- Update the single bundle builder, marketplace/repository validators, platform contract, tests, and installation documentation to reject component mirrors.
+- Add discovery hard gates, sub-project decomposition checks, one-question-per-message interviewing, and 2–3 approach trade-off recommendations.
+- Add the 3-Gate ADR Filter (Reversibility, Surprise, Trade-off), inline ubiquitous-language capture, and fresh-context subagent delegation requirements.
+- Mark compose-team, create-task-graph, capability-smoke-test, and session-checkpoint with `disable-model-invocation: true`; validate the optional boolean skill frontmatter field.
 
 ## 0.4.0 — Hybrid multi-runtime adapters
 
