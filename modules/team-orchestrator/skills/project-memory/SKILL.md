@@ -57,7 +57,7 @@ When the user requests an architecture update:
 5. Record unresolved questions, risks, and assumptions separately.
 6. Update state.json and create a session checkpoint describing the review and evidence.
 
-## 5. Domain language and ADR discipline
+## 5. 3-Gate ADR Filter and domain language
 
 - Capture canonical domain terms inline in `PROJECT_CONTEXT.md` (or the existing `GLOSSARY.md`) as soon as the user and team agree on them. Do not defer resolved terms to a later documentation pass.
 - Record canonical spelling, concise definition, meaningful synonyms, and distinctions between easily confused concepts. Keep UI labels, API payloads, event names, and database schemas aligned with this vocabulary.
