@@ -15,8 +15,8 @@ Do NOT write application code, scaffold implementation files, or dispatch implem
 ## Step 0 — Sub-Project Decomposition Check
 
 - Re-evaluate the Product Brief for independently valuable subsystems, distinct domain models, data ownership, integrations, user groups, or release lifecycles (for example auth + billing + analytics + chat).
-   - If the request is too broad for one cohesive MVP, pause detailed requirements and feature prioritization. Present 2–3 concrete ways to split the work into independent sub-projects/phases, show trade-offs, and recommend a sequence.
-   - Ask at most ONE question to confirm the decomposition. Scope only the first agreed sub-project; keep later phases as explicit out-of-scope items/dependencies.
+- If the request is too broad for one cohesive MVP, pause detailed requirements and feature prioritization. Present 2–3 concrete ways to split the work into independent sub-projects/phases, show trade-offs, and recommend a sequence.
+- Ask at most ONE question to confirm the decomposition. Scope only the first agreed sub-project; keep later phases as explicit out-of-scope items/dependencies.
 
 ## Procedure
 
