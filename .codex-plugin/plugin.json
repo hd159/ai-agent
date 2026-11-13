@@ -1,0 +1,21 @@
+{
+  "name": "ai-agent-ecosystem",
+  "version": "0.4.0",
+  "description": "A shared root bundle of specialist agents, reusable engineering skills, and project rules.",
+  "author": {
+    "name": "hd159"
+  },
+  "homepage": "https://github.com/hd159/ai-agent",
+  "repository": "https://github.com/hd159/ai-agent",
+  "license": "MIT",
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "AI Agent Ecosystem",
+    "shortDescription": "7 specialist agents and 19 reusable engineering skills",
+    "longDescription": "One canonical root bundle shared across Antigravity, Codex, Claude Code, Copilot CLI, and Cursor.",
+    "developerName": "hd159",
+    "category": "Developer Tools",
+    "websiteURL": "https://github.com/hd159/ai-agent"
+  }
+}
