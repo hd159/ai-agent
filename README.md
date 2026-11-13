@@ -31,11 +31,7 @@ All specialists ship together. You do **not** need to install or clone nine sepa
 
 ## Native Plugin Marketplaces — Codex, Claude Code, and Cursor
 
-Claude Code and Cursor use the **single root component bundle**:
-
-- Agents: `./agents/`
-- Skills: `./skills/`
-- Rules: `./rules/`
+Claude Code and Cursor use the **single root component bundle**. Claude Code loads root `./agents/` and `./skills/`; Cursor loads root `./agents/`, `./skills/`, and `./rules/`.
 
 Their marketplace sources are `"./"`; their metadata directories contain only `plugin.json` and `marketplace.json`. No components are copied into `.claude-plugin/` or `.cursor-plugin/`.
 
