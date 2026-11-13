@@ -75,6 +75,12 @@ for path in skill_files:
         errors.append(f"{path.relative_to(ROOT)}: skill name must match directory")
     if not fm.get("description"):
         errors.append(f"{path.relative_to(ROOT)}: description is required")
+    # Optional skill metadata; when present it must be a YAML boolean.
+    invocation_flag = fm.get("disable-model-invocation")
+    if invocation_flag is not None and invocation_flag not in {"true", "false"}:
+        errors.append(
+            f"{path.relative_to(ROOT)}: disable-model-invocation must be true or false"
+        )
 
 constitution_mdc = ROOT / "rules" / "ai-agent-constitution.mdc"
 if not constitution_mdc.is_file():
@@ -87,50 +93,52 @@ else:
     if "Universal Agent Constitution" not in content:
         errors.append("rules/ai-agent-constitution.mdc must contain the shared constitution")
 
-# Claude Code and Cursor metadata directories contain manifests only.
-for metadata_dir in (".claude-plugin", ".cursor-plugin", ".agents/plugins"):
-    path = ROOT / metadata_dir
-    if path.is_dir():
-        for child in path.iterdir():
-            if child.is_dir():
-                errors.append(f"{metadata_dir} must contain metadata only; found directory {child.name}/")
+# Plugin metadata directories contain manifests only; all components are at root.
+expected_metadata = {
+    ".claude-plugin": {"plugin.json", "marketplace.json"},
+    ".cursor-plugin": {"plugin.json", "marketplace.json"},
+    ".codex-plugin": {"plugin.json"},
+}
+for metadata_dir, expected_files in expected_metadata.items():
+    directory = ROOT / metadata_dir
+    if not directory.is_dir():
+        errors.append(f"required metadata directory is missing: {metadata_dir}")
+        continue
+    files = {item.name for item in directory.iterdir() if item.is_file()}
+    directories = {item.name for item in directory.iterdir() if item.is_dir()}
+    if files != expected_files or directories:
+        errors.append(
+            f"{metadata_dir} must contain only {sorted(expected_files)}; "
+            f"files={sorted(files)}, directories={sorted(directories)}"
+        )
 
-# Codex requires a strict subdirectory source. Keep only its manifest and the
-# skills-only mirror; agents and rules remain canonical at the repository root.
-if (ROOT / ".codex-plugin").exists():
-    errors.append("root .codex-plugin/ cannot be installed through a Codex repo marketplace; use plugins/ai-agent/")
-codex_root = ROOT / "plugins" / "ai-agent"
-if codex_root.is_dir():
-    top_level = {path.name for path in codex_root.iterdir()}
-    if top_level != {".codex-plugin", "skills"}:
-        errors.append(f"plugins/ai-agent may contain only .codex-plugin/ and skills/; found {sorted(top_level)}")
-    for unsupported in ("agents", "rules"):
-        if (codex_root / unsupported).exists():
-            errors.append(f"plugins/ai-agent/{unsupported}/ must not duplicate the root bundle")
-    codex_manifest_path = codex_root / ".codex-plugin" / "plugin.json"
-    try:
-        codex_manifest = json.loads(codex_manifest_path.read_text(encoding="utf-8"))
-        if codex_manifest.get("name") != "ai-agent":
-            errors.append("plugins/ai-agent/.codex-plugin/plugin.json name must match its directory")
-        if codex_manifest.get("skills") != "./skills/":
-            errors.append("Codex plugin manifest must reference its local ./skills/ mirror")
-        if "agents" in codex_manifest or "rules" in codex_manifest:
-            errors.append("Codex plugin manifest must not declare unsupported agents/rules components")
-    except Exception as exc:
-        errors.append(f"invalid Codex plugin manifest: {exc}")
-    root_skill_files = sorted((ROOT / "skills").glob("*/SKILL.md"))
-    codex_skill_files = sorted((codex_root / "skills").glob("*/SKILL.md"))
-    if len(codex_skill_files) != len(root_skill_files):
-        errors.append("Codex skill mirror count must match the shared root skills directory")
-    for source in root_skill_files:
-        target = codex_root / "skills" / source.parent.name / "SKILL.md"
-        if not target.is_file() or target.read_bytes() != source.read_bytes():
-            errors.append(f"Codex skill mirror differs from root source: {source.parent.name}")
-else:
-    errors.append("required Codex plugin subdirectory plugins/ai-agent is missing")
+if (ROOT / "plugins").exists():
+    errors.append("plugins/ is forbidden; agents, skills, and rules must exist only in the root bundle")
+if (ROOT / ".agents").exists():
+    errors.append(".agents/ is obsolete; Codex marketplace discovery uses .claude-plugin/marketplace.json")
 
-if (ROOT / "plugins" / "ai-agent-ecosystem").exists():
-    errors.append("obsolete duplicate plugins/ai-agent-ecosystem package is forbidden")
+codex_manifest_path = ROOT / ".codex-plugin" / "plugin.json"
+try:
+    codex_manifest = json.loads(codex_manifest_path.read_text(encoding="utf-8"))
+    if codex_manifest.get("name") != "ai-agent-ecosystem":
+        errors.append(".codex-plugin/plugin.json name must be ai-agent-ecosystem")
+    if codex_manifest.get("agents") != "./agents/":
+        errors.append(".codex-plugin/plugin.json must point agents to ./agents/")
+    if codex_manifest.get("skills") != "./skills/":
+        errors.append(".codex-plugin/plugin.json must point skills to ./skills/")
+except Exception as exc:
+    errors.append(f"invalid .codex-plugin/plugin.json: {exc}")
+
+source_agents = sorted((ROOT / "modules").glob("*/agents/*.md"))
+for source in source_agents:
+    target = ROOT / "agents" / source.name
+    if not target.is_file() or target.read_bytes() != source.read_bytes():
+        errors.append(f"root agent differs from canonical module source: {source.name}")
+
+source_rule = ROOT / "modules" / "agent-constitution" / "rules" / "AGENTS.md"
+root_rule = ROOT / "rules" / "AGENTS.md"
+if not source_rule.is_file() or not root_rule.is_file() or source_rule.read_bytes() != root_rule.read_bytes():
+    errors.append("root rules/AGENTS.md must match the canonical module constitution")
 
 if errors:
     print("PLUGIN VALIDATION FAILED")
