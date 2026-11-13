@@ -165,6 +165,11 @@ def same_generated(temp: Path) -> list[str]:
             differences.append(f"missing file: {relative}")
         elif expected.read_bytes() != actual.read_bytes():
             differences.append(f"out of date: {relative}")
+    # Legacy marketplace packaging is never part of the generated bundle.
+    if (ROOT / "plugins").exists():
+        differences.append("obsolete directory exists: plugins/")
+    if (ROOT / ".agents" / "plugins" / "marketplace.json").exists():
+        differences.append("obsolete marketplace catalog exists: .agents/plugins/marketplace.json")
     return differences
 
 
@@ -190,14 +195,27 @@ def main() -> int:
             print("ROOT PLUGIN BUNDLE CURRENT:", ", ".join(stats))
             return 0
 
-    # Remove only the known generated bundle. No marketplace metadata or
-    # canonical modules are touched by the build.
+    # Remove the known generated bundle and clean up the obsolete Codex
+    # subdirectory package/catalog from earlier releases. Canonical modules and
+    # current marketplace metadata are never touched.
     for relative in GENERATED:
         target = ROOT / relative
         if target.is_dir():
             shutil.rmtree(target)
         elif target.exists():
             target.unlink()
+
+    legacy_plugins = ROOT / "plugins"
+    if legacy_plugins.exists():
+        shutil.rmtree(legacy_plugins)
+
+    legacy_catalog = ROOT / ".agents" / "plugins" / "marketplace.json"
+    if legacy_catalog.exists():
+        legacy_catalog.unlink()
+    for legacy_directory in (ROOT / ".agents" / "plugins", ROOT / ".agents"):
+        if legacy_directory.is_dir() and not any(legacy_directory.iterdir()):
+            legacy_directory.rmdir()
+
     try:
         stats = build(ROOT)
     except Exception as exc:
