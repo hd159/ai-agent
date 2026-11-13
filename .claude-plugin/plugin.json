@@ -9,6 +9,5 @@
   "homepage": "https://github.com/hd159/ai-agent",
   "license": "MIT",
   "agents": "./agents/",
-  "skills": "./skills/",
-  "rules": "./rules/"
+  "skills": "./skills/"
 }
