@@ -39,7 +39,7 @@ class DiscoveryArchitectureTests(unittest.TestCase):
         content = read("modules/core-engineering-skills/skills/product-discovery/SKILL.md")
         self.assertIn("<HARD-GATE>", content)
         self.assertIn(HARD_GATE_TEXT, content)
-        self.assertIn("Sub-Project Decomposition Check", content)
+        self.assertIn("## Step 0 — Sub-Project Decomposition Check", content)
         self.assertIn("multiple independent subsystems", content)
         self.assertIn("at most ONE question per message", content)
         self.assertIn("2–3 concrete approaches", content)
