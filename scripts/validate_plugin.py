@@ -24,7 +24,7 @@ def parse_frontmatter(path: Path) -> dict[str, str]:
     for line in text[4:end].splitlines():
         match = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", line)
         if match:
-            result[match.group(1)] = match.group(2).strip().strip('"\\'')
+            result[match.group(1)] = match.group(2).strip().strip("\\\"'")
     return result
 
 
