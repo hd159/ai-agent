@@ -37,9 +37,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install quality gate dependencies
         run: python -m pip install -r requirements-dev.txt
-      - name: Rebuild backward-compatible Antigravity plugin
+      - name: Build canonical root plugin bundle from modules
         run: python scripts/build_single_plugin.py
-      - name: Check backward-compatible Antigravity plugin
+      - name: Verify generated root bundle is committed and synchronized
+        run: git diff --exit-code -- plugin.json .codex-plugin agents skills rules
+      - name: Check canonical root plugin bundle
         run: python scripts/build_single_plugin.py --check
       - name: Build native adapters
         run: python scripts/build_adapters.py --adapter all
