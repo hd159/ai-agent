@@ -21,9 +21,9 @@ The task is a fully specified, narrowly scoped implementation change with approv
 ## Step 0 — Sub-Project Decomposition Check
 
 - Inspect the request for independently valuable subsystems, distinct domain models, separate data ownership, integrations, user groups, or release lifecycles (for example auth + billing + analytics + chat).
-   - If the request spans multiple independent subsystems and cannot be captured in one cohesive Product Brief, pause detailed discovery. Present 2–3 concrete decomposition approaches with explicit trade-offs and a clear recommendation.
-   - Ask at most one question in that message to confirm the first sub-project or phase. Do not scope every subsystem at once.
-   - After the decomposition is agreed, scope only the first sub-project; record later phases as boundaries/dependencies, not hidden MVP scope.
+- If the request spans multiple independent subsystems and cannot be captured in one cohesive Product Brief, pause detailed discovery. Present 2–3 concrete decomposition approaches with explicit trade-offs and a clear recommendation.
+- Ask at most one question in that message to confirm the first sub-project or phase. Do not scope every subsystem at once.
+- After the decomposition is agreed, scope only the first sub-project; record later phases as boundaries/dependencies, not hidden MVP scope.
 
 ## Procedure
 
