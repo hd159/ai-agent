@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate root-shared Claude/Cursor components and the minimal Codex subdirectory package."""
+"""Validate one canonical root bundle shared by Codex, Claude Code, Copilot CLI, and Cursor."""
 from __future__ import annotations
 
 import json
@@ -7,7 +7,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ROOT_COMPONENTS = {"agents": "./agents/", "skills": "./skills/", "rules": "./rules/"}
-CODEX_PACKAGE = "plugins/ai-agent"
 
 
 def validate(root: Path = ROOT) -> list[str]:
@@ -27,12 +26,21 @@ def validate(root: Path = ROOT) -> list[str]:
     catalog = load("ecosystem.json")
     version = catalog.get("version")
 
-    # Claude Code and Cursor can consume the repository root as the plugin root.
-    root_plugins = {
-        "claude": (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json", ("agents", "skills")),
-        "cursor": (".cursor-plugin/plugin.json", ".cursor-plugin/marketplace.json", ("agents", "skills", "rules")),
+    # Claude Code, Codex core-plugins, and Copilot CLI share the Claude-format
+    # marketplace/catalog. Codex also reads the root .codex-plugin manifest.
+    marketplaces = {
+        "claude_code": (
+            ".claude-plugin/plugin.json",
+            ".claude-plugin/marketplace.json",
+            ("agents", "skills"),
+        ),
+        "cursor": (
+            ".cursor-plugin/plugin.json",
+            ".cursor-plugin/marketplace.json",
+            ("agents", "skills", "rules"),
+        ),
     }
-    for platform, (plugin_path, marketplace_path, components) in root_plugins.items():
+    for platform, (plugin_path, marketplace_path, components) in marketplaces.items():
         plugin = load(plugin_path)
         marketplace = load(marketplace_path)
         if plugin.get("name") != "ai-agent-ecosystem":
@@ -43,10 +51,10 @@ def validate(root: Path = ROOT) -> list[str]:
             expected = ROOT_COMPONENTS[component]
             if plugin.get(component) != expected:
                 errors.append(f"{plugin_path}: {component} must resolve from repository root as {expected}")
-            if not (root / expected.removeprefix("./")).is_dir():
-                errors.append(f"{plugin_path}: root component directory is missing: {expected}")
-        if platform == "claude" and "rules" in plugin:
-            errors.append(f"{plugin_path}: Claude Code plugin manifests do not declare a rules component")
+            if not (root / component).is_dir():
+                errors.append(f"{plugin_path}: root component directory is missing: {component}/")
+        if platform == "claude_code" and "rules" in plugin:
+            errors.append(f"{plugin_path}: Claude Code manifest should declare only supported agents/skills paths")
 
         if marketplace.get("name") != "ai-agent-ecosystem":
             errors.append(f"{marketplace_path}: marketplace name mismatch")
@@ -62,46 +70,30 @@ def validate(root: Path = ROOT) -> list[str]:
         if entry.get("version") != version:
             errors.append(f"{marketplace_path}: plugin version must match ecosystem.json")
 
-    # Codex currently rejects a repository-root local source and its plugin
-    # manifest supports skills, not agents/rules. Its only permitted mirror is
-    # the smallest package at ./plugins/ai-agent containing plugin.json + skills.
-    codex_plugin_path = f"{CODEX_PACKAGE}/.codex-plugin/plugin.json"
-    codex_marketplace_path = ".agents/plugins/marketplace.json"
-    codex_plugin = load(codex_plugin_path)
-    codex_marketplace = load(codex_marketplace_path)
-    if codex_plugin.get("name") != "ai-agent":
-        errors.append(f"{codex_plugin_path}: name must match the plugins/ai-agent directory")
-    if codex_plugin.get("version") != version:
-        errors.append(f"{codex_plugin_path}: plugin version must match ecosystem.json ({version})")
-    if codex_plugin.get("skills") != "./skills/":
-        errors.append(f"{codex_plugin_path}: skills must resolve to ./skills/ inside the Codex package")
-    if "agents" in codex_plugin or "rules" in codex_plugin:
-        errors.append(f"{codex_plugin_path}: Codex plugin manifest must not declare unsupported agents/rules components")
+    # Codex core-plugins discovers .claude-plugin/marketplace.json and resolves
+    # source './' to the repository root. Its native manifest lives at
+    # .codex-plugin/plugin.json. The agents path is shared ecosystem metadata;
+    # current Codex core-plugins consumes the skills path.
+    codex_manifest_path = ".codex-plugin/plugin.json"
+    codex_manifest = load(codex_manifest_path)
+    if codex_manifest.get("name") != "ai-agent-ecosystem":
+        errors.append(f"{codex_manifest_path}: name must be ai-agent-ecosystem")
+    if codex_manifest.get("version") != version:
+        errors.append(f"{codex_manifest_path}: version must match ecosystem.json ({version})")
+    for component in ("agents", "skills"):
+        expected = ROOT_COMPONENTS[component]
+        if codex_manifest.get(component) != expected:
+            errors.append(f"{codex_manifest_path}: {component} must resolve to {expected}")
+        if not (root / component).is_dir():
+            errors.append(f"{codex_manifest_path}: root {component}/ directory is missing")
 
-    if codex_marketplace.get("name") != "ai-agent-ecosystem":
-        errors.append(f"{codex_marketplace_path}: marketplace name mismatch")
-    codex_entries = codex_marketplace.get("plugins", [])
-    if len(codex_entries) != 1:
-        errors.append(f"{codex_marketplace_path}: expected exactly one Codex plugin entry")
-    else:
-        entry = codex_entries[0]
-        if entry.get("name") != "ai-agent":
-            errors.append(f"{codex_marketplace_path}: entry name must match the Codex plugin directory")
-        source = entry.get("source", {})
-        if source.get("source") != "local" or source.get("path") != f"./{CODEX_PACKAGE}":
-            errors.append(f"{codex_marketplace_path}: Codex source must use ./plugins/ai-agent (root paths are rejected)")
-        policy = entry.get("policy", {})
-        if policy.get("installation") != "AVAILABLE" or policy.get("authentication") != "ON_INSTALL":
-            errors.append(f"{codex_marketplace_path}: Codex installation/authentication policy mismatch")
-        if entry.get("category") != "Developer Tools":
-            errors.append(f"{codex_marketplace_path}: Codex category mismatch")
-
-    # Metadata directories stay metadata-only; component directories are not copied here.
+    # All hidden plugin directories contain manifests only. The Codex marketplace
+    # intentionally reuses .claude-plugin/marketplace.json; no .agents catalog
+    # or nested plugins/ copy is needed.
     expected_metadata = {
         ".claude-plugin": {"plugin.json", "marketplace.json"},
         ".cursor-plugin": {"plugin.json", "marketplace.json"},
-        ".agents/plugins": {"marketplace.json"},
-        f"{CODEX_PACKAGE}/.codex-plugin": {"plugin.json"},
+        ".codex-plugin": {"plugin.json"},
     }
     for relative, expected_files in expected_metadata.items():
         directory = root / relative
@@ -116,33 +108,23 @@ def validate(root: Path = ROOT) -> list[str]:
                 f"files={sorted(files)}, directories={sorted(directories)}"
             )
 
-    # No root Codex manifest can be installed as a repo-local plugin: Codex
-    # requires a strict subdirectory. No legacy duplicated marketplace package may return.
-    if (root / ".codex-plugin").exists():
-        errors.append("root .codex-plugin/ is not a valid repo-marketplace plugin root; use plugins/ai-agent/.codex-plugin/")
-    for duplicate in (root / "plugins" / "ai-agent-ecosystem",):
-        if duplicate.exists():
-            errors.append(f"obsolete duplicate plugin package is forbidden: {duplicate.relative_to(root)}")
-
-    codex_root = root / CODEX_PACKAGE
-    if not codex_root.is_dir():
-        errors.append(f"required Codex plugin package is missing: {CODEX_PACKAGE}")
-    else:
-        actual_top_level = {path.name for path in codex_root.iterdir()}
-        if actual_top_level != {".codex-plugin", "skills"}:
-            errors.append(
-                f"{CODEX_PACKAGE} may contain only .codex-plugin/ and skills/; "
-                f"found={sorted(actual_top_level)}"
-            )
-        for unsupported in ("agents", "rules"):
-            if (codex_root / unsupported).exists():
-                errors.append(f"{CODEX_PACKAGE}/{unsupported}/ is not supported or required")
-
-    # Root bundle is canonical for Claude Code, Cursor, and Antigravity.
-    agent_files = sorted((root / "agents").glob("*.md"))
+    if (root / "plugins").exists():
+        errors.append("plugins/ is forbidden: all marketplace components must be shared from the repository root")
+    if (root / ".agents").exists():
+        errors.append(".agents/ is obsolete for this layout; Codex uses .claude-plugin/marketplace.json")
+    
+    # Verify the root bundle is generated from canonical module sources.
     expected_agents = set(load("contracts/agent-tool-policy.json").get("agents", []))
-    if {path.stem for path in agent_files} != expected_agents:
+    root_agent_files = sorted((root / "agents").glob("*.md"))
+    if {path.stem for path in root_agent_files} != expected_agents:
         errors.append("root ./agents inventory does not match contracts/agent-tool-policy.json")
+    source_agents = sorted((root / "modules").glob("*/agents/*.md"))
+    if len(root_agent_files) != len(source_agents):
+        errors.append(f"root ./agents count mismatch: expected {len(source_agents)}, found {len(root_agent_files)}")
+    for source in source_agents:
+        target = root / "agents" / source.name
+        if not target.is_file() or target.read_bytes() != source.read_bytes():
+            errors.append(f"root agent differs from canonical module source: {source.name}")
 
     source_skills = sorted((root / "modules").glob("*/skills/*/SKILL.md"))
     root_skills = sorted((root / "skills").glob("*/SKILL.md"))
@@ -153,19 +135,15 @@ def validate(root: Path = ROOT) -> list[str]:
         if not target.is_file() or target.read_bytes() != source.read_bytes():
             errors.append(f"root skill differs from canonical module source: {source.parent.name}")
 
-    codex_skills = sorted((codex_root / "skills").glob("*/SKILL.md")) if codex_root.is_dir() else []
-    if len(codex_skills) != len(root_skills):
-        errors.append(f"Codex skills mirror mismatch: expected {len(root_skills)}, found {len(codex_skills)}")
-    for source in root_skills:
-        target = codex_root / "skills" / source.parent.name / "SKILL.md"
-        if not target.is_file() or target.read_bytes() != source.read_bytes():
-            errors.append(f"Codex-required skill mirror differs from root source: {source.parent.name}")
-
-    rule = root / "rules" / "ai-agent-constitution.mdc"
-    if not rule.is_file():
-        errors.append("root ./rules/ai-agent-constitution.mdc is required")
+    source_rule = root / "modules" / "agent-constitution" / "rules" / "AGENTS.md"
+    root_rule = root / "rules" / "AGENTS.md"
+    if not source_rule.is_file() or not root_rule.is_file() or source_rule.read_bytes() != root_rule.read_bytes():
+        errors.append("root rules/AGENTS.md must match the canonical module constitution")
+    mdc_rule = root / "rules" / "ai-agent-constitution.mdc"
+    if not mdc_rule.is_file():
+        errors.append("root rules/ai-agent-constitution.mdc is required")
     else:
-        content = rule.read_text(encoding="utf-8")
+        content = mdc_rule.read_text(encoding="utf-8")
         if not content.startswith("---\n") or "alwaysApply: true" not in content.split("\n---", 1)[0]:
             errors.append("root constitution rule must use native MDC frontmatter with alwaysApply: true")
         if "Universal Agent Constitution" not in content:
@@ -181,9 +159,9 @@ def main() -> int:
         for error in errors:
             print("ERROR:", error)
         return 1
-    print("MARKETPLACE VALIDATION PASSED: Claude Code and Cursor share the root bundle; Codex uses the required skills-only subdirectory package")
-    print("Root components: 7 agents, 19 skills, 1 MDC constitution rule (+ Antigravity AGENTS.md)")
-    print("Codex exception: 19 skills mirrored under ./plugins/ai-agent; no agent/rule copies")
+    print("MARKETPLACE VALIDATION PASSED: Codex, Claude Code, Copilot CLI, and Cursor share the root bundle")
+    print("Root components: 7 agents, 19 skills, AGENTS.md, and ai-agent-constitution.mdc")
+    print("No plugins/ mirror or .agents/plugins marketplace catalog")
     return 0
 
 
