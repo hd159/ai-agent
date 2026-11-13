@@ -110,10 +110,10 @@
       "source": "./",
       "components": {
         "agents": "./agents/",
-        "skills": "./skills/",
-        "rules": "./rules/"
+        "skills": "./skills/"
       },
-      "metadata_directory_policy": "Only plugin.json and marketplace.json; no component subdirectories."
+      "metadata_directory_policy": "Only plugin.json and marketplace.json; no component subdirectories.",
+      "note": "Claude Code plugin.json supports agents and skills paths relative to the plugin root. The constitution remains in the shared root rules/ for Cursor and Antigravity; Claude does not declare a rules component."
     },
     "cursor": {
       "catalog": ".cursor-plugin/marketplace.json",
