@@ -12,6 +12,10 @@ description: >-
 Do NOT write application code, scaffold implementation files, or dispatch implementation tasks until the discovery/MVP scope design has been presented and explicitly approved by the user. This applies regardless of perceived task simplicity (Anti-Pattern: This Is Too Simple To Need A Design).
 </HARD-GATE>
 
+## Step 0 — Sub-Project Decomposition Check
+
+
+
 ## Procedure
 
 0. **Sub-Project Decomposition Check (before detailed questions):**
