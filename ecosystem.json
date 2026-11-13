@@ -12,7 +12,8 @@
     "Project-local memory remains in the target project's .agent-ecosystem directory and is shared through existing JSON/Markdown contracts.",
     "Native adapters do not grant host permissions. Runtime tools, approval policies, sandboxing, MCP connectivity, and delegation must be verified in each runtime and surface.",
     "Installers preserve existing instruction content through managed blocks where the host format allows it; Cursor uses a dedicated exclusively managed MDC rule. Unmanaged conflicting files are never overwritten.",
-    "Codex, Claude Code, and Cursor marketplaces all reference the single root plugin bundle: ./agents/, ./skills/, and ./rules/. Hidden metadata directories contain manifests only; no component files are duplicated."
+    "Codex, Claude Code, and Cursor marketplaces all reference the single root plugin bundle: ./agents/, ./skills/, and ./rules/. Hidden metadata directories contain manifests only; no component files are duplicated.",
+    "Claude Code and Cursor marketplaces share the root ./agents/, ./skills/, and ./rules/ bundle. Codex requires a strict plugins/ subdirectory and mirrors only its supported skills component there; Codex agent profiles remain available through the native .codex/agents adapter."
   ],
   "modules": [
     {
