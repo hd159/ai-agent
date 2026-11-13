@@ -11,7 +11,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 # The root bundle is the only distributable copy of agents, skills, and rules.
 # Platform manifests live in metadata-only hidden directories and point back here.
-GENERATED = ("plugin.json", "agents", "skills", "rules")
+# Codex requires a strict repository subdirectory for local marketplace sources.
+# Only its supported skills component is mirrored; Codex agents use .codex/agents.
+GENERATED = ("plugin.json", "agents", "skills", "rules", "plugins/ai-agent")
 
 
 def build(destination: Path) -> list[str]:
@@ -102,7 +104,47 @@ def build(destination: Path) -> list[str]:
         "keywords": ["multi-agent", "orchestration", "architecture", "product-design", "frontend", "backend", "devops", "qa", "agent-skills"]
     }
     (destination / "plugin.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    return [f"agents={agent_count}", f"skills={skill_count}", f"rules={rule_count} source rule + ai-agent-constitution.mdc"]
+
+    # Codex marketplace sources must be strict subdirectories of the repository
+    # root. Keep only the minimal supported Codex package at ./plugins/ai-agent.
+    # Codex plugin manifests support skills, not agents or rules.
+    codex_root = destination / "plugins" / "ai-agent"
+    codex_manifest_dir = codex_root / ".codex-plugin"
+    codex_skills_dir = codex_root / "skills"
+    codex_manifest_dir.mkdir(parents=True, exist_ok=True)
+    codex_skills_dir.mkdir(parents=True, exist_ok=True)
+    for skill_dir in sorted(skills_dir.iterdir()):
+        if (skill_dir / "SKILL.md").is_file():
+            shutil.copytree(skill_dir, codex_skills_dir / skill_dir.name)
+
+    codex_manifest = {
+        "name": "ai-agent",
+        "version": catalog["version"],
+        "description": "AI Agent Ecosystem reusable engineering skills for Codex.",
+        "author": {"name": "hd159"},
+        "homepage": "https://github.com/hd159/ai-agent",
+        "repository": "https://github.com/hd159/ai-agent",
+        "license": "MIT",
+        "skills": "./skills/",
+        "interface": {
+            "displayName": "AI Agent Ecosystem",
+            "shortDescription": "19 reusable engineering skills",
+            "longDescription": "The Codex-compatible skill package. Specialist Codex agents are installed separately through the native project adapter.",
+            "developerName": "hd159",
+            "category": "Developer Tools",
+            "websiteURL": "https://github.com/hd159/ai-agent"
+        }
+    }
+    (codex_manifest_dir / "plugin.json").write_text(
+        json.dumps(codex_manifest, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8"
+    )
+    return [
+        f"agents={agent_count}",
+        f"skills={skill_count}",
+        f"rules={rule_count} source rule + ai-agent-constitution.mdc",
+        f"codex-plugin-skills={skill_count} (required ./plugins/ai-agent mirror)"
+    ]
 
 
 def same_generated(temp: Path) -> list[str]:
