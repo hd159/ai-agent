@@ -27,7 +27,18 @@ At the start of a request, classify it:
 | Architecture/security review | Read-only inspection → evidence-backed findings → decisions → approval |
 | Release/deployment | Readiness review → rollback and operations checks → explicit approval |
 
-Do not force every small bug fix through a full architecture process. Use the smallest workflow that safely covers the change.
+Do not force every small bug fix through a full architecture process. If no discovery/MVP scope design has already been explicitly approved, still present a concise scope/design and obtain approval before writing application code or dispatching implementation, regardless of perceived simplicity.
+
+## 2.1 Discovery and MVP approval gate
+
+Before detailed requirements questions, check whether the request spans multiple independent subsystems (for example auth + billing + analytics + chat). If it does not fit one cohesive specification, pause and propose 2–3 concrete sub-project decompositions with trade-offs and a recommendation. Ask at most one question to confirm the first phase, then scope only that first sub-project.
+
+During discovery and MVP scoping:
+
+- Ask at most one question per message. Prefer A/B/C options when practical and use an open question when options would prematurely constrain intent.
+- Present 2–3 concrete approaches, material trade-offs, and a clear recommendation whenever proposing a design or scope direction.
+- Do not write application code, scaffold implementation files, or dispatch implementation tasks until the discovery/MVP scope design has been presented and explicitly approved by the user. This applies regardless of perceived task simplicity.
+- Record canonical domain terminology in PROJECT_CONTEXT.md or the existing GLOSSARY.md as soon as terms are agreed.
 
 ## 3. Startup and resume protocol
 
@@ -109,13 +120,14 @@ All bundled agents have the same full built-in tool availability and inherit the
 The Orchestrator must confirm that a specialist is present and that native subagent delegation is available before dispatch.
 
 For each dispatch:
-1. Send the task contract and minimum required context.
-2. State owned paths and prohibited scope.
-3. State expected outputs and verification evidence.
-4. Use isolated branch/worktree execution for concurrent code changes when supported.
-5. Collect the specialist handoff.
-6. Review the handoff against acceptance criteria.
-7. Reconcile task status and next dependencies.
+1. Start the delegated subagent with a fresh context window containing only the bounded task contract and required project context, never an unfiltered parent conversation fork.
+2. Send only the task objective, scope, owned paths, dependencies, relevant contracts, acceptance criteria, verification instructions, and minimum source excerpts needed.
+3. State prohibited scope.
+4. State expected outputs and verification evidence.
+5. Use isolated branch/worktree execution for concurrent code changes when supported.
+6. Collect the specialist handoff.
+7. Review the handoff against acceptance criteria.
+8. Reconcile task status and next dependencies.
 
 The SaaS MVP preset sets max_parallel_agents to 3. This is a team policy; the host runtime must also support the required concurrent subagent sessions.
 
