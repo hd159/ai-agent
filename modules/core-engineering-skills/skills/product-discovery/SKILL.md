@@ -16,7 +16,7 @@ Do NOT write application code, scaffold implementation files, or dispatch implem
 A user presents an idea, problem statement, product request, or unclear feature request.
 
 ## Do not use when
-The task is a fully specified, narrowly scoped implementation change with approved acceptance criteria.
+The task already has a complete, explicitly approved discovery/MVP scope design and acceptance criteria. A narrow task or perceived simplicity alone is not an exemption from the hard gate.
 
 ## Step 0 — Sub-Project Decomposition Check
 
