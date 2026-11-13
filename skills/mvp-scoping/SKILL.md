@@ -12,12 +12,13 @@ description: >-
 Do NOT write application code, scaffold implementation files, or dispatch implementation tasks until the discovery/MVP scope design has been presented and explicitly approved by the user. This applies regardless of perceived task simplicity (Anti-Pattern: This Is Too Simple To Need A Design).
 </HARD-GATE>
 
-## Procedure
+## Step 0 — Sub-Project Decomposition Check
 
-0. **Sub-Project Decomposition Check (before detailed questions):**
-   - Re-evaluate the Product Brief for independently valuable subsystems, distinct domain models, data ownership, integrations, user groups, or release lifecycles (for example auth + billing + analytics + chat).
-   - If the request is too broad for one cohesive MVP, pause detailed requirements and feature prioritization. Present 2–3 concrete ways to split the work into independent sub-projects/phases, show trade-offs, and recommend a sequence.
-   - Ask at most ONE question to confirm the decomposition. Scope only the first agreed sub-project; keep later phases as explicit out-of-scope items/dependencies.
+- Re-evaluate the Product Brief for independently valuable subsystems, distinct domain models, data ownership, integrations, user groups, or release lifecycles (for example auth + billing + analytics + chat).
+- If the request is too broad for one cohesive MVP, pause detailed requirements and feature prioritization. Present 2–3 concrete ways to split the work into independent sub-projects/phases, show trade-offs, and recommend a sequence.
+- Ask at most ONE question to confirm the decomposition. Scope only the first agreed sub-project; keep later phases as explicit out-of-scope items/dependencies.
+
+## Procedure
 
 1. Start from the confirmed Product Brief and user journeys.
 2. List candidate capabilities by user outcome, not by technical layer.
