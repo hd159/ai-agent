@@ -31,28 +31,30 @@ All specialists ship together. You do **not** need to install or clone nine sepa
 
 ## Native Plugin Marketplaces — Codex, Claude Code, and Cursor
 
-The repository exposes three native marketplace catalogs that all point to the **same root component bundle**:
+Claude Code and Cursor use the **single root component bundle**:
 
-- Codex: `.agents/plugins/marketplace.json`
-- Claude Code: `.claude-plugin/marketplace.json`
-- Cursor: `.cursor-plugin/marketplace.json`
+- Agents: `./agents/`
+- Skills: `./skills/`
+- Rules: `./rules/`
 
-All plugin manifests resolve `./agents/`, `./skills/`, and `./rules/` from the repository root. The hidden metadata directories contain manifests only. There is no nested `plugins/ai-agent/` component package and no duplicated component directories under `.claude-plugin/`.
+Their marketplace sources are `"./"`; their metadata directories contain only `plugin.json` and `marketplace.json`. No components are copied into `.claude-plugin/` or `.cursor-plugin/`.
 
-**Codex:** In Add Plugin Marketplace, set Source to `https://github.com/hd159/ai-agent`, Git ref to `main`, and leave **Sparse paths empty**. The root `.codex-plugin/plugin.json` declares `./agents/` and `./skills/`. CLI:
+Codex has one narrowly scoped packaging exception: its marketplace resolver requires a strict subdirectory source and its plugin manifest supports skills, not custom agents/rules. The builder therefore creates `plugins/ai-agent/` with only `.codex-plugin/plugin.json` and a 19-skill mirror. Codex custom agents remain available through the native `.codex/agents/*.toml` adapter. No agent or rule files are copied into the Codex package.
+
+**Codex:** In Add Plugin Marketplace, set Source to `https://github.com/hd159/ai-agent`, Git ref to `main`, and leave **Sparse paths empty**. The catalog at `.agents/plugins/marketplace.json` points to `./plugins/ai-agent`.
 
 ```bash
 codex plugin marketplace add hd159/ai-agent --ref main
 codex plugin marketplace list
 ```
 
-Then open `/plugins` and install **AI Agent Ecosystem**.
+Then open `/plugins` and install **ai-agent**.
 
-**Claude Code:** Add `https://github.com/hd159/ai-agent` as a marketplace. Its metadata is in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`; the catalog uses `"source": "./"` and the plugin manifest points to the root component directories.
+**Claude Code:** Add `https://github.com/hd159/ai-agent` as a marketplace. The catalog at `.claude-plugin/marketplace.json` uses `"source": "./"` and the plugin manifest resolves all components from the repository root.
 
-**Cursor:** Import `https://github.com/hd159/ai-agent` as a Team Marketplace from Dashboard → Plugins → Team Marketplaces → Add Marketplace → Import from Repo. Then install the plugin from Cursor Customize. Team Marketplace requires Cursor Teams or Enterprise. The root `.cursor-plugin/plugin.json` points to the same shared component directories.
+**Cursor:** Import `https://github.com/hd159/ai-agent` as a Team Marketplace from Dashboard → Plugins → Team Marketplaces → Add Marketplace → Import from Repo. The catalog at `.cursor-plugin/marketplace.json` uses `"source": "./"`. Team Marketplace requires Cursor Teams or Enterprise.
 
-Build and verify the one root bundle:
+Build and verify the shared root bundle and Codex exception:
 
 ```powershell
 python .\scripts\build_single_plugin.py
@@ -61,7 +63,7 @@ python .\scripts\validate_plugin.py
 python .\scripts\validate_marketplaces.py
 ```
 
-See [Root-Shared Native Plugin Marketplaces](docs/marketplaces/README.md) for the repository layout and platform-specific installation details.
+See [Root-Shared Native Plugin Marketplaces](docs/marketplaces/README.md) for the layout and installation details.
 
 ## Install a native adapter in an existing project
 
