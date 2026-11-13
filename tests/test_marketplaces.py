@@ -57,10 +57,14 @@ class RootSharedMarketplaceTests(unittest.TestCase):
             self.assertFalse((directory / component).exists())
 
     def test_claude_and_cursor_manifests_resolve_from_repository_root(self):
-        for path in (".claude-plugin/plugin.json", ".cursor-plugin/plugin.json"):
-            manifest = json.loads((ROOT / path).read_text(encoding="utf-8"))
-            for component in ("agents", "skills", "rules"):
-                self.assertEqual(manifest[component], f"./{component}/")
+        claude = json.loads((ROOT / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
+        self.assertEqual(claude["agents"], "./agents/")
+        self.assertEqual(claude["skills"], "./skills/")
+        self.assertNotIn("rules", claude)
+
+        cursor = json.loads((ROOT / ".cursor-plugin/plugin.json").read_text(encoding="utf-8"))
+        for component in ("agents", "skills", "rules"):
+            self.assertEqual(cursor[component], f"./{component}/")
 
     def test_claude_and_cursor_marketplaces_use_root_source(self):
         for path in (".claude-plugin/marketplace.json", ".cursor-plugin/marketplace.json"):
