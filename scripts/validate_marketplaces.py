@@ -29,21 +29,24 @@ def validate(root: Path = ROOT) -> list[str]:
 
     # Claude Code and Cursor can consume the repository root as the plugin root.
     root_plugins = {
-        "claude": (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"),
-        "cursor": (".cursor-plugin/plugin.json", ".cursor-plugin/marketplace.json"),
+        "claude": (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json", ("agents", "skills")),
+        "cursor": (".cursor-plugin/plugin.json", ".cursor-plugin/marketplace.json", ("agents", "skills", "rules")),
     }
-    for platform, (plugin_path, marketplace_path) in root_plugins.items():
+    for platform, (plugin_path, marketplace_path, components) in root_plugins.items():
         plugin = load(plugin_path)
         marketplace = load(marketplace_path)
         if plugin.get("name") != "ai-agent-ecosystem":
             errors.append(f"{plugin_path}: plugin name must be ai-agent-ecosystem")
         if plugin.get("version") != version:
             errors.append(f"{plugin_path}: plugin version must match ecosystem.json ({version})")
-        for component, expected in ROOT_COMPONENTS.items():
+        for component in components:
+            expected = ROOT_COMPONENTS[component]
             if plugin.get(component) != expected:
                 errors.append(f"{plugin_path}: {component} must resolve from repository root as {expected}")
             if not (root / expected.removeprefix("./")).is_dir():
                 errors.append(f"{plugin_path}: root component directory is missing: {expected}")
+        if platform == "claude" and "rules" in plugin:
+            errors.append(f"{plugin_path}: Claude Code plugin manifests do not declare a rules component")
 
         if marketplace.get("name") != "ai-agent-ecosystem":
             errors.append(f"{marketplace_path}: marketplace name mismatch")
