@@ -87,18 +87,50 @@ else:
     if "Universal Agent Constitution" not in content:
         errors.append("rules/ai-agent-constitution.mdc must contain the shared constitution")
 
-# Plugin metadata directories must never contain copied component bundles.
-for metadata_dir in (".claude-plugin", ".cursor-plugin", ".codex-plugin", ".agents/plugins"):
+# Claude Code and Cursor metadata directories contain manifests only.
+for metadata_dir in (".claude-plugin", ".cursor-plugin", ".agents/plugins"):
     path = ROOT / metadata_dir
     if path.is_dir():
         for child in path.iterdir():
-            if child.is_dir() and child.name in {"agents", "skills", "rules"}:
-                errors.append(f"{metadata_dir} must contain metadata only; found duplicated {child.name}/")
+            if child.is_dir():
+                errors.append(f"{metadata_dir} must contain metadata only; found directory {child.name}/")
 
-# The previous nested package duplicated the root agents/skills/rules. Fail if it returns.
-for duplicate in (ROOT / "plugins" / "ai-agent", ROOT / "plugins" / "ai-agent-ecosystem"):
-    if duplicate.exists():
-        errors.append(f"duplicate plugin component package is forbidden: {duplicate.relative_to(ROOT)}")
+# Codex requires a strict subdirectory source. Keep only its manifest and the
+# skills-only mirror; agents and rules remain canonical at the repository root.
+if (ROOT / ".codex-plugin").exists():
+    errors.append("root .codex-plugin/ cannot be installed through a Codex repo marketplace; use plugins/ai-agent/")
+codex_root = ROOT / "plugins" / "ai-agent"
+if codex_root.is_dir():
+    top_level = {path.name for path in codex_root.iterdir()}
+    if top_level != {".codex-plugin", "skills"}:
+        errors.append(f"plugins/ai-agent may contain only .codex-plugin/ and skills/; found {sorted(top_level)}")
+    for unsupported in ("agents", "rules"):
+        if (codex_root / unsupported).exists():
+            errors.append(f"plugins/ai-agent/{unsupported}/ must not duplicate the root bundle")
+    codex_manifest_path = codex_root / ".codex-plugin" / "plugin.json"
+    try:
+        codex_manifest = json.loads(codex_manifest_path.read_text(encoding="utf-8"))
+        if codex_manifest.get("name") != "ai-agent":
+            errors.append("plugins/ai-agent/.codex-plugin/plugin.json name must match its directory")
+        if codex_manifest.get("skills") != "./skills/":
+            errors.append("Codex plugin manifest must reference its local ./skills/ mirror")
+        if "agents" in codex_manifest or "rules" in codex_manifest:
+            errors.append("Codex plugin manifest must not declare unsupported agents/rules components")
+    except Exception as exc:
+        errors.append(f"invalid Codex plugin manifest: {exc}")
+    root_skill_files = sorted((ROOT / "skills").glob("*/SKILL.md"))
+    codex_skill_files = sorted((codex_root / "skills").glob("*/SKILL.md"))
+    if len(codex_skill_files) != len(root_skill_files):
+        errors.append("Codex skill mirror count must match the shared root skills directory")
+    for source in root_skill_files:
+        target = codex_root / "skills" / source.parent.name / "SKILL.md"
+        if not target.is_file() or target.read_bytes() != source.read_bytes():
+            errors.append(f"Codex skill mirror differs from root source: {source.parent.name}")
+else:
+    errors.append("required Codex plugin subdirectory plugins/ai-agent is missing")
+
+if (ROOT / "plugins" / "ai-agent-ecosystem").exists():
+    errors.append("obsolete duplicate plugins/ai-agent-ecosystem package is forbidden")
 
 if errors:
     print("PLUGIN VALIDATION FAILED")
