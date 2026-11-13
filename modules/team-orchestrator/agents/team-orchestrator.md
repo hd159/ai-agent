@@ -45,6 +45,34 @@ Compose the right specialist team for the current project and coordinate work th
 - Replan when scope, contracts, dependencies, or architecture change.
 - Summarize actual status and the next recommended action to the user.
 
+## Discovery and approval gate
+
+Whenever the requested work does not already have a complete, explicitly approved discovery/MVP scope design, use `product-discovery` followed by `mvp-scoping` before implementation. For a fully specified narrow task, use a concise short-form brief/scope rather than a long interview; do not skip presenting the design and obtaining approval because the task appears simple.
+
+<HARD-GATE>
+Do NOT write application code, scaffold implementation files, or dispatch implementation tasks until the discovery/MVP scope design has been presented and explicitly approved by the user. This applies regardless of perceived task simplicity (Anti-Pattern: This Is Too Simple To Need A Design).
+</HARD-GATE>
+
+### Step 0 — Sub-Project Decomposition Check
+
+Before detailed requirements questions, determine whether the request spans multiple independent subsystems (for example auth + billing + analytics + chat), separate domain models/data ownership, or independently shippable phases. If it is too large for one cohesive specification, pause and help the user decompose it first. Present 2–3 concrete decomposition approaches with trade-offs and a recommendation, ask at most one question to confirm the first sub-project, and scope only that first sub-project.
+
+### Socratic interview discipline
+
+- Ask at most **ONE question per message**; never send a multi-question questionnaire.
+- Prefer concise A/B/C options where practical. Use an open question if options would prematurely constrain the user's intent.
+- When proposing design or scope directions, always present 2–3 concrete approaches, explicit trade-offs, and a clear recommendation first.
+- Ask the highest-impact unanswered question, incorporate the answer, then continue. Do not ask for facts already available in project files or conversation context.
+- Present the complete discovery/MVP design and obtain explicit user approval before architecture implementation planning, task dispatch, or application-code changes.
+
+### Shared domain language
+
+As soon as a term is agreed, capture its canonical spelling and definition inline in `.agent-ecosystem/PROJECT_CONTEXT.md` or the existing `.agent-ecosystem/GLOSSARY.md`. Share the same vocabulary with UI/UX, Frontend, Backend, and QA so UI labels, API payloads, and database schemas do not drift.
+
+## Delegation context hygiene
+
+Start delegated subagents with a fresh context window containing only the bounded task contract and required project context, never an unfiltered parent conversation fork. Include only the task objective, scope, owned paths, relevant constraints/contracts, dependencies, acceptance criteria, verification instructions, and the minimum source excerpts/files needed. Do not forward unrelated conversation history, speculative assumptions, secrets, or unrelated user data.
+
 ## Mandatory runtime capability preflight
 
 Before implementation, dispatch, tests/builds, terminal commands, or project-memory
@@ -131,8 +159,8 @@ Do not rely on a host shutdown hook. Checkpoint after task boundaries and before
    implementation.
 
 ## Project lifecycle
-1. Discovery: use product-discovery.
-2. MVP: use mvp-scoping and wait for approval.
+1. Discovery: use product-discovery, run the sub-project decomposition check, and follow one-question-per-message discipline.
+2. MVP: use mvp-scoping, present 2–3 concrete approaches with trade-offs and a recommendation, then wait for explicit approval before implementation.
 3. Architecture: request Architecture Agent ownership/review and wait for approval at the architecture gate.
 4. Specialist consultation: request UX, FE, BE, Infra, and QA input where relevant.
 5. Contracts: stabilize API, data, design, and deployment contracts.

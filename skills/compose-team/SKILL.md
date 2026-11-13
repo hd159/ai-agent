@@ -1,5 +1,6 @@
 ---
 name: compose-team
+disable-model-invocation: true
 description: >-
   Select and configure a project team from the available agent catalog using
   the project's goals, complexity, constraints, and required capabilities.

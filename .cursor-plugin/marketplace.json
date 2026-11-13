@@ -1,0 +1,31 @@
+{
+  "name": "ai-agent-ecosystem",
+  "owner": {
+    "name": "hd159"
+  },
+  "metadata": {
+    "description": "Native Cursor plugin for the AI Agent Ecosystem using the shared root bundle.",
+    "version": "0.4.0"
+  },
+  "plugins": [
+    {
+      "name": "ai-agent-ecosystem",
+      "source": "./",
+      "description": "Seven specialist agents, shared engineering rules, and 19 reusable skills.",
+      "version": "0.4.0",
+      "author": {
+        "name": "hd159"
+      },
+      "repository": "https://github.com/hd159/ai-agent",
+      "license": "MIT",
+      "category": "Developer Tools",
+      "tags": [
+        "agents",
+        "engineering",
+        "orchestration",
+        "skills",
+        "code-review"
+      ]
+    }
+  ]
+}

@@ -106,7 +106,25 @@ When the user asks to update architecture:
 
 Never regenerate an architecture summary from scratch if doing so would discard still-valid decisions.
 
-## 9. Security and Git policy
+## 9. ADR quality and domain language
+
+### 3-Gate ADR Filter
+
+Every candidate standalone ADR under `.agent-ecosystem/artifacts/` or `.agent-ecosystem/execution/decisions/` must pass all three gates:
+
+1. **Reversibility:** Is the decision costly or difficult to reverse later?
+2. **Surprise:** Is the choice non-obvious (would a future engineer wonder why this path was taken)?
+3. **Trade-off:** Were there genuine competing alternatives with material trade-offs?
+
+**Rule:** If any of the three gates is missing, skip creating a standalone ADR file and record a concise note in `PROJECT_CONTEXT.md` instead.
+
+This keeps the ADR set focused on decisions with durable consequences. Routine choices and obvious conventions remain concise context notes.
+
+### Inline ubiquitous language
+
+As soon as a domain term is agreed, update its canonical spelling and definition inline in `PROJECT_CONTEXT.md` or the project's existing `GLOSSARY.md`. Record meaningful synonyms and distinctions. Treat this as a shared contract for UI labels, API payloads, events, database schemas, and QA terminology. Update it during discovery/design, not as a final documentation task.
+
+## 10. Security and Git policy
 
 - Never store passwords, API keys, access tokens, private keys, or sensitive personal data.
 - Prefer references to secret-manager names over secret values.
@@ -114,6 +132,6 @@ Never regenerate an architecture summary from scratch if doing so would discard 
 - Do not commit or push memory files unless the user or repository policy authorizes it.
 - For shared or multi-user workspaces, use normal Git branch/merge practices to resolve concurrent changes.
 
-## 10. Scope and future evolution
+## 11. Scope and future evolution
 
 This is a project-local, Git-backed design. A centralized memory service may be added later if projects need cross-repository search, multiple independent workspaces, shared user identity, or centralized access control. Do not introduce PostgreSQL, Redis, or vector search merely to persist a small project status snapshot.

@@ -1,5 +1,6 @@
 ---
 name: capability-smoke-test
+disable-model-invocation: true
 description: >-
   Preflight actual Antigravity file, terminal, MCP and delegation capabilities
   before implementation; diagnose missing or denied tools without guessing.

@@ -74,6 +74,9 @@ for module_dir in module_dirs:
             fail(f"{skill_file.relative_to(ROOT)}: skill name must match directory")
         if not fm.get("description"):
             fail(f"{skill_file.relative_to(ROOT)}: missing skill description")
+        invocation_flag = fm.get("disable-model-invocation")
+        if invocation_flag is not None and invocation_flag not in {"true", "false"}:
+            fail(f"{skill_file.relative_to(ROOT)}: disable-model-invocation must be true or false")
 
 catalog_path = ROOT / "ecosystem.json"
 if catalog_path.is_file():
@@ -181,10 +184,25 @@ required = [
     "docs/adapters/cursor/README.md",
     "docs/adapters/antigravity/README.md",
     "docs/adapters/README.md",
+    ".claude-plugin/plugin.json",
+    ".claude-plugin/marketplace.json",
+    ".cursor-plugin/plugin.json",
+    ".cursor-plugin/marketplace.json",
+    ".codex-plugin/plugin.json",
+    "rules/ai-agent-constitution.mdc",
+    "scripts/validate_marketplaces.py",
+    "tests/test_marketplaces.py",
+    "tests/test_discovery_architecture.py",
+    "docs/marketplaces/README.md",
 ]
 for relative in required:
     if not (ROOT / relative).exists():
         fail(f"missing required path: {relative}")
+
+if (ROOT / "plugins").exists():
+    fail("plugins/ must not exist; marketplace components are shared from repository root")
+if (ROOT / ".agents").exists():
+    fail(".agents/ must not exist; Codex uses .claude-plugin/marketplace.json")
 
 if errors:
     print("VALIDATION FAILED")

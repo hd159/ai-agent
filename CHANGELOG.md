@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — Root-only marketplaces and stronger design governance
+
+- Remove the Codex-only `plugins/ai-agent/` package and `.agents/plugins/marketplace.json`; Codex core-plugins reuses `.claude-plugin/marketplace.json` with root source `"./"`.
+- Generate root `.codex-plugin/plugin.json` alongside the root Antigravity, Claude Code, Copilot CLI, and Cursor manifests; all component paths point to root `agents/`, `skills/`, and `rules/`.
+- Update the single bundle builder, marketplace/repository validators, platform contract, tests, and installation documentation to reject component mirrors.
+- Add discovery hard gates, sub-project decomposition checks, one-question-per-message interviewing, and 2–3 approach trade-off recommendations.
+- Add the 3-Gate ADR Filter (Reversibility, Surprise, Trade-off), inline ubiquitous-language capture, and fresh-context subagent delegation requirements.
+- Mark compose-team, create-task-graph, capability-smoke-test, and session-checkpoint with `disable-model-invocation: true`; validate the optional boolean skill frontmatter field.
+
 ## 0.4.0 — Hybrid multi-runtime adapters
 
 - Add native Codex local-client, GitHub Copilot CLI / VS Code / GitHub.com custom-agent, Claude Code, and Cursor adapters generated from the existing canonical agent and skill sources.

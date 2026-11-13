@@ -1,58 +1,150 @@
 #!/usr/bin/env python3
-"""Validate a standalone Antigravity plugin repository without third-party packages."""
-from pathlib import Path
-import json, re, sys
-ROOT = Path(__file__).resolve().parents[1]
-errors = []
+"""Validate the single canonical root plugin bundle and its backward compatibility."""
+from __future__ import annotations
 
-def parse_frontmatter(path: Path):
-    text = path.read_text(encoding='utf-8')
-    if not text.startswith('---\n'):
-        errors.append(f'{path.relative_to(ROOT)}: missing YAML frontmatter')
+from pathlib import Path
+import json
+import re
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+errors: list[str] = []
+
+
+def parse_frontmatter(path: Path) -> dict[str, str]:
+    text = path.read_text(encoding="utf-8")
+    if not text.startswith("---\n"):
+        errors.append(f"{path.relative_to(ROOT)}: missing YAML frontmatter")
         return {}
-    end = text.find('\n---', 4)
+    end = text.find("\n---", 4)
     if end < 0:
-        errors.append(f'{path.relative_to(ROOT)}: unterminated frontmatter')
+        errors.append(f"{path.relative_to(ROOT)}: unterminated frontmatter")
         return {}
     result = {}
     for line in text[4:end].splitlines():
-        match = re.match(r'^([A-Za-z0-9_-]+):\s*(.*)$', line)
+        match = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", line)
         if match:
-            result[match.group(1)] = match.group(2).strip().strip('"\'')
+            result[match.group(1)] = match.group(2).strip().strip("\"'")
     return result
 
-manifest_path = ROOT / 'plugin.json'
+
+manifest_path = ROOT / "plugin.json"
+manifest = {}
 if not manifest_path.is_file():
-    errors.append('plugin.json must exist at repository root')
+    errors.append("plugin.json must exist at repository root")
 else:
     try:
-        manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
-        if not re.fullmatch(r'[a-z0-9]+(-[a-z0-9]+)*', manifest.get('name', '')):
-            errors.append('plugin.json name must be lowercase kebab-case')
-        if not re.fullmatch(r'\d+\.\d+\.\d+', manifest.get('version', '')):
-            errors.append('plugin.json version must use MAJOR.MINOR.PATCH')
-        if len(manifest.get('suggestedPrompts', [])) > 3:
-            errors.append('plugin.json suggestedPrompts supports at most 3 items')
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", manifest.get("name", "")):
+            errors.append("plugin.json name must be lowercase kebab-case")
+        if not re.fullmatch(r"\d+\.\d+\.\d+", manifest.get("version", "")):
+            errors.append("plugin.json version must use MAJOR.MINOR.PATCH")
+        if len(manifest.get("suggestedPrompts", [])) > 3:
+            errors.append("plugin.json suggestedPrompts supports at most 3 items")
+        if manifest.get("version") != "0.3.2":
+            errors.append("Antigravity root plugin must remain backward-compatible at version 0.3.2")
     except Exception as exc:
-        errors.append(f'invalid plugin.json: {exc}')
+        errors.append(f"invalid plugin.json: {exc}")
 
-for path in (ROOT / 'agents').glob('*.md') if (ROOT / 'agents').exists() else []:
+agents_dir = ROOT / "agents"
+agent_files = sorted(agents_dir.glob("*.md")) if agents_dir.is_dir() else []
+policy_path = ROOT / "contracts" / "agent-tool-policy.json"
+expected_agents = set()
+if policy_path.is_file():
+    expected_agents = set(json.loads(policy_path.read_text(encoding="utf-8")).get("agents", []))
+if {path.stem for path in agent_files} != expected_agents:
+    errors.append(
+        f"root agent bundle mismatch: expected={sorted(expected_agents)}, "
+        f"actual={sorted(path.stem for path in agent_files)}"
+    )
+for path in agent_files:
     fm = parse_frontmatter(path)
-    if fm.get('name') != path.stem:
-        errors.append(f'{path.relative_to(ROOT)}: name must match filename')
-    if not fm.get('description'):
-        errors.append(f'{path.relative_to(ROOT)}: description is required')
+    if fm.get("name") != path.stem:
+        errors.append(f"{path.relative_to(ROOT)}: name must match filename")
+    if not fm.get("description"):
+        errors.append(f"{path.relative_to(ROOT)}: description is required")
 
-for path in (ROOT / 'skills').glob('*/SKILL.md') if (ROOT / 'skills').exists() else []:
+skills_dir = ROOT / "skills"
+skill_files = sorted(skills_dir.glob("*/SKILL.md")) if skills_dir.is_dir() else []
+source_skills = sorted((ROOT / "modules").glob("*/skills/*/SKILL.md"))
+if len(skill_files) != len(source_skills):
+    errors.append(f"root skill bundle count mismatch: expected={len(source_skills)}, actual={len(skill_files)}")
+for path in skill_files:
     fm = parse_frontmatter(path)
-    if fm.get('name') != path.parent.name:
-        errors.append(f'{path.relative_to(ROOT)}: skill name must match directory')
-    if not fm.get('description'):
-        errors.append(f'{path.relative_to(ROOT)}: skill description is required')
+    if fm.get("name") != path.parent.name:
+        errors.append(f"{path.relative_to(ROOT)}: skill name must match directory")
+    if not fm.get("description"):
+        errors.append(f"{path.relative_to(ROOT)}: description is required")
+    # Optional skill metadata; when present it must be a YAML boolean.
+    invocation_flag = fm.get("disable-model-invocation")
+    if invocation_flag is not None and invocation_flag not in {"true", "false"}:
+        errors.append(
+            f"{path.relative_to(ROOT)}: disable-model-invocation must be true or false"
+        )
+
+constitution_mdc = ROOT / "rules" / "ai-agent-constitution.mdc"
+if not constitution_mdc.is_file():
+    errors.append("rules/ai-agent-constitution.mdc must exist in the shared root bundle")
+else:
+    content = constitution_mdc.read_text(encoding="utf-8")
+    fm = parse_frontmatter(constitution_mdc)
+    if fm.get("alwaysApply") != "true":
+        errors.append("rules/ai-agent-constitution.mdc must set alwaysApply: true")
+    if "Universal Agent Constitution" not in content:
+        errors.append("rules/ai-agent-constitution.mdc must contain the shared constitution")
+
+# Plugin metadata directories contain manifests only; all components are at root.
+expected_metadata = {
+    ".claude-plugin": {"plugin.json", "marketplace.json"},
+    ".cursor-plugin": {"plugin.json", "marketplace.json"},
+    ".codex-plugin": {"plugin.json"},
+}
+for metadata_dir, expected_files in expected_metadata.items():
+    directory = ROOT / metadata_dir
+    if not directory.is_dir():
+        errors.append(f"required metadata directory is missing: {metadata_dir}")
+        continue
+    files = {item.name for item in directory.iterdir() if item.is_file()}
+    directories = {item.name for item in directory.iterdir() if item.is_dir()}
+    if files != expected_files or directories:
+        errors.append(
+            f"{metadata_dir} must contain only {sorted(expected_files)}; "
+            f"files={sorted(files)}, directories={sorted(directories)}"
+        )
+
+if (ROOT / "plugins").exists():
+    errors.append("plugins/ is forbidden; agents, skills, and rules must exist only in the root bundle")
+if (ROOT / ".agents").exists():
+    errors.append(".agents/ is obsolete; Codex marketplace discovery uses .claude-plugin/marketplace.json")
+
+codex_manifest_path = ROOT / ".codex-plugin" / "plugin.json"
+try:
+    codex_manifest = json.loads(codex_manifest_path.read_text(encoding="utf-8"))
+    if codex_manifest.get("name") != "ai-agent-ecosystem":
+        errors.append(".codex-plugin/plugin.json name must be ai-agent-ecosystem")
+    if codex_manifest.get("agents") != "./agents/":
+        errors.append(".codex-plugin/plugin.json must point agents to ./agents/")
+    if codex_manifest.get("skills") != "./skills/":
+        errors.append(".codex-plugin/plugin.json must point skills to ./skills/")
+except Exception as exc:
+    errors.append(f"invalid .codex-plugin/plugin.json: {exc}")
+
+source_agents = sorted((ROOT / "modules").glob("*/agents/*.md"))
+for source in source_agents:
+    target = ROOT / "agents" / source.name
+    if not target.is_file() or target.read_bytes() != source.read_bytes():
+        errors.append(f"root agent differs from canonical module source: {source.name}")
+
+source_rule = ROOT / "modules" / "agent-constitution" / "rules" / "AGENTS.md"
+root_rule = ROOT / "rules" / "AGENTS.md"
+if not source_rule.is_file() or not root_rule.is_file() or source_rule.read_bytes() != root_rule.read_bytes():
+    errors.append("root rules/AGENTS.md must match the canonical module constitution")
 
 if errors:
-    print('PLUGIN VALIDATION FAILED')
+    print("PLUGIN VALIDATION FAILED")
     for error in errors:
-        print('ERROR:', error)
+        print("ERROR:", error)
     sys.exit(1)
-print('PLUGIN VALIDATION PASSED:', json.loads(manifest_path.read_text(encoding='utf-8'))['name'])
+
+print("PLUGIN VALIDATION PASSED: Antigravity 0.3.2; shared root bundle "
+      f"{len(agent_files)} agents, {len(skill_files)} skills, Cursor MDC rule")

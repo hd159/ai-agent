@@ -30,6 +30,21 @@ It must:
 9. Implementation dispatch
 10. Integration and quality review
 
+## 2.1 Discovery and approval gate
+
+Before detailed requirements questions, perform a sub-project decomposition check. If the request spans multiple independent subsystems or cannot fit one cohesive specification, pause and help split it into independent sub-projects/phases. Present 2–3 concrete decomposition approaches with trade-offs and a recommendation, ask at most one question to confirm the first sub-project, and scope only that first phase.
+
+For discovery and MVP scoping:
+
+- Ask at most one question per message; prefer concise A/B/C choices when they do not constrain intent prematurely.
+- When proposing a design or scope direction, present 2–3 concrete approaches, explicit trade-offs, and a clear recommendation.
+- Do not write application code, scaffold implementation files, or dispatch implementation tasks until the discovery/MVP scope design has been presented and explicitly approved by the user, regardless of perceived simplicity.
+- Capture agreed domain terms immediately in `.agent-ecosystem/PROJECT_CONTEXT.md` or the existing `.agent-ecosystem/GLOSSARY.md`.
+
+## 2.2 Delegation context hygiene
+
+Start delegated subagents with a fresh context window containing only the bounded task contract and required project context, never an unfiltered parent conversation fork. Include only the objective, scope, owned paths, dependencies, relevant contracts, acceptance criteria, verification instructions, and minimum source context.
+
 ## 3. Task decomposition rules
 
 A good task:

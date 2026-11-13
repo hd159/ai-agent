@@ -1,5 +1,6 @@
 ---
 name: session-checkpoint
+disable-model-invocation: true
 description: >-
   Persist work completed, task progress, blockers, decisions, verification
   evidence, and next actions to project execution state and an append-only

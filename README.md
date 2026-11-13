@@ -29,6 +29,54 @@ agy plugin uninstall ai-agent
 
 All specialists ship together. You do **not** need to install or clone nine separate repositories, copy plugin folders, or run a local folder installer.
 
+## Native Plugin Marketplaces — Codex, Claude Code, Copilot CLI, and Cursor
+
+All native marketplaces share one generated root bundle:
+
+- `./agents/` — seven specialist agent definitions
+- `./skills/` — 19 reusable skills
+- `./rules/` — shared constitution and Cursor MDC rule
+
+The marketplace entry points use the repository root as their source (`"./"`):
+
+| Runtime | Marketplace / manifest |
+|---|---|
+| Antigravity | Root `plugin.json` |
+| Claude Code | `.claude-plugin/marketplace.json` + `.claude-plugin/plugin.json` |
+| Codex core-plugins | Reuses `.claude-plugin/marketplace.json`; root `.codex-plugin/plugin.json` |
+| GitHub Copilot CLI | Reuses `.claude-plugin/plugin.json` |
+| Cursor | `.cursor-plugin/marketplace.json` + `.cursor-plugin/plugin.json` |
+
+There is no `plugins/` component mirror and no `.agents/plugins/marketplace.json`. Codex core-plugins recognizes `.claude-plugin/marketplace.json` and resolves `"source": "./"` to the repository root. The root Codex manifest declares `./agents/` and `./skills/`; current Codex core-plugins consumes the skills component, while custom Codex subagent profiles are installed by the native adapter.
+
+**Codex:** Add `https://github.com/hd159/ai-agent` as a plugin marketplace using the repository root. Install the AI Agent Ecosystem plugin from the discovered marketplace. For native custom subagents, use the adapter:
+
+```powershell
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project
+```
+
+**Claude Code:** Add `https://github.com/hd159/ai-agent` as a marketplace. Its catalog uses `"source": "./"` and the plugin manifest resolves the root `agents/` and `skills/` directories.
+
+**Copilot CLI:** Uses the Claude-format root plugin metadata and the same canonical agent/skill sources; no separate component bundle is required.
+
+**Cursor:** Import `https://github.com/hd159/ai-agent` as a Team Marketplace from Dashboard → Plugins → Team Marketplaces → Add Marketplace → Import from Repo. The catalog uses `"source": "./"` and resolves root agents, skills, and rules. Team Marketplace requires Cursor Teams or Enterprise.
+
+Build and validate the one root bundle:
+
+```powershell
+python .\scripts\build_single_plugin.py
+python .\scripts\build_single_plugin.py --check
+python .\scripts\validate_repo.py
+python .\scripts\validate_plugin.py
+python .\scripts\validate_agent_tools.py
+python .\scripts\validate_capabilities.py
+python .\scripts\validate_marketplaces.py
+python -m unittest discover -s tests -v
+```
+
+See [Root-Shared Native Plugin Marketplaces](docs/marketplaces/README.md) for manifest details and runtime compatibility notes.
+
 ## Install a native adapter in an existing project
 
 The Antigravity plugin remains installable with the original command above. For other coding agents, clone this repository and use the native adapter installer:
