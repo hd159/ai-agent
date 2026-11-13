@@ -29,24 +29,39 @@ agy plugin uninstall ai-agent
 
 All specialists ship together. You do **not** need to install or clone nine separate repositories, copy plugin folders, or run a local folder installer.
 
-## Native Plugin Marketplaces — Codex and Cursor
+## Native Plugin Marketplaces — Codex, Claude Code, and Cursor
 
-The repository now exposes two platform-native marketplace catalogs. Add the GitHub repository directly; do not point Codex at the nested plugin folder.
+The repository exposes three native marketplace catalogs that all point to the **same root component bundle**:
 
-**Codex:** In Add plugin marketplace, set Source to `https://github.com/hd159/ai-agent`, Git ref to `main`, and leave **Sparse paths empty**. The catalog is `.agents/plugins/marketplace.json` and references the nested plugin folder inside the same checkout. You can also run:
+- Codex: `.agents/plugins/marketplace.json`
+- Claude Code: `.claude-plugin/marketplace.json`
+- Cursor: `.cursor-plugin/marketplace.json`
+
+All plugin manifests resolve `./agents/`, `./skills/`, and `./rules/` from the repository root. The hidden metadata directories contain manifests only. There is no nested `plugins/ai-agent/` component package and no duplicated component directories under `.claude-plugin/`.
+
+**Codex:** In Add Plugin Marketplace, set Source to `https://github.com/hd159/ai-agent`, Git ref to `main`, and leave **Sparse paths empty**. The root `.codex-plugin/plugin.json` declares `./agents/` and `./skills/`. CLI:
 
 ```bash
 codex plugin marketplace add hd159/ai-agent --ref main
 codex plugin marketplace list
 ```
 
-Then open `/plugins` in Codex and install **AI Agent Ecosystem**.
+Then open `/plugins` and install **AI Agent Ecosystem**.
 
-**Cursor:** Import `https://github.com/hd159/ai-agent` as a Team Marketplace from Dashboard → Plugins → Team Marketplaces → Add Marketplace → Import from Repo. Then install the plugin from Cursor Customize. Team marketplaces require Cursor Teams or Enterprise. For individual local testing, use `~/.cursor/plugins/local/ai-agent-ecosystem`.
+**Claude Code:** Add `https://github.com/hd159/ai-agent` as a marketplace. Its metadata is in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`; the catalog uses `"source": "./"` and the plugin manifest points to the root component directories.
 
-**Capability difference:** Codex's plugin package distributes the 19 shared skills; it does not install the seven custom-agent TOML profiles or `AGENTS.md`. Use the Codex native adapter installer for those. Cursor's plugin package includes 7 custom agents, 1 always-applied rule, and 19 skills.
+**Cursor:** Import `https://github.com/hd159/ai-agent` as a Team Marketplace from Dashboard → Plugins → Team Marketplaces → Add Marketplace → Import from Repo. Then install the plugin from Cursor Customize. Team Marketplace requires Cursor Teams or Enterprise. The root `.cursor-plugin/plugin.json` points to the same shared component directories.
 
-See [Dual Native Plugin Marketplaces](docs/marketplaces/README.md) for exact steps, the sparse-path explanation, local Cursor setup, and runtime boundaries.
+Build and verify the one root bundle:
+
+```powershell
+python .\scripts\build_single_plugin.py
+python .\scripts\build_single_plugin.py --check
+python .\scripts\validate_plugin.py
+python .\scripts\validate_marketplaces.py
+```
+
+See [Root-Shared Native Plugin Marketplaces](docs/marketplaces/README.md) for the repository layout and platform-specific installation details.
 
 ## Install a native adapter in an existing project
 
