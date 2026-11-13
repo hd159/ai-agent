@@ -45,11 +45,7 @@ jobs:
         run: python scripts/build_adapters.py --adapter all
       - name: Validate native adapters
         run: python scripts/validate_adapters.py
-      - name: Build marketplace plugin components
-        run: python scripts/build_marketplace_components.py
-      - name: Check generated marketplace components
-        run: python scripts/build_marketplace_components.py --check
-      - name: Validate Codex and Cursor marketplaces
+      - name: Validate root-shared Codex, Claude Code, and Cursor marketplaces
         run: python scripts/validate_marketplaces.py
       - name: Test quality gates, installers, and marketplaces
         run: python -m unittest discover -s tests -v
