@@ -104,24 +104,55 @@
     "verification": "Run real read, write, terminal, MCP, and delegation probes separately in each target runtime and surface."
   },
   "marketplaces": {
-    "codex": {
-      "catalog": ".agents/plugins/marketplace.json",
-      "package": "plugins/ai-agent-ecosystem/",
-      "manifest": "plugins/ai-agent-ecosystem/.codex-plugin/plugin.json",
-      "components": [
-        "skills"
-      ],
-      "note": "Codex plugin packages do not declare Cursor-style agent or rule components; install AGENTS.md and .codex/agents through the native adapter."
+    "claude_code": {
+      "catalog": ".claude-plugin/marketplace.json",
+      "manifest": ".claude-plugin/plugin.json",
+      "source": "./",
+      "components": {
+        "agents": "./agents/",
+        "skills": "./skills/",
+        "rules": "./rules/"
+      },
+      "metadata_directory_policy": "Only plugin.json and marketplace.json; no component subdirectories."
     },
     "cursor": {
       "catalog": ".cursor-plugin/marketplace.json",
-      "package": "plugins/ai-agent-ecosystem/",
-      "manifest": "plugins/ai-agent-ecosystem/.cursor-plugin/plugin.json",
-      "components": [
-        "agents",
-        "rules",
-        "skills"
-      ]
+      "manifest": ".cursor-plugin/plugin.json",
+      "source": "./",
+      "components": {
+        "agents": "./agents/",
+        "skills": "./skills/",
+        "rules": "./rules/"
+      },
+      "metadata_directory_policy": "Only plugin.json and marketplace.json; no component subdirectories."
+    },
+    "codex": {
+      "catalog": ".agents/plugins/marketplace.json",
+      "manifest": ".codex-plugin/plugin.json",
+      "source": {
+        "source": "local",
+        "path": "."
+      },
+      "components": {
+        "agents": "./agents/",
+        "skills": "./skills/"
+      },
+      "metadata_directory_policy": "Only plugin.json in .codex-plugin/; Codex marketplace catalog remains under .agents/plugins/."
     }
+  },
+  "shared_plugin_bundle": {
+    "root": ".",
+    "canonical_components": {
+      "agents": "./agents/",
+      "skills": "./skills/",
+      "rules": "./rules/"
+    },
+    "canonical_sources": {
+      "agents": "modules/*/agents/*.md",
+      "skills": "modules/*/skills/*/SKILL.md",
+      "rules": "modules/agent-constitution/rules/AGENTS.md"
+    },
+    "generated_rule": "rules/ai-agent-constitution.mdc",
+    "note": "All native marketplace manifests resolve component paths from the repository root. Do not copy components into hidden metadata directories or nested plugins/ packages."
   }
 }
