@@ -1,0 +1,14 @@
+{
+  "name": "ai-agent-ecosystem",
+  "version": "0.4.0",
+  "description": "A coordinated engineering team with seven specialist agents, shared engineering rules, and 19 reusable skills.",
+  "author": {
+    "name": "hd159"
+  },
+  "repository": "https://github.com/hd159/ai-agent",
+  "homepage": "https://github.com/hd159/ai-agent",
+  "license": "MIT",
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "rules": "./rules/"
+}
