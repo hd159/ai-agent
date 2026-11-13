@@ -18,6 +18,10 @@ A user presents an idea, problem statement, product request, or unclear feature 
 ## Do not use when
 The task is a fully specified, narrowly scoped implementation change with approved acceptance criteria.
 
+## Step 0 — Sub-Project Decomposition Check
+
+
+
 ## Procedure
 
 0. **Sub-Project Decomposition Check (before detailed questions):**
