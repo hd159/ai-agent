@@ -57,7 +57,18 @@ When the user requests an architecture update:
 5. Record unresolved questions, risks, and assumptions separately.
 6. Update state.json and create a session checkpoint describing the review and evidence.
 
-## 5. Privacy and persistence
+## 5. 3-Gate ADR Filter and domain language
+
+- Capture canonical domain terms inline in `PROJECT_CONTEXT.md` (or the existing `GLOSSARY.md`) as soon as the user and team agree on them. Do not defer resolved terms to a later documentation pass.
+- Record canonical spelling, concise definition, meaningful synonyms, and distinctions between easily confused concepts. Keep UI labels, API payloads, event names, and database schemas aligned with this vocabulary.
+- Before creating a standalone ADR in `artifacts/` or `execution/decisions/`, require all three gates:
+  1. **Reversibility:** Is the decision costly or difficult to reverse later?
+  2. **Surprise:** Is the choice non-obvious (would a future engineer wonder why this path was taken)?
+  3. **Trade-off:** Were there genuine competing alternatives with material trade-offs?
+- **Rule:** If any of the three gates is missing, skip creating a standalone ADR file and record a concise note in `PROJECT_CONTEXT.md` instead.
+- Apply this filter to new decisions and architecture changes. Do not create ADRs for routine or obvious choices merely to create a paper trail.
+
+## 6. Privacy and persistence
 
 - Never write secrets, access tokens, passwords, private keys, or sensitive personal data into project memory.
 - Keep state.json concise; put detail in task files, ADRs, and session journals.
