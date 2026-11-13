@@ -4,13 +4,13 @@
     "name": "hd159"
   },
   "metadata": {
-    "description": "Native Cursor plugin for the AI Agent Ecosystem: specialist agents, always-applied engineering rules, and reusable skills.",
+    "description": "Native Cursor plugin for the AI Agent Ecosystem using the shared root bundle.",
     "version": "0.4.0"
   },
   "plugins": [
     {
       "name": "ai-agent-ecosystem",
-      "source": "plugins/ai-agent-ecosystem",
+      "source": "./",
       "description": "Seven specialist agents, shared engineering rules, and 19 reusable skills.",
       "version": "0.4.0",
       "author": {
