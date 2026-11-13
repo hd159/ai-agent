@@ -29,37 +29,53 @@ agy plugin uninstall ai-agent
 
 All specialists ship together. You do **not** need to install or clone nine separate repositories, copy plugin folders, or run a local folder installer.
 
-## Native Plugin Marketplaces — Codex, Claude Code, and Cursor
+## Native Plugin Marketplaces — Codex, Claude Code, Copilot CLI, and Cursor
 
-Claude Code and Cursor use the **single root component bundle**. Claude Code loads root `./agents/` and `./skills/`; Cursor loads root `./agents/`, `./skills/`, and `./rules/`.
+All native marketplaces share one generated root bundle:
 
-Their marketplace sources are `"./"`; their metadata directories contain only `plugin.json` and `marketplace.json`. No components are copied into `.claude-plugin/` or `.cursor-plugin/`.
+- `./agents/` — seven specialist agent definitions
+- `./skills/` — 19 reusable skills
+- `./rules/` — shared constitution and Cursor MDC rule
 
-Codex has one narrowly scoped packaging exception: its marketplace resolver requires a strict subdirectory source and its plugin manifest supports skills, not custom agents/rules. The builder therefore creates `plugins/ai-agent/` with only `.codex-plugin/plugin.json` and a 19-skill mirror. Codex custom agents remain available through the native `.codex/agents/*.toml` adapter. No agent or rule files are copied into the Codex package.
+The marketplace entry points use the repository root as their source (`"./"`):
 
-**Codex:** In Add Plugin Marketplace, set Source to `https://github.com/hd159/ai-agent`, Git ref to `main`, and leave **Sparse paths empty**. The catalog at `.agents/plugins/marketplace.json` points to `./plugins/ai-agent`.
+| Runtime | Marketplace / manifest |
+|---|---|
+| Antigravity | Root `plugin.json` |
+| Claude Code | `.claude-plugin/marketplace.json` + `.claude-plugin/plugin.json` |
+| Codex core-plugins | Reuses `.claude-plugin/marketplace.json`; root `.codex-plugin/plugin.json` |
+| GitHub Copilot CLI | Reuses `.claude-plugin/plugin.json` |
+| Cursor | `.cursor-plugin/marketplace.json` + `.cursor-plugin/plugin.json` |
 
-```bash
-codex plugin marketplace add hd159/ai-agent --ref main
-codex plugin marketplace list
+There is no `plugins/` component mirror and no `.agents/plugins/marketplace.json`. Codex core-plugins recognizes `.claude-plugin/marketplace.json` and resolves `"source": "./"` to the repository root. The root Codex manifest declares `./agents/` and `./skills/`; current Codex core-plugins consumes the skills component, while custom Codex subagent profiles are installed by the native adapter.
+
+**Codex:** Add `https://github.com/hd159/ai-agent` as a plugin marketplace using the repository root. Install the AI Agent Ecosystem plugin from the discovered marketplace. For native custom subagents, use the adapter:
+
+```powershell
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project --dry-run
+python .\scripts\install_adapter.py --adapter codex --target ..\my-project
 ```
 
-Then open `/plugins` and install **ai-agent**.
+**Claude Code:** Add `https://github.com/hd159/ai-agent` as a marketplace. Its catalog uses `"source": "./"` and the plugin manifest resolves the root `agents/` and `skills/` directories.
 
-**Claude Code:** Add `https://github.com/hd159/ai-agent` as a marketplace. The catalog at `.claude-plugin/marketplace.json` uses `"source": "./"` and the plugin manifest resolves all components from the repository root.
+**Copilot CLI:** Uses the Claude-format root plugin metadata and the same canonical agent/skill sources; no separate component bundle is required.
 
-**Cursor:** Import `https://github.com/hd159/ai-agent` as a Team Marketplace from Dashboard → Plugins → Team Marketplaces → Add Marketplace → Import from Repo. The catalog at `.cursor-plugin/marketplace.json` uses `"source": "./"`. Team Marketplace requires Cursor Teams or Enterprise.
+**Cursor:** Import `https://github.com/hd159/ai-agent` as a Team Marketplace from Dashboard → Plugins → Team Marketplaces → Add Marketplace → Import from Repo. The catalog uses `"source": "./"` and resolves root agents, skills, and rules. Team Marketplace requires Cursor Teams or Enterprise.
 
-Build and verify the shared root bundle and Codex exception:
+Build and validate the one root bundle:
 
 ```powershell
 python .\scripts\build_single_plugin.py
 python .\scripts\build_single_plugin.py --check
+python .\scripts\validate_repo.py
 python .\scripts\validate_plugin.py
+python .\scripts\validate_agent_tools.py
+python .\scripts\validate_capabilities.py
 python .\scripts\validate_marketplaces.py
+python -m unittest discover -s tests -v
 ```
 
-See [Root-Shared Native Plugin Marketplaces](docs/marketplaces/README.md) for the layout and installation details.
+See [Root-Shared Native Plugin Marketplaces](docs/marketplaces/README.md) for manifest details and runtime compatibility notes.
 
 ## Install a native adapter in an existing project
 
